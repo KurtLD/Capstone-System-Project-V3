@@ -379,7 +379,7 @@ def normalize_name_improved(name):
             first = ' '.join(name_parts[:-1])
     
     # Return normalized name 
-    return f"{last}, {first}, {mi}".rstrip(', ')
+    return f"{last}, {first} {mi}".rstrip(', ')
 
 # Function to find matching faculty using normalized names and fuzzy logic
 def find_matching_faculty(subject_teacher_name):
@@ -1643,83 +1643,85 @@ def add_groupPOD(request):
     })
 
 # # Helper function to normalize names (handles commas, extra spaces, and proper casing)
+# def normalize_name_improvedPOD(name):
+#     """
+#     Normalize the name for better matching by:
+#     - Removing extra spaces
+#     - Handling both "Last, First" and "First Last" formats
+#     - Converting to lowercase for case-insensitive comparison
+#     - Removing special characters
+#     """
+#     # Remove leading and trailing whitespace
+#     name = name.strip()
+    
+#     # Replace any sequences of whitespace with a single space
+#     name = re.sub(r'\s+', ' ', name)
+    
+#     # Handle "Last, First" format
+#     if ',' in name:
+#         last, first = name.split(',', 1)
+#         normalized_name = f"{first.strip()} {last.strip()}"
+#     else:
+#         # If it's already in "First Last" format, just use it
+#         normalized_name = name
+
+#     # Convert to lowercase for case-insensitive matching
+#     # normalized_name = normalized_name.lower()
+    
+#     # Optionally, remove special characters (if needed)
+#     normalized_name = re.sub(r'[^\w\s]', '', normalized_name)
+
+#     return normalized_name
+
 def normalize_name_improvedPOD(name):
     """
-    Normalize the name for better matching by:
-    - Removing extra spaces
-    - Handling both "Last, First" and "First Last" formats
-    - Converting to lowercase for case-insensitive comparison
-    - Removing special characters
-    """
-    # Remove leading and trailing whitespace
-    name = name.strip()
+    Normalizes name to 'Lastname, Firstname, M.I.' format
     
-    # Replace any sequences of whitespace with a single space
+    Handles various name formats more robustly:
+    - Single names
+    - First Last
+    - First Middle Last
+    - Last, First
+    - Last, First Middle
+    """
+    # Convert to string and strip whitespace
+    name = str(name).strip()
+    
+    # Replace multiple spaces with single space
     name = re.sub(r'\s+', ' ', name)
     
     # Handle "Last, First" format
     if ',' in name:
         last, first = name.split(',', 1)
-        normalized_name = f"{first.strip()} {last.strip()}"
+        last = last.strip()
+        first = first.strip()
     else:
-        # If it's already in "First Last" format, just use it
-        normalized_name = name
-
-    # Convert to lowercase for case-insensitive matching
-    # normalized_name = normalized_name.lower()
-    
-    # Optionally, remove special characters (if needed)
-    normalized_name = re.sub(r'[^\w\s]', '', normalized_name)
-
-    return normalized_name
-
-# def normalize_name_improvedPOD(name):
-#     """
-#     Normalizes name to 'Lastname, Firstname, M.I.' format.
-
-#     Handles various name formats robustly:
-#     - Single names
-#     - First Last
-#     - First Middle Last
-#     - Last, First
-#     - Last, First Middle
-#     - Handles middle initials correctly
-#     """
-#     # Convert to string and strip whitespace
-#     name = str(name).strip()
-
-#     # Replace multiple spaces with single space
-#     name = re.sub(r'\s+', ' ', name)
-
-#     # Handle "Last, First" format
-#     if ',' in name:
-#         last, first = name.split(',', 1)
-#         last = last.strip()
-#         first = first.strip()
-#     else:
-#         # Split name into parts
-#         parts = name.split()
+        # Split name into parts
+        parts = name.split()
+        if len(parts) == 1:
+            return parts[0]  # Single name
         
-#         if len(parts) == 1:  # Single name
-#             return parts[0]
-#         elif len(parts) == 2:  # First Last
-#             first, last = parts
-#             mi = ''
-#         else:  # First Middle Last or more
-#             first = parts[0]  # First part is always the first name
-#             last = parts[-1]  # Last part is always the last name
-#             potential_mi = parts[-2]  # Second-to-last part for potential middle initial
-            
-#             # Check if the second-to-last part is a middle initial
-#             if len(potential_mi) == 1 or (len(potential_mi) == 2 and potential_mi.endswith('.')):
-#                 mi = potential_mi if potential_mi.endswith('.') else potential_mi + '.'
-#                 first = ' '.join(parts[1:-2])  # Middle parts excluding MI and Last
-#             else:
-#                 mi = ''
-#                 first = ' '.join(parts[1:-1])  # Middle parts excluding Last
+        # More robust last name extraction
+        # Assume last name is the last part, but with some intelligence
+        last = parts[-1]
+        first_parts = parts[:-1]
+        first = ' '.join(first_parts)
+    
+    # Extract middle initial (if exists)
+    name_parts = first.split()
+    mi = ''
+    if len(name_parts) > 1:
+        # Check the last part for potential middle initial
+        potential_mi = name_parts[-1]
+        # If it's a single letter or single letter followed by a period
+        if len(potential_mi) == 1 or (len(potential_mi) == 2 and potential_mi[1] == '.'):
+            mi = potential_mi if potential_mi.endswith('.') else potential_mi + '.'
+            # Remove the middle initial from the first name
+            first = ' '.join(name_parts[:-1])
+    
+    # Return normalized name 
+    return f"{last}, {first} {mi}".rstrip(', ')
 
-#     # Return normalized name
-#     return f"{last}, {first} {mi}".strip()
 
 # Function to find matching faculty using normalized names and fuzzy logic
 def find_matching_faculty(teacher_or_adviser_name):
