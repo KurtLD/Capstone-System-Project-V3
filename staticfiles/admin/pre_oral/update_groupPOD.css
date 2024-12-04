@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --header-color: #333;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+/* General styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary-bg);
+    margin: 0;
+    padding: 20px;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: var(--secondary-bg);
+}
+
+.card-header {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+    border-radius: 10px 10px 0 0;
+}
+
+.btn-danger {
+    background-color: var(--highlighted-color);
+    border-color: var(--highlighted-color);
+}
+
+.btn-primary {
+    background-color: var(--header-color);
+    border-color: var(--header-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--highlighted-color);
+    border-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}

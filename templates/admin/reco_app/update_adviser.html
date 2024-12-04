@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Adviser</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'admin/reco_app/update_adviser.css' %}">
+</head>
+<body>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        {% include 'sidebar.html' %}
+        <div class="flex-1 flex flex-col">
+            <!-- Navbar -->
+            {% include 'navbar.html' %}
+            <!-- Content -->
+            <main class="flex-1 overflow-auto p-6">
+                <div class="container"> 
+                    <div class="form-container">
+                        <h2>Update Advisers</h2>
+                        <form method="post" id="updateForm" action="{% url 'update_adviser' adviser.id %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="id_faculty">Faculty</label>
+                                {{ form.faculty }}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_approved_title">Approved Title</label>
+                                {{ form.approved_title }}
+                            </div>
+                            <div class="form-group">
+                                <label for="id_members">Select Member:</label>
+                                <select id="id_members" name="members">
+                                    {% for group in form.fields.members.queryset %}
+                                        <option value="{{ group.id }}" {% if group.id == form.instance.members.id %}selected{% endif %}>
+                                            {{ group.member1 }}<br>
+                                            {{ group.member2 }}<br>
+                                            {{ group.member3 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                {{ form.members.errors }}
+                            </div>
+                            <a class="btn btn-danger" href="{% url 'adviser_list' %}">Cancel</a>
+                            <button class="btn btn-primary" type="submit">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+            <!-- Footer -->
+            <div>
+                {% include 'footer.html' %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

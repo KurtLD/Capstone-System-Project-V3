@@ -1,0 +1,150 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title Hearing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'faculty/title_hearing.css' %}" />
+</head>
+<body>
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'faculty/faculty_sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <main class="main-content p-6">
+                    <div class="content-wrapper">
+                        <div class="container-fluid mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-12 full-height">
+                                    <div class="card">
+                                        <div>
+                                            <h4 class="card-title">Title Hearing Schedule</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if page_obj %}
+                                                <div class="table-responsive">
+                                                    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search...">
+                                                    <table class="table table-striped" id="scheduleTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Date</th>
+                                                                <th>Time</th>
+                                                                <th>Room</th>
+                                                                <th>Group Members</th>
+                                                                <th>Panelists</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for schedule in page_obj %}
+                                                                {% if not schedule.has_been_rescheduled %}
+                                                                    <tr>
+                                                                        <td data-label="Date">({{ schedule.day_of_week }}) {{ schedule.date }}</td>
+                                                                        <td data-label="Time">{{ schedule.slot }}</td>
+                                                                        <td data-label="Room">{{ schedule.room }}</td>
+                                                                        <td data-label="Group Members">{{ schedule.group|replace_commas|safe }}</td>
+                                                                        <td data-label="Panelists">
+                                                                            <div>
+                                                                                {{ schedule.faculty1.name }} {% if schedule.faculty1 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                            </div>
+                                                                            <div>
+                                                                                {{ schedule.faculty2.name }} {% if schedule.faculty2 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                            </div>
+                                                                            <div>
+                                                                                {{ schedule.faculty3.name }} {% if schedule.faculty3 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="pagination" id="pagination-title-hearing">
+                                                    <span class="step-links">
+                                                        {% if page_obj.has_previous %}
+                                                            <a href="?page=1">&laquo;</a>
+                                                            <a href="?page={{ page_obj.previous_page_number }}">&lsaquo;</a>
+                                                        {% endif %}
+                                                        <span class="current">
+                                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                                        </span>
+                                                        {% if page_obj.has_next %}
+                                                            <a href="?page={{ page_obj.next_page_number }}">&rsaquo;</a>
+                                                            <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <p>No schedules available.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="footer">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="https://adminlte.io/themes/v3/plugins/jquery/jquery.min.js"></script>
+    <script src="https://adminlte.io/themes/v3/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="https://adminlte.io/themes/v3/dist/js/adminlte.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Sidebar toggle logic
+            document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+                event.preventDefault();
+                var sidebar = document.getElementById("sidebar");
+                var navbar = document.querySelector(".main-header.navbar");
+                sidebar.classList.toggle("hidden");
+                sidebar.classList.toggle("no-hover");
+                navbar.classList.toggle("navbar-expanded");
+                toggleMenuIcon();
+                toggleLogo();
+            });
+        
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('keyup', function () {
+                console.log('Search input detected'); // Check if this logs
+                var filter = this.value.toLowerCase();
+                var rows = document.querySelectorAll('#scheduleTable tbody tr');
+                
+                rows.forEach(function(row) {
+                    let match = false;
+                    row.querySelectorAll('td').forEach(function(cell) {
+                        if (cell.textContent.toLowerCase().includes(filter)) {
+                            match = true;
+                        }
+                    });
+                    row.style.display = match ? '' : 'none';
+                });
+            });
+        });
+        
+    </script>
+</body>
+</html>

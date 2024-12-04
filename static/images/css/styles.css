@@ -1,0 +1,21 @@
+body {
+    font-family: 'Poppins', sans-serif; /* Font style for the body */
+    background-color: #EFEFEF; /* Main background color */
+}
+/* Custom styles for the sidebar */
+.sidebar {
+    background-color: #333; /* Sidebar background color */
+}
+/* Custom styles for transitions and hover effects */
+.nav-link:hover {
+    background-color: #7D1E22; /* Change background color on hover */
+}
+.card:hover {
+    background-color: #f3f2eb; /* Change card background on hover */
+}
+.footer {
+    background-color: #FFFFFF; /* Footer color */
+}
+.sidebar-toggle {
+    background-color: #900303; /* Hamburger button color */
+}

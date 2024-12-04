@@ -1,0 +1,682 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'faculty/input_grade.css' %}" />
+    <title>
+      CAPSTONE PROJECT AND RESEARCH 1 - PRE-ORAL DEFENSE EVALUATION FORM
+    </title>
+    <script>
+      function getSelectedVerdict() {
+        // Retrieve the selected radio button for the verdict
+        let selectedVerdict = document.querySelector(
+          'input[name="verdict"]:checked'
+        );
+
+        // Check if a radio button is selected
+        if (selectedVerdict) {
+          return selectedVerdict.value;
+        } else {
+          return null; // or handle the case where no option is selected
+        }
+      }
+
+      function updateTotalScore() {
+        // Update total score for Capstone Project Proposal Manuscript
+        let manuscriptMechanics =
+          parseFloat(
+            document.querySelector('input[name="manuscript_mechanics"]').value
+          ) || 0;
+        let chapter1 =
+          parseFloat(document.querySelector('input[name="chapter_1"]').value) ||
+          0;
+        let chapter2 =
+          parseFloat(document.querySelector('input[name="chapter_2"]').value) ||
+          0;
+        let chapter3 =
+          parseFloat(document.querySelector('input[name="chapter_3"]').value) ||
+          0;
+
+        // Display values in the Summary of Points table
+        document.getElementById("manuscript_mechanics_summary").innerText =
+          manuscriptMechanics.toFixed(2);
+        document.getElementById("chapter_1_summary").innerText =
+          chapter1.toFixed(2);
+        document.getElementById("chapter_2_summary").innerText =
+          chapter2.toFixed(2);
+        document.getElementById("chapter_3_summary").innerText =
+          chapter3.toFixed(2);
+
+        let totalManuscript =
+          manuscriptMechanics + chapter1 + chapter2 + chapter3;
+        document.getElementById("total_manuscript").innerText =
+          totalManuscript.toFixed(2);
+
+        // Update total score for Pre-Oral Defense
+        let systemPerformance =
+          parseFloat(
+            document.querySelector('input[name="system_performance"]').value
+          ) || 0;
+        let userInterface =
+          parseFloat(
+            document.querySelector('input[name="user_interface"]').value
+          ) || 0;
+        let systemInput =
+          parseFloat(
+            document.querySelector('input[name="system_input"]').value
+          ) || 0;
+        let systemOutput =
+          parseFloat(
+            document.querySelector('input[name="system_output"]').value
+          ) || 0;
+        let systemControl =
+          parseFloat(
+            document.querySelector('input[name="system_control"]').value
+          ) || 0;
+
+        let totalPreOral =
+          systemPerformance +
+          userInterface +
+          systemInput +
+          systemOutput +
+          systemControl;
+        document.getElementById("total_pre_oral").innerText =
+          totalPreOral.toFixed(2);
+        document.getElementById("pre_oral_summary").innerText =
+          totalPreOral.toFixed(2);
+
+         // Update total score for Oral Presentation for each group member
+         function calculateIndividualTotal(prefix) {
+          let contentOrganization =
+              parseFloat(
+                  document.querySelector(`input[name="${prefix}_content_organization"]`).value
+              ) || 0;
+          let presentationSkills =
+              parseFloat(
+                  document.querySelector(`input[name="${prefix}_presentation_skills"]`).value
+              ) || 0;
+          let qaHandling =
+              parseFloat(
+                  document.querySelector(`input[name="${prefix}_qa_handling"]`).value
+              ) || 0;
+
+          return contentOrganization + presentationSkills + qaHandling;
+      }
+
+        let totalOralPresentation1 = calculateIndividualTotal("member1");
+        let totalOralPresentation2 = calculateIndividualTotal("member2");
+        let totalOralPresentation3 = calculateIndividualTotal("member3");
+
+        document.getElementById("total_oral_presentation_1").innerText =
+          totalOralPresentation1.toFixed(2);
+        document.getElementById("total_oral_presentation_2").innerText =
+          totalOralPresentation2.toFixed(2);
+        document.getElementById("total_oral_presentation_3").innerText =
+          totalOralPresentation3.toFixed(2);
+
+        let oral_grade =
+          (totalOralPresentation1 +
+            totalOralPresentation2 +
+            totalOralPresentation3) /
+          3;
+        document.getElementById("oral_presentation_summary").innerText =
+          oral_grade.toFixed(2);
+
+        // Calculate overall grade
+        let overallGrade =
+          manuscriptMechanics +
+          chapter1 +
+          chapter2 +
+          chapter3 +
+          totalPreOral +
+          oral_grade;
+        document.getElementById("overall_grade").innerText =
+          overallGrade.toFixed(2);
+
+        let comments = document.querySelector("#comments").value;
+
+        // Retrieve member names using their IDs
+        let member1 = document.querySelector("#hidden_member1").value;
+        let member2 = document.querySelector("#hidden_member2").value;
+        let member3 = document.querySelector("#hidden_member3").value;
+        let scheduleID = document.querySelector("#scheduleID").value;
+        let faculty = document.querySelector("#faculty").value;
+        let title = document.querySelector("#title").value;
+
+        // Get the selected verdict
+        let verdict = getSelectedVerdict();
+        document.querySelector("#selected_verdict").value = verdict;
+        // console.log("Selected Verdict:", verdict);
+
+        let specific_veridict =
+          document.querySelector("#specific_veridict").value;
+      }
+
+      // Attach event listener to all number inputs
+      window.addEventListener("load", () => {
+        const inputs = document.querySelectorAll('input[type="number"]');
+        inputs.forEach((input) => {
+          input.addEventListener("input", updateTotalScore);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>CAPSTONE PROJECT AND RESEARCH 1</h1>
+    <h2>PRE-ORAL DEFENSE EVALUATION FORM</h2>
+
+    <!-- Display project title and group members -->
+    <table>
+      <tr>
+        <th colspan="2">CAPSTONE PROJECT TITLE: <strong style="color: #FFFFFF; background-color: #7C0404; padding: 5px;">{{ schedule.title }}</strong></th>
+      </tr>
+      <tr>
+        <th colspan="2">GROUP MEMBERS</th>
+      </tr>
+      <tr>
+        <td>Member 1:</td>
+        <td data-member="1" id="member1">{{ schedule.group.member1 }}</td>
+      </tr>
+      <tr>
+        <td>Member 2:</td>
+        <td data-member="2" id="member2">{{ schedule.group.member2 }}</td>
+      </tr>
+      <tr>
+        <td>Member 3:</td>
+        <td data-member="3" id="member3">{{ schedule.group.member3 }}</td>
+      </tr>
+
+      <tr>
+        <td>DATE OF DEFENSE:</td>
+        <td>{{ schedule.date }}</td>
+      </tr>
+      <tr>
+        <td>TIME OF DEFENSE:</td>
+        <td>{{ schedule.slot }}</td>
+      </tr>
+      <tr>
+        <td>FACULTY PANEL:</td>
+        <td>{{ faculty_member.name }}</td>
+      </tr>
+    </table>
+
+    <h3>Summary of Points:</h3>
+    <table>
+      <tr>
+        <th>Criteria</th>
+        <th>Points</th>
+        <th>Overall Grade (%)</th>
+      </tr>
+      <tr>
+        <td>Manuscript Mechanics</td>
+        <td>5%</td>
+        <td id="manuscript_mechanics_summary">0.00</td>
+      </tr>
+      <tr>
+        <td>Chapter 1</td>
+        <td>15%</td>
+        <td id="chapter_1_summary">0.00</td>
+      </tr>
+      <tr>
+        <td>Chapter 2</td>
+        <td>15%</td>
+        <td id="chapter_2_summary">0.00</td>
+      </tr>
+      <tr>
+        <td>Chapter 3</td>
+        <td>15%</td>
+        <td id="chapter_3_summary">0.00</td>
+      </tr>
+      <tr>
+        <td>System</td>
+        <td>35%</td>
+        <td id="pre_oral_summary">0.00</td>
+      </tr>
+      <tr>
+        <td>Oral Presentation</td>
+        <td>15%</td>
+        <td id="oral_presentation_summary">0.00</td>
+      </tr>
+      <tr>
+        <td><strong>TOTAL</strong></td>
+        <td><strong>100%</strong></td>
+        <td id="overall_grade">0.00</td>
+      </tr>
+    </table>
+
+    {% if is_lead_panel %}
+    <h3>VERDICT (Pre-Oral Defense)</h3>
+    <p>
+      The verdict is a unanimous decision among the defense panel. Once issued,
+      it is final and irrevocable.
+    </p>
+    {% endif %}
+    <br />
+
+    <div class="card">
+      <form method="post" action="{% url 'evaluate_capstone' %}">
+        {% csrf_token %} {% if is_lead_panel %}
+        <fieldset>
+          <legend>Select the appropriate verdict:</legend>
+          <div>
+            <input
+              type="radio"
+              id="pass_no_revision"
+              name="verdict"
+              value="CONDITIONAL PASS WITH NO REVISION"
+            />
+            <label for="pass_no_revision"
+              >CONDITIONAL PASS WITH NO REVISION</label
+            >
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="pass_minor_revision1"
+              name="verdict"
+              value="CONDITIONAL PASS WITH MINOR REVISION (To be checked by the Capstone Project Adviser)"
+            />
+            <label for="pass_minor_revision"
+              >CONDITIONAL PASS WITH MINOR REVISION (To be checked by the
+              Capstone Project Adviser)</label
+            >
+            <br />
+            <input
+              type="radio"
+              id="pass_minor_revision2"
+              name="verdict"
+              value="CONDITIONAL PASS WITH MINOR REVISION (To be checked by the Panelists)"
+            />
+            <label for="pass_minor_revision"
+              >CONDITIONAL PASS WITH MINOR REVISION (To be checked by the
+              Panelists)</label
+            >
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="pass_major_revision1"
+              name="verdict"
+              value="CONDITIONAL PASS WITH MAJOR REVISION (Make the necessary revisions and resubmit within one week)"
+            />
+            <label for="pass_major_revision"
+              >CONDITIONAL PASS WITH MAJOR REVISION (Make the necessary
+              revisions and resubmit within one week)</label
+            >
+            <br />
+            <input
+              type="radio"
+              id="pass_major_revision2"
+              name="verdict"
+              value="CONDITIONAL PASS WITH MAJOR REVISION (With a re-demonstration of the software)"
+            />
+            <label for="pass_major_revision"
+              >CONDITIONAL PASS WITH MAJOR REVISION (With a re-demonstration of
+              the software)</label
+            >
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="fail"
+              name="verdict"
+              value="FAIL (Change the entire project by submitting a new proposal for approval)"
+            />
+            <label for="fail"
+              >FAIL (Change the entire project by submitting a new proposal for
+              approval)</label
+            >
+          </div>
+          <div>
+            <input type="radio" id="others" name="verdict" value="Others:" />
+            <label for="others">Others (specify):</label>
+            <textarea
+              id="specific_veridict"
+              name="specific_veridict"
+              rows="2"
+              cols="50"
+            >
+{{ form.specific_veridict }}</textarea
+            >
+          </div>
+        </fieldset>
+        {% endif %}
+
+        <!-- Input grades -->
+        <fieldset>
+          <legend>Evaluation Rubric</legend>
+
+          <!-- Capstone Project Proposal Manuscript -->
+          <h4>Capstone Project Proposal Manuscript (group/team grade 85%)</h4>
+          <table>
+            <tr>
+              <th>Criteria</th>
+              <th>Points</th>
+              <th>Score</th>
+            </tr>
+            <tr>
+              <td>Manuscript Mechanics</td>
+              <td>5</td>
+              <td>
+                <input
+                  type="number"
+                  name="manuscript_mechanics"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Chapter 1</td>
+              <td>15</td>
+              <td>
+                <input
+                  type="number"
+                  name="chapter_1"
+                  min="0"
+                  max="15"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Chapter 2</td>
+              <td>15</td>
+              <td>
+                <input
+                  type="number"
+                  name="chapter_2"
+                  min="0"
+                  max="15"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Chapter 3</td>
+              <td>15</td>
+              <td>
+                <input
+                  type="number"
+                  name="chapter_3"
+                  min="0"
+                  max="15"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><strong>TOTAL</strong></td>
+              <td><strong>50</strong></td>
+              <td id="total_manuscript">0.00</td>
+            </tr>
+          </table>
+
+          <!-- Pre-Oral Defense Rating Sheet -->
+          <h4>Pre-Oral Defense Rating Sheet</h4>
+          <table>
+            <tr>
+              <th>Criteria</th>
+              <th>Points</th>
+              <th>Score</th>
+            </tr>
+            <tr>
+              <td>System Performance</td>
+              <td>7</td>
+              <td>
+                <input
+                  type="number"
+                  name="system_performance"
+                  min="0"
+                  max="7"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>User Interface</td>
+              <td>7</td>
+              <td>
+                <input
+                  type="number"
+                  name="user_interface"
+                  min="0"
+                  max="7"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>System Input</td>
+              <td>8</td>
+              <td>
+                <input
+                  type="number"
+                  name="system_input"
+                  min="0"
+                  max="8"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>System Output</td>
+              <td>8</td>
+              <td>
+                <input
+                  type="number"
+                  name="system_output"
+                  min="0"
+                  max="8"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>System Control</td>
+              <td>5</td>
+              <td>
+                <input
+                  type="number"
+                  name="system_control"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><strong>TOTAL</strong></td>
+              <td><strong>35</strong></td>
+              <td id="total_pre_oral">0.00</td>
+            </tr>
+          </table>
+
+          <!-- Oral Presentation -->
+          <h4>Oral Presentation (Individual grade) 15%</h4>
+          <table>
+            <tr>
+              <th>Criteria</th>
+              <th>Points</th>
+              <th>
+                Member 1: <u><p>{{ schedule.group.member1 }}</p></u>
+              </th>
+              <th>
+                Member 2: <u><p>{{ schedule.group.member2 }}</p></u>
+              </th>
+              <th>
+                Member 3: <u><p>{{ schedule.group.member3 }}</p></u>
+              </th>
+            </tr>
+            <tr>
+              <td>Content and Organization</td>
+              <td>5</td>
+              <td>
+                <input
+                  type="number"
+                  name="member1_content_organization"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="member2_content_organization"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="member3_content_organization"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Presentation Skills</td>
+              <td>5</td>
+              <td>
+                <input
+                  type="number"
+                  name="member1_presentation_skills"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="member2_presentation_skills"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="member3_presentation_skills"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Q&A Handling</td>
+              <td>5</td>
+              <td>
+                <input
+                  type="number"
+                  name="member1_qa_handling"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="member2_qa_handling"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  name="member3_qa_handling"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value="0"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><strong>TOTAL</strong></td>
+              <td><strong>15</strong></td>
+              <td id="total_oral_presentation_1">0.00</td>
+              <td id="total_oral_presentation_2">0.00</td>
+              <td id="total_oral_presentation_3">0.00</td>
+            </tr>
+          </table>
+
+          <!-- Additional comments -->
+          <div>
+            <label for="comments">Additional Comments:</label><br />
+            <textarea id="comments" name="comments" rows="4" cols="50">
+{{ form.comments }}</textarea
+            >
+          </div>
+        </fieldset>
+
+        <!-- to get the members and be part of the form -->
+        <div style="opacity: 0">
+          <textarea type="" name="member1" id="hidden_member1">
+{{ schedule.group.member1 }}</textarea
+          >
+          <textarea type="" name="member2" id="hidden_member2">
+{{ schedule.group.member2 }}</textarea
+          >
+          <textarea type="" name="member3" id="hidden_member3">
+{{ schedule.group.member3 }}</textarea
+          >
+
+          <!-- to get the ID and include in the form -->
+          <textarea name="scheduleID" id="scheduleID">
+{{ schedule_id }}</textarea
+          >
+
+          <!-- to get the faculty and include in the form -->
+          <textarea name="faculty" id="faculty">
+{{ faculty_member.name }}</textarea
+          >
+
+          <!-- to get the title and include in the form -->
+          <textarea name="title" id="title">{{ schedule.title }}</textarea>
+          <textarea name="selected_verdict" id="selected_verdict"></textarea>
+        </div>
+
+        <button type="submit">Submit Evaluation</button>
+      </form>
+    </div>
+  </body>
+</html>

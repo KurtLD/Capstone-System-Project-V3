@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Group</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        :root {
+            --primary-bg: #EFEFEF;
+            --secondary-bg: #FFFFFF;
+            --header-color: #333;
+            --highlighted-color: #7C0404;
+            --text-light: #FFFFFF;
+            --border-color: #7D1E22;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--header-color);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        h1 {
+            color: var(--highlighted-color);
+            text-align: center;
+        }
+
+        .container {
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .form-group label {
+            color: var(--header-color);
+            font-weight: bold;
+        }
+
+        .form-control {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .btn-primary {
+            background-color: var(--highlighted-color);
+            border-color: var(--highlighted-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--border-color);
+            border-color: var(--border-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--header-color);
+            border-color: var(--header-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            border-color: var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Update Group Informations</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="section">Section</label>
+                <input type="text" class="form-control" id="section" name="section" value="{{ group.section }}" required>
+            </div>
+            <div class="form-group">
+                <label for="subject_teacher">Subject Teacher</label>
+                <select class="form-control" id="subject_teacher" name="subject_teacher" required>
+                    {% for teacher in teachers %}
+                        <option value="{{ teacher.id }}" {% if teacher.id == group.subject_teacher.id %}selected{% endif %}>
+                            {{ teacher.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="member1">Member 1</label>
+                <input type="text" class="form-control" id="member1" name="member1" value="{{ group.member1 }}" required>
+            </div>
+            <div class="form-group">
+                <label for="member2">Member 2</label>
+                <input type="text" class="form-control" id="member2" name="member2" value="{{ group.member2 }}">
+            </div>
+            <div class="form-group">
+                <label for="member3">Member 3</label>
+                <input type="text" class="form-control" id="member3" name="member3" value="{{ group.member3 }}">
+            </div>
+            <a href="{% url 'carousel_page' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

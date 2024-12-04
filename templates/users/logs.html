@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Audit Logs</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'logs.css' %}">
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+            <main class="main-content p-4">
+                <div class="card">
+                    <fieldset>
+                        <legend>Audit Logs</legend>
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if audit_logs.has_previous %}
+                                    <a href="?page=1&per_page={{ request.GET.per_page }}">&laquo;</a>
+                                    <a href="?page={{ audit_logs.previous_page_number }}&per_page={{ request.GET.per_page }}">&lsaquo;</a>
+                                {% endif %}
+                                <span class="current">
+                                    Page {{ audit_logs.number }} of {{ audit_logs.paginator.num_pages }}
+                                </span>
+                                {% if audit_logs.has_next %}
+                                    <a href="?page={{ audit_logs.next_page_number }}&per_page={{ request.GET.per_page }}">&rsaquo;</a>
+                                    <a href="?page={{ audit_logs.paginator.num_pages }}&per_page={{ request.GET.per_page }}">&raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div id="pst-time" class="float-right"></div> <!-- Placeholder for PST time -->
+                        {% if audit_logs %}
+                            <div class="table-container">
+                                <table class="table table-striped">
+                                    {% comment %} <a href="{% if user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'faculty_dashboard' %}{% endif %}" class="back-button">Back to Dashboard</a> {% endcomment %}
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Action</th>
+                                            <th>Time</th>
+                                            <th>IP Address</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for log in audit_logs %}
+                                            <tr>
+                                                <td data-label="Email">{{ log.user }}</td>
+                                                <td data-label="Action">{{ log.action|safe }}</td>
+                                                <td data-label="Time">{{ log.time|date:"M d, Y, h:i A" }}</td>
+                                                <td data-label="Ip Address">{{ log.ip_address }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p>No audit logs found.</p>
+                        {% endif %}
+                    </fieldset>
+                </div>
+            </main>
+            <footer class="footer">
+                {% include 'footer.html' %}
+              </footer>
+        </div>
+      </div>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            const sidebar = document.getElementById("sidebar");
+    
+            // Retrieve the sidebar state from localStorage
+            const sidebarState = localStorage.getItem("sidebarState");
+    
+            // Apply the saved sidebar state (open/closed)
+            if (sidebarState === "closed") {
+                sidebar.classList.add("hidden"); // Keep sidebar closed if it was previously closed
+            }
+    
+            // Sidebar toggle functionality
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    sidebar.classList.toggle("hidden");
+    
+                    // Store the sidebar state in localStorage
+                    if (sidebar.classList.contains("hidden")) {
+                        localStorage.setItem("sidebarState", "closed");
+                    } else {
+                        localStorage.setItem("sidebarState", "open");
+                    }
+                });
+            }
+    
+            // Function to get current time in Philippine Standard Time (PST)
+            function updatePSTTime() {
+                const pstTimeElement = document.getElementById('pst-time');
+                if (pstTimeElement) {
+                    const now = new Date();
+                    const options = {
+                        timeZone: 'Asia/Manila',
+                        weekday: 'long', // Add day of the week
+                        hour12: true,
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        second: 'numeric',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    };
+                    const pstTime = now.toLocaleString('en-US', options);
+                    pstTimeElement.textContent = `Philippine Standard Time: ${pstTime}`;
+                }
+            }
+    
+            // Update PST time every second
+            setInterval(updatePSTTime, 1000);
+            updatePSTTime(); // Initial call to set the time immediately
+    
+            // Focus the clicked pagination link
+            const paginationLinks = document.querySelectorAll('.pagination a');
+            paginationLinks.forEach(function (link) {
+                link.addEventListener("click", function () {
+                    // Store the href of the clicked pagination link in localStorage
+                    localStorage.setItem("focusedPaginationLink", this.href);
+                });
+            });
+    
+            // Retrieve the focused pagination link from localStorage
+            const focusedPaginationLink = localStorage.getItem("focusedPaginationLink");
+            if (focusedPaginationLink) {
+                const linkToFocus = Array.from(paginationLinks).find(link => link.href === focusedPaginationLink);
+                if (linkToFocus) {
+                    // Focus on the link and scroll it into view
+                    linkToFocus.focus();
+                    linkToFocus.scrollIntoView({ behavior: "smooth" });
+                    // Clear the stored link after focusing to avoid refocusing on subsequent page loads
+                    localStorage.removeItem("focusedPaginationLink");
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+/* carousel.css */
+
+:root {
+    --primary-bg: #f0f0f0;
+    /* Lighter background for a softer look */
+    --secondary-bg: #ffffff;
+    --highlighted-color: #7C0404;
+    --text-light: #ffffff;
+    --border-color: #7D1E22;
+    --header-color: #333;
+    --sidebar-hover: #606060;
+
+}
+
+/* disable an a tag */
+.disabled-link {
+    pointer-events: none;
+    /* Prevent clicking */
+    color: gray;
+    /* Make it look visually disabled */
+    text-decoration: none;
+}
+
+
+/* Navigation link styles */
+.nav-link {
+    transition: opacity 0.3s, background-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-light) !important;
+    font-size: 16px;
+}
+
+.nav-link:hover {
+    background-color: var(--sidebar-hover);
+    transform: scale(1.0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    color: var(--text-light);
+    border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+    opacity: 0.9;
+}
+
+nav:hover .nav-link {
+    opacity: 1;
+}
+
+/* Sidebar styles */
+#sidebar {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    background-color: var(--header-color);
+}
+
+#sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+body {
+    background-color: var(--primary-bg);
+    color: var(--header-color);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+}
+
+.main-content {
+    overflow-y: auto;
+    flex: 1;
+}
+
+/*School Year*/
+.section-container {
+    padding: 0.5rem;
+    margin-top: 8px;
+    background-color: #2d3748;
+    /* bg-gray-800 */
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    font-family: 'Poppins', sans-serif;
+}
+
+.section-container form {
+    margin-bottom: 8px;
+    /* mb-2 */
+}
+
+.section-container label {
+    display: block;
+    /* mb-1 */
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.section-container select {
+    width: 100%;
+    /* w-full */
+    padding: 10px !important;
+    /* p-2 */
+    border: 1px solid #ccc;
+    /* border */
+    border-radius: 0.25rem;
+    /* rounded */
+    color: #000000;
+    /* text-black */
+}
+
+.section-container button {
+    font-size: 0.875rem;
+    /* text-sm */
+    font-weight: 600;
+    /* font-semibold */
+    color: #63b3ed;
+    /* text-blue-400 */
+    display: flex;
+    /* flex */
+    align-items: center;
+    /* items-center */
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.section-container button:hover {
+    color: #4299e1;
+    /* hover:text-blue-500 */
+}
+
+.section-container .fa-plus-circle {
+    margin-right: 0.5rem;
+    /* mr-2 */
+    font-size: 1.125rem;
+    /* text-lg */
+    color: #4299e1;
+    /* text-blue-500 */
+}
+
+
+.carousel {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+table {
+    width: 100%;
+    margin: 0 auto 20px;
+    border-collapse: separate;
+    background-color: var(--secondary-bg);
+    overflow-x: auto;
+    border-radius: 5px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 15px;
+
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.table th {
+    background-color: #900303;
+    color: #FFFFFF;
+    white-space: nowrap;
+    border-radius: 5px;
+    border: 1px solid var(--text-light) !important;
+}
+
+.table tr {
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+}
+
+
+.table ul {
+    padding-left: 20px;
+}
+
+
+/* Card styles */
+.card {
+    background-color: var(--secondary-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    /* border: 1px solid var(--highlighted-color); */
+    overflow-x: auto;
+}
+
+/* Additional styles for responsive design */
+@media (max-width: 768px) {
+    .carousel {
+        gap: 15px;
+    }
+
+    .footer {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel {
+        gap: 10px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1,
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Toggle button styles */
+.toggle-button {
+    background-color: var(--header-color) !important;
+    color: var(--text-light) !important;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.toggle-button:hover {
+    background-color: var(--highlighted-color) !important;
+    color: var(--text-light) !important;
+}
+
+/* Details section styles */
+.details-section {
+    display: block;
+    margin-top: 10px;
+}
+
+.details-section.open {
+    display: block;
+}
+
+/* Header styles */
+.header {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.title-heading {
+    font-size: 24px;
+}
+
+/* Pagination styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0;
+    height: 100%;
+    /* Ensure it takes the full height of its container */
+}
+
+.pagination .step-links {
+    display: flex;
+}
+
+.pagination .step-links a {
+    margin: 0 5px;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: var(--highlighted-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .step-links a:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.pagination .step-links .current {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.custom-no-button {
+    background-color: #EFEFEF;
+    /* Custom background color */
+    color: black;
+    /* Text color */
+    border-color: #dcdcdc;
+    /* Border color */
+}
+
+.custom-no-button:hover {
+    background-color: #dcdcdc;
+    /* Hover background color */
+    border-color: #c0c0c0;
+    /* Hover border color */
+}
+
+
+.modal-content {
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.modal-btn {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+}
+
+.modal-dialog {
+    max-width: 600px;
+}
+
+.btn-modal {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.btn-modal:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}

@@ -1,0 +1,90 @@
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --header-color: #333;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --hover-shadow-color: rgba(0, 0, 0, 0.2);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--header-color);
+    margin: 0;
+    padding: 0;
+}
+
+.card {
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 8px var(--shadow-color);
+    border-radius: 8px;
+    margin: 20px;
+    padding: 20px;
+}
+
+fieldset {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+legend {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: var(--header-color);
+}
+
+.card-body {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+    justify-content: space-between;
+}
+
+tr:nth-child(even) {
+    background-color: var(--secondary-bg);
+}
+
+tr.highlight {
+    background-color: var(--secondary-bg);
+    color: var(--header-color);
+}
+
+.card-footer {
+    margin-top: 20px;
+    text-align: left;
+    /* Align text to the left */
+}
+
+.card-footer a {
+    background-color: var(--header-color);
+    text-decoration: none;
+    color: var(--text-light);
+    padding: 10px 20px;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.card-footer a:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}

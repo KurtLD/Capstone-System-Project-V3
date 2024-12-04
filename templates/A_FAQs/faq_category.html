@@ -1,0 +1,171 @@
+<!-- A_FAQs/templates/A_FAQs/faq_category.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ category.name }} - FAQs</title>
+    <style>
+        :root {
+            --primary-bg: #EFEFEF;
+            --secondary-bg: #FFFFFF;
+            --header-color: #333;
+            --highlighted-color: #7C0404;
+            --text-light: #FFFFFF;
+            --border-color: #7D1E22;
+        }
+    
+        body {
+            background-color: var(--primary-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: black; /* Set default text color to black */
+            margin: 0;
+            padding: 20px;
+        }
+    
+        h1 {
+            color: var(--highlighted-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            font-size: 2em;
+        }
+    
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+    
+        li {
+            background-color: var(--secondary-bg);
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+    
+        li:hover {
+            background-color: var(--primary-bg);
+        }
+    
+        li strong {
+            display: block;
+            cursor: pointer;
+            color: var(--highlighted-color); /* Keep the question color */
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.3s;
+        }
+    
+        .modal-content {
+            background-color: var(--secondary-bg);
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            width: 60%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s;
+        }
+    
+        .close {
+            color: var(--highlighted-color);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+    
+        .close:hover,
+        .close:focus {
+            color: var(--border-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+    
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--highlighted-color);
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+    
+        .back-button:hover {
+            background-color: var(--border-color);
+        }
+    
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+    
+        @keyframes slideIn {
+            from {transform: translateY(-50px);}
+            to {transform: translateY(0);}
+        }
+    </style>
+    <script>
+        function toggleAnswer(id) {
+            var modal = document.getElementById('modal-' + id);
+            modal.style.display = "block";
+        }
+
+        function closeModal(id) {
+            var modal = document.getElementById('modal-' + id);
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            var modals = document.getElementsByClassName('modal');
+            for (var i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>{{ category.name }}</h1>
+    <ul>
+        <!-- Loop through each FAQ in the category and display the question and answer -->
+        {% for faq in faqs %}
+            <li>
+                <strong onclick="toggleAnswer('{{ faq.id }}')">{{ faq.question }}</strong>
+                <div id="modal-{{ faq.id }}" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('{{ faq.id }}')">&times;</span>
+                        <h2>{{ faq.question }}</h2>
+                        <p>{{ faq.answer }}</p>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <!-- Link to go back to the FAQ categories list -->
+    <a href="{% url 'faq_list' %}" class="back-button">Back to FAQ Categories</a>
+    <!-- Back button to the login page -->
+    {% if user.is_authenticated %}
+        <a href="{% if user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'faculty_dashboard' %}{% endif %}" class="back-button">
+            Go to Dashboard
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}" class="back-button">Back to Login</a>
+    {% endif %}
+</body>
+</html>

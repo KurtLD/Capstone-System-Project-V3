@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+:root {
+  --primary-bg: #EFEFEF;
+  --secondary-bg: #f3f2eb;
+  --header-color: #333;
+  --highlighted-color: #900303;
+  --text-light: #FFFFFF;
+  --border-color: #7D1E22;
+}
+
+body {
+  background-color: var(--primary-bg);
+  color: var(--header-color);
+  font-family: 'Poppins', sans-serif;
+}
+
+.form-container {
+  max-width: 500px;
+  background-color: var(--secondary-bg);
+  padding: 32px 24px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  color: var(--header-color);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.084), 0px 2px 3px rgba(0, 0, 0, 0.168);
+  margin: auto;
+  margin-top: 100px;
+}
+
+.form-container button:active {
+  scale: 0.95;
+}
+
+.form-container .logo-container {
+  text-align: center;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.form-container .otp-subheading {
+  text-align: center;
+  font-size: 14px;
+  color: var(--header-color);
+}
+
+.form-container .form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.form-container .form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-container .form-group input {
+  width: 100%;
+  /* Ensure the input takes up the full width of the form group */
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  border: 1px solid var(--border-color);
+  box-sizing: border-box;
+  /* Include padding and border in the element's total width and height */
+  margin-bottom: 5px;
+}
+
+.form-container .form-group input::placeholder {
+  opacity: 0.5;
+}
+
+.form-container .form-group input:focus {
+  outline: none;
+  border-color: var(--highlighted-color);
+  padding: 14px 16px;
+  /* Adjusted padding to maintain consistency */
+}
+
+.form-container .form-submit-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-light);
+  background-color: var(--header-color);
+  border: none;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: inherit;
+  gap: 8px;
+  margin: 12px 0;
+  cursor: pointer;
+  border-radius: 6px;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.084), 0px 2px 3px rgba(0, 0, 0, 0.168);
+}
+
+.form-container .form-submit-btn:hover {
+  background-color: var(--highlighted-color);
+}
+
+.form-container .link {
+  color: var(--highlighted-color);
+  text-decoration: none;
+}
+
+.form-container .signup-link {
+  align-self: center;
+  font-weight: 500;
+}
+
+.form-container .signup-link .link {
+  font-weight: 400;
+}
+
+.form-container .link:hover {
+  text-decoration: underline;
+}

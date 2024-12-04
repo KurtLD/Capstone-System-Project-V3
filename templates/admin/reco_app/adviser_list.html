@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adviser List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'admin/reco_app/adviser_list.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  </head>
+  <body>
+    <body>
+      <div class="flex h-screen flex-col">
+          <!-- Navbar -->
+          <div class="no-print">
+              {% include 'navbar.html' %}
+          </div>
+          <div class="flex flex-1 overflow-hidden">
+              <!-- Sidebar -->
+              {% include 'sidebar.html' %}
+              <!-- Main Content Wrapper -->
+              <div class="flex flex-col flex-1">
+                  <!-- Content -->
+                  <main class="flex-1 overflow-auto p-6 main-content">
+                      <div>
+                          <div class="container container-with-border">
+                              <div class="row mb-4">
+                                  <div class="col-md-6">
+                                      <h2 class="h2">Adviser List</h2>
+                                  </div>
+                                  <div class="col-md-6 parent-container">
+                                      <input type="text" id="searchInput" class="form-control search-bar" placeholder="Search for adviser..." value="{{ query|default_if_none:'' }}">
+                                  </div>
+                              </div>
+                              <!-- Dropdown Filter -->
+                                <div class="col-md-3">
+                                    <label for="filterDropdown">Filter By:</label>
+                                    <select id="filterDropdown" class="form-control">
+                                        <option value="all" {% if filter_status == 'all' %}selected{% endif %}>All Titles</option>
+                                        <option value="declined" {% if filter_status == 'declined' %}selected{% endif %}>Declined Titles</option>
+                                        <option value="accepted" {% if filter_status == 'accepted' %}selected{% endif %}>Accepted Titles</option>
+                                        <option value="replaced" {% if filter_status == 'replaced' %}selected{% endif %}>Adviser that has been Replaced</option>
+                                    </select>
+                                </div>
+                              <div class="table-container">
+                                  <div class="table-responsive">
+                                      <table class="table table-bordered table-striped" id="adviserTable">
+                                          <thead>
+                                              <tr>
+                                                  <th>Adviser</th>
+                                                  <th>Approved Title</th>
+                                                  <th>Group Members</th>
+                                                  <th>Status</th>
+                                                  <th>Actions</th>
+                                              </tr>
+                                          </thead>
+                                          <tbody>
+                                              {% for adviser in page_obj %}
+                                              <tr>
+                                                  <td data-label="Adviser">{{ adviser.faculty.name }}</td>
+                                                  <td data-label="Title">{{ adviser.approved_title }}</td>
+                                                  <td data-label="Group Members">{{ adviser.group_name|safe }}</td>
+                                                  {% if adviser.accepted %}
+                                                    <td data-label="Status">Confirmed</td>
+                                                  {% elif adviser.declined and not adviser.has_been_replaced %}
+                                                    <td data-label="Status">Declined</td>
+                                                  {% elif adviser.declined and adviser.has_been_replaced %}
+                                                    <td data-label="Status">Declined and has been replaced</td>
+                                                  {% else %}
+                                                    <td data-label="Status">To be Confirmed</td>
+                                                  {% endif %}
+                                                  
+                                                  <td data-label="Actions">
+                                                      {% if count > 0 %}
+                                                      <div class="btn-group" role="group">
+                                                          <center>
+                                                            {% if not adviser.has_been_replaced %}
+                                                              <button class="btn btn-danger btn-sm delete-button" data-id="{{ adviser.id }}" data-name="{{ adviser.faculty.name }}" data-title="{{ adviser.approved_title }}" data-group="{{ adviser.group_name|safe }}" data-toggle="modal" data-target="#deleteModal">
+                                                                  Delete
+                                                              </button>
+                                                              {% if adviser.declined %}
+                                                                <a href="{% url 'recommend_faculty_again' adviser.id %}" class="btn btn-success" style="color: white;">Recommend Again</a>
+                                                              {% endif %}
+                                                            {% else %}
+                                                              <p><i>Not Available</i></p>
+                                                            {% endif %}
+                                                          </center>
+                                                      </div>
+                                                      {% else %}
+                                                      <div class="btn-group" role="group" style="gap: 10px;">
+                                                        {% if not adviser.has_been_replaced %}
+                                                          <button class="btn btn-edit btn-sm edit-button" data-id="{{ adviser.id }}" data-name="{{ adviser.faculty.name }}" data-title="{{ adviser.approved_title }}" data-group="{{ adviser.group_name|safe }}" data-toggle="modal" data-target="#editModal">
+                                                              Edit
+                                                          </button>
+                                                          <button class="btn btn-danger btn-sm delete-button" data-id="{{ adviser.id }}" data-name="{{ adviser.faculty.name }}" data-title="{{ adviser.approved_title }}" data-group="{{ adviser.group_name|safe }}" data-toggle="modal" data-target="#deleteModal">
+                                                              Delete
+                                                          </button>
+                                                          {% if adviser.declined %}
+                                                              <a href="{% url 'recommend_faculty_again' adviser.id %}" class="btn btn-success" style="color: white;">Recommend Again</a>
+                                                          {% endif %}
+                                                        {% else %}
+                                                          <p><i>Not Available</i></p>
+                                                        {% endif %}
+                                                      </div>
+                                                      {% endif %}
+                                                  </td>
+                                              </tr>
+                                              {% endfor %}
+                                          </tbody>
+                                      </table>
+                                  </div>
+                                  <!-- Pagination controls -->
+                                  <!-- <div class="pagination">
+                                      <span class="step-links">
+                                          {% if page_obj.has_previous %}
+                                          <a href="?page=1&per_page={{ request.GET.per_page }}">&laquo;</a>
+                                          <a href="?page={{ page_obj.previous_page_number }}&per_page={{ request.GET.per_page }}">&lsaquo;</a>
+                                          {% endif %}
+                                          <span class="current">
+                                              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                          </span>
+                                          {% if page_obj.has_next %}
+                                          <a href="?page={{ page_obj.next_page_number }}&per_page={{ request.GET.per_page }}">&rsaquo;</a>
+                                          <a href="?page={{ page_obj.paginator.num_pages }}&per_page={{ request.GET.per_page }}">&raquo;</a>
+                                          {% endif %}
+                                      </span>
+                                  </div> -->
+                                  <!-- Pagination controls -->
+                                    <div class="pagination">
+                                        <span class="step-links">
+                                            {% if page_obj.has_previous %}
+                                            <a href="?page=1&q={{ query }}&filter_status={{ filter_status }}">&laquo;</a>
+                                            <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&filter_status={{ filter_status }}">&lsaquo;</a>
+                                            {% endif %}
+                                            <span class="current">
+                                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                            </span>
+                                            {% if page_obj.has_next %}
+                                            <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&filter_status={{ filter_status }}">&rsaquo;</a>
+                                            <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&filter_status={{ filter_status }}">&raquo;</a>
+                                            {% endif %}
+                                        </span>
+                                    </div>
+
+                              </div>
+                          </div>
+                      </div>
+                  </main>
+                  <footer class="footer">
+                      {% include 'footer.html' %}
+                  </footer>
+              </div>
+          </div>
+      </div>
+      <!-- Edit Adviser Modal -->
+      <div class="modal fade modal-font" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                  <div class="modal-header d-flex justify-content-between align-items-center">
+                      <h5 class="modal-title" id="editModalLabel">Edit Adviser</h5>
+                      <img src="{% static 'images/IT.png' %}" alt="Adviser Picture" class="img-fluid rounded-circle" style="width: 70px; height: 50px;">
+                  </div>
+                  <div class="modal-body">
+                      <form method="post" id="updateForm" action="">
+                          {% csrf_token %}
+                          <div class="form-group">
+                              <label for="id_faculty">Faculty</label>
+                              <select class="form-control" id="editFaculty" name="faculty" required></select>
+                          </div>
+                          <div class="form-group">
+                              <label for="id_approved_title">Approved Title</label>
+                              <input type="text" class="form-control" id="editTitle" name="approved_title" required>
+                          </div>
+                          <div class="form-group">
+                              <label for="id_members">Select Member</label>
+                              <select id="editGroup" name="members" class="form-control" required></select>
+                          </div>
+                          <div class="modal-footer">
+                              <a class="btn btn-secondary" data-dismiss="modal">Cancel</a>
+                              <button class="btn btn-modal" type="submit">Save Changes</button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <!-- Delete Confirmation Modal -->
+      <div class="modal fade modal-font" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header d-flex align-items-center">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                      {% comment %} <i class="fas fa-trash-alt" style="color: red; margin-right: 10px;"></i> {% endcomment %}
+                      <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i>
+                      Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close btn-close-super-small" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this adviser? You won't be able to revert this!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Yes, delete it!</button>
+                </div>
+            </div>
+        </div>
+      </div>
+  
+      <!-- Bootstrap JS and dependencies -->
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      <script>
+          document.addEventListener("DOMContentLoaded", function () {
+              // Search functionality
+              document.getElementById("searchInput").addEventListener("keyup", function () {
+                  var query = this.value.toLowerCase();
+                  var rows = document.querySelectorAll("#adviserTable tbody tr");
+                  rows.forEach(function (row) {
+                      var match = false;
+                      var cells = row.querySelectorAll("td");
+                      cells.forEach(function (cell) {
+                          if (cell.textContent.toLowerCase().indexOf(query) > -1) {
+                              match = true;
+                          }
+                      });
+                      if (match) {
+                          row.style.display = "";
+                      } else {
+                          row.style.display = "none";
+                      }
+                  });
+              });
+  
+              // Delete button functionality
+              document.querySelectorAll(".delete-button").forEach(function (button) {
+                  button.addEventListener("click", function () {
+                      var id = this.getAttribute("data-id");
+                      document.getElementById("confirmDeleteBtn").onclick = function() {
+                          window.location.href = "/delete_adviser/" + id + "/";
+                      };
+                  });
+              });
+  
+              // Edit button functionality
+              document.querySelectorAll(".edit-button").forEach(function (button) {
+                  button.addEventListener("click", function () {
+                      var id = this.getAttribute("data-id");
+                      var name = this.getAttribute("data-name");
+                      var title = this.getAttribute("data-title");
+                      var group = this.getAttribute("data-group");
+  
+                      var editForm = document.getElementById("updateForm");
+                      editForm.action = "/update_adviser/" + id + "/";
+                      document.getElementById("editTitle").value = title;
+  
+                      // Fetch faculty data
+                      fetch('/get_faculty/')
+                          .then(response => response.json())
+                          .then(data => {
+                              var facultySelect = document.getElementById("editFaculty");
+                              facultySelect.innerHTML = '';
+                              data.forEach(function (faculty) {
+                                  var option = document.createElement("option");
+                                  option.value = faculty.id;
+                                  option.text = faculty.name;
+                                  if (faculty.name === name) {
+                                      option.selected = true;
+                                  }
+                                  facultySelect.appendChild(option);
+                              });
+                          });
+  
+                      // Fetch group members data
+                      fetch('/get_group_members/')
+                          .then(response => response.json())
+                          .then(data => {
+                              var groupSelect = document.getElementById("editGroup");
+                              groupSelect.innerHTML = '';
+                              data.forEach(function (member) {
+                                  var option = document.createElement("option");
+                                  option.value = member.id;
+                                  option.text = `${member.member1}\n${member.member2}\n${member.member3}`;
+                                  if (member.id == group) {
+                                      option.selected = true;
+                                  }
+                                  groupSelect.appendChild(option);
+                              });
+                          });
+                  });
+              });
+  
+              // Form submission
+              document.getElementById("updateForm").addEventListener("submit", function (event) {
+                  event.preventDefault();
+                  var form = this;
+                  var formData = new FormData(form);
+                  var actionUrl = form.action;
+  
+                  fetch(actionUrl, {
+                      method: 'POST',
+                      body: formData,
+                      headers: {
+                          'X-Requested-With': 'XMLHttpRequest',
+                          'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                      }
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          $('#editModal').modal('hide');
+                          location.reload(); // Reload the page to reflect the changes
+                      } else {
+                          // Handle form errors
+                          var errorMessages = Object.values(data.errors).flat().join('\n');
+                          alert('Error: ' + errorMessages);
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                      alert('An unexpected error occurred.');
+                  });
+              });
+  
+              // Sidebar toggle functionality
+              document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+                  event.preventDefault();
+                  var sidebar = document.getElementById("sidebar");
+                  sidebar.classList.toggle("hidden");
+              });
+  
+              // Dropdown functionality for sidebar list items
+              document.querySelectorAll('.sidebar-dropdown > a').forEach(function (dropdownLink) {
+                  dropdownLink.addEventListener('click', function (event) {
+                      event.preventDefault();
+                      var parentLi = this.parentElement;
+                      var dropdownMenu = parentLi.querySelector('.sidebar-submenu');
+                      dropdownMenu.classList.toggle('hidden');
+                  });
+              });
+  
+              // Dropdown functionality for sidebar list items with Bootstrap
+              document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function (dropdownLink) {
+                  dropdownLink.addEventListener('click', function (event) {
+                      event.preventDefault();
+                      var target = document.querySelector(this.getAttribute('data-bs-target'));
+                      target.classList.toggle('show');
+                  });
+              });
+          });
+      </script>
+
+      <!-- script for the dropdown -->
+        <script>
+            document.getElementById('filterDropdown').addEventListener('change', function () {
+                const filterValue = this.value;
+                const baseUrl = window.location.pathname;  // Current URL path without query parameters
+                const newUrl = `${baseUrl}?filter_status=${encodeURIComponent(filterValue)}`;
+                window.location.href = newUrl;  // Redirect with the updated query parameters
+            });
+        </script>
+    
+
+  </body>
+  </html>

@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --header-color: #333;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary-bg);
+    margin: 0;
+    padding: 20px;
+}
+
+/* Navigation link styles */
+.nav-link {
+    transition: opacity 0.3s, background-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+}
+
+.nav-link:hover {
+    background-color: var(--highlighted-color);
+    transform: scale(1.0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    color: var(--text-light);
+    border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+    opacity: 0.9;
+}
+
+nav:hover .nav-link {
+    opacity: 1;
+}
+
+/* Footer styles */
+.footer {
+    background-color: var(--secondary-bg);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* Sidebar styles */
+#sidebar {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    background-color: var(--header-color);
+}
+
+#sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.container {
+    max-width: 600px;
+    padding: 20px;
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.1),
+        0 6px 20px rgba(0, 0, 0, 0.1),
+        0 8px 30px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+h2 {
+    color: var(--header-color);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    background-color: var(--secondary-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+    border: 2px groove var(--highlighted-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #800000;
+    /* Dark Red */
+}
+
+select,
+input[type="text"],
+input[type="email"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #c5c0a1;
+    /* Slightly Darker Light Green */
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+select:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+    border-color: #982b1c;
+    /* Dark Green */
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 14px;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.btn-primary {
+    background-color: #c5c0a1;
+    color: var(--highlighted-color);
+    width: 150px;
+}
+
+.btn-primary:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.btn-danger {
+    background-color: var(--header-color);
+    color: var(--text-light);
+    width: 150px;
+    /* Adjusted to match the primary button width */
+}
+
+.btn-danger:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}

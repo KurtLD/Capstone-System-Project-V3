@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Criteria</title>
+</head>
+<body>
+    <h1>{{ criterion.name }} - {{ criterion.percentage }}%</h1>
+    <h2>Descriptions</h2>
+    <ul>
+        {% for description in descriptions %}
+            <li>
+                {{ description.text }}
+                <a href="{% url 'mock_edit_criteria_description' description.id %}">Edit</a>
+                <a href="{% url 'mock_delete_criteria_description' description.id %}" onclick="return confirm('Are you sure you want to delete?')">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'mock_add_criteria_description' criterion.id %}">Add New Description</a>
+    <a href="{% url 'mock_view_section' %}">Back to Sections</a>
+</body>
+</html>

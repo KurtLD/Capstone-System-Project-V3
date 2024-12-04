@@ -1,0 +1,58 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static '02_loginForm.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="front-img">
+            <img src="{% static 'images/evsu.jpg' %}" alt="Landing Image" />
+        </div>
+        <form method="post" action="{% url 'login' %}" onsubmit="showLoader()">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Email</label>
+                <div class="input-container">
+                    <i class="fas fa-envelope icon"></i>
+                    {{ form.username|attr:"placeholder:Enter your email" }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-container">
+                    <i class="fas fa-lock icon"></i>
+                    {{ form.password|attr:"placeholder:Enter your password" }}
+                </div>
+            </div>
+            {% if form.non_field_errors %}
+            <div class="form-group error">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <div class="form-group">
+                <a class="forgot-password" href="{% url 'forgot_password' %}">Forgot password?</a>
+            </div>
+            <button type="submit" id="loginButton" onclick="showLoader()">
+                <i class="fas fa-sign-in-alt" id="loginIcon"></i>
+                <i class="fas fa-spinner fa-spin" id="loader" style="display: none;"></i>
+                Login
+            </button>
+        </form>
+        <div class="signup-link">
+            Don't have an account? <a href="{% url 'signup' %}">Signup now</a>
+            <p>Have questions? <a href="{% url 'faq_list' %}">Check our FAQs</a></p>
+        </div>
+    </div>
+    <script>
+        function showLoader() {
+            document.getElementById('loginIcon').style.display = 'none';
+            document.getElementById('loader').style.display = 'inline-block';
+        }
+    </script>
+</body>
+</html>

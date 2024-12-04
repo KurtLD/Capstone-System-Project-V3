@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FAQs</title>
+    <style>
+        :root {
+            --primary-bg: #EFEFEF;
+            --secondary-bg: #FFFFFF;
+            --header-color: #333;
+            --highlighted-color: #7C0404;
+            --text-light: #FFFFFF;
+            --border-color: #7D1E22;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--header-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--highlighted-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            font-size: 2em;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: var(--secondary-bg);
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        li:hover {
+            background-color: var(--primary-bg);
+        }
+
+        li a {
+            color: var(--highlighted-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        li a:hover {
+            text-decoration: underline;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: var(--highlighted-color);
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: var(--border-color);
+        }
+
+        .review-section {
+            margin-top: 20px;
+        }
+
+        .review-form {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .review-list {
+            margin-top: 20px;
+        }
+
+        .review-item {
+            background-color: var(--secondary-bg);
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        .toggle-btn {
+            cursor: pointer;
+            color: var(--highlighted-color);
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        function toggleReviewForm() {
+            const form = document.querySelector('.review-form');
+            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+
+    <!-- used for the yes or no function in the review -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const buttons = document.querySelectorAll('.helpful-btn');
+    
+            buttons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const reviewId = this.getAttribute('data-review-id');
+                    const vote = this.getAttribute('data-vote');
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+                    fetch(`/review/${reviewId}/vote/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ vote })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const countElement = document.getElementById(`helpful-count-${reviewId}`);
+                            countElement.textContent = `${data.helpful_count} people found this helpful`;
+                        } else {
+                            alert('An error occurred while submitting your vote.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                });
+            });
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const allReviews = $('.review-item'); // Select all reviews
+            const showMoreButton = $('#showMore'); // "Show More" button
+            const showLessButton = $('#showLess'); // "Show Less" button
+
+            // If reviews are greater than 3, initialize the functionality
+            if (allReviews.length > 3) {
+                allReviews.slice(3).hide(); // Hide all but the first 3 reviews
+                showMoreButton.show(); // Show the "Show More" button
+                showLessButton.hide(); // Hide the "Show Less" button initially
+            } else {
+                // If 3 or fewer reviews, show all and hide both buttons
+                showMoreButton.hide();
+                showLessButton.hide();
+            }
+
+            // Handle the "Show More" button click
+            showMoreButton.click(function () {
+                allReviews.show(); // Show all reviews
+                showMoreButton.hide(); // Hide the "Show More" button
+                showLessButton.show(); // Show the "Show Less" button
+            });
+
+            // Handle the "Show Less" button click
+            showLessButton.click(function () {
+                allReviews.slice(3).hide(); // Hide all but the first 3 reviews
+                showMoreButton.show(); // Show the "Show More" button
+                showLessButton.hide(); // Hide the "Show Less" button
+            });
+        });
+    </script>
+
+    
+</head>
+<body>
+    <h1>Frequently Asked Questions</h1>
+    <ul>
+        {% for category in categories %}
+            <li><a href="{% url 'faq_category' category.id %}">{{ category.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <!-- Feedback Section -->
+     <br>
+    <div class="review-section">
+        {% if user.is_authenticated and not user.is_superuser %}
+            <span class="toggle-btn" onclick="toggleReviewForm()">Write a Review</span>
+            <form method="post" action="{% url 'add_review' %}" class="review-form">
+                {% csrf_token %}
+                {{ review_form.as_p }}
+                <textarea name="text" rows="3" style="width: 100%; padding: 10px;" placeholder="Write your review here..."></textarea>
+                <button type="submit" style="margin-top: 10px; padding: 10px 20px; background-color: var(--highlighted-color); color: var(--text-light); border: none; border-radius: 5px; cursor: pointer;">
+                    Submit
+                </button>
+            </form> 
+        {% endif %}       
+        <!-- <form method="post" action="{% url 'add_review' %}" class="card p-3">
+            {% csrf_token %}
+            {{ comment_form.as_p }}
+            <button type="submit" class="btn btn-primary mt-2">Submit</button>
+        </form> -->
+
+        <h3>Reviews</h3>
+        <div class="review-list">
+            {% for review in reviews %}
+                <div class="review-item">
+                    <strong>{{ review.user }}</strong>
+                    <small>({{ review.created_at|timesince }} ago.)</small> |
+                    <small>Posted on: {{ review.created_at|date:"F j, Y, g:i a" }}</small>
+                    <br>
+                    {{ review.text }}
+                    <br>
+
+                    <!-- Helpful vote count -->
+                    <br>
+                    {% if review.helpful_count != 0 %}
+                        <p>{{ review.helpful_count }} people found this helpful</p>
+                    {% endif %}
+
+                    <!-- Vote form -->
+                    {% if review.user == faculty_member %}
+                        <p>You wrote this review.</p>
+                    {% else %}
+                        <form method="post" action="{% url 'review_helpful_vote' review.id %}">
+                            {% csrf_token %}
+                            <label>Was this review helpful?</label><br>
+                            <button name="vote" value="yes">Yes</button>
+                            <button name="vote" value="no">No</button>
+                        </form>
+                    {% endif %}
+
+                </div>
+            {% empty %}
+                {% if user.is_superuser %}
+                    <p>No reviews yet.</p>
+                {% else %}
+                    <p>No reviews yet. Be the first to write one!</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <button id="showMore">Show More</button>
+        <button id="showLess">Show Less</button>
+    </div>
+
+    {% if user.is_authenticated %}
+        <a href="{% if user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'faculty_dashboard' %}{% endif %}" class="back-button">
+            Go to Dashboard
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}" class="back-button">Back to Login</a>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,1658 @@
+{% load static %}
+{% load form_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Final Evaluation</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'admin/Mock_Evaluation/mock_view_section.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Make the modal content wider and rectangular */
+        .modal-lg {
+            max-width: 50vw; /* Makes the modal 90% of the viewport width */
+        }
+
+        /* Make modal body scrollable when subcriteria overflow */
+        .modal-body {
+            max-height: 50vh; /* Limit the height of the modal body */
+            overflow-y: auto; /* Enable vertical scrolling if the content exceeds the height */
+        }
+
+        /* Ensure the form layout is aligned horizontally */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .form-control::placeholder {
+            font-style: italic;  /* Make the placeholder text italic */
+            color: #999;         /* Optional: Change the placeholder color */
+        }
+
+
+        /* Add some space between subcriteria items */
+        .subcriteria-group {
+            margin-bottom: 20px;
+        }
+
+
+        .subcriteria-group {
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+    
+        .subcriteria-group {
+        margin-bottom: 20px;
+        padding: 10px;
+    }
+
+        fieldset {
+            border: 1px solid #ddd;
+            padding: 10px;
+            position: relative;
+            padding-left: 15px;
+            padding-right: 15px;
+            border-radius: 5px;
+            background-color: #d9d7d721;
+        }
+
+        legend {
+            color: var(--highlighted-color);
+            font-size: 14px;
+            padding: 0 10px; /* Adds space around the text */
+            width: auto;
+            margin-bottom: 0;
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+    {% if empty %}
+    <script>
+        alert("{{ message }}");
+    </script>
+    {% endif %}
+
+    <div class="flex h-screen flex-col bg-gray-100">
+        <!-- Navbar -->
+        <div class="no-print bg-white shadow-md">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            <div id="sidebar" class="sidebar w-64 bg-white shadow-lg">
+                {% include 'sidebar.html' %}
+            </div>
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <main class="main-content flex-grow p-4">
+                    <div class="card bg-white shadow-lg rounded-lg p-4 mx-auto w-full">
+                        <h1 class="text-lg font-bold mb-6 text-center text-gray-800">Final Defense Evaluation Form</h1>
+                        {% if selected_school_year == last_school_year %}
+                            <div style="font-size: 12px;" class="text-center">
+                                {% if sy_count > 1 %}
+                                <button class="custom-button" data-bs-toggle="modal" data-bs-target="#confirmationModal">
+                                    Use Previous Evaluation Form
+                                </button>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <fieldset>
+                            <legend class="text-sm font-bold mb-4">Main Rubric</legend>
+                            <div class="content-box mb-8">
+                                <ul id="sections-list" class="space-y-6">
+                                    {% for section in sections %}
+                                        <fieldset class="section-item p-6 border rounded-lg bg-gray-50 shadow-md transition duration-200 ">
+                                            <legend>Rubric {{ forloop.counter }}</legend>
+                                            <li>
+                                                <h2 class="text-base mb-4 flex justify-between items-center">
+                                                    <strong>{{ section.name }}</strong>
+                                                    {% if selected_school_year == last_school_year %}
+                                                        <div class="button-group">
+                                                            <button class="edit-section btn btn-primary" data-id="{{ section.id }}" data-name="{{ section.name }}">
+                                                                <i class="fas fa-edit icon-gap"></i> Edit
+                                                            </button>
+                                                            <button class="delete-section btn btn-danger" data-id="{{ section.id }}" data-name="{{ section.name }}">
+                                                                <i class="fas fa-trash-alt icon-gap"></i> Delete
+                                                            </button>
+                                                        </div>
+                                                    {% endif %}
+                                                </h2>
+                                                <ul class="space-y-3">
+                                                    {% for criterion in section.fcriteria.all %}
+                                                        <fieldset class="criterion-item p-4 border rounded-lg bg-white shadow-sm transition duration-200 hover:shadow-md">
+                                                            <legend>Sub Criteria {{ forloop.counter }}</legend>
+                                                            <li>
+                                                                <div class="flex justify-between items-center">
+                                                                    <h3 class="text-sm font-bold mb-2">{{ criterion.name }} - {{ criterion.percentage|floatformat:0 }}%</h3>
+                                                                    {% if selected_school_year == last_school_year %}
+                                                                        <!-- <div class="button-group">
+                                                                            <button class="edit-criteria btn btn-primary" data-id="{{ criterion.id }}" data-name="{{ criterion.name }}" data-percentage="{{ criterion.percentage }}">
+                                                                                <i class="fas fa-edit icon-gap"></i> Edit
+                                                                            </button>
+                                                                            <button class="delete-criteria btn btn-danger" data-id="{{ criterion.id }}">
+                                                                                <i class="fas fa-trash-alt icon-gap"></i> Delete
+                                                                            </button>
+                                                                        </div> -->
+                                                                    {% endif %}
+                                                                </div>
+                                                                <ul class="mt-3 space-y-2">
+                                                                    {% for description in criterion.fdescriptions.all %}
+                                                                        <li>
+                                                                            <fieldset class="description-item p-3 border rounded-lg bg-gray-50 shadow-sm">
+                                                                                <legend>Description/s</legend>
+                                                                                <span>{{ description.text|linebreaks }}</span>
+                                                                                {% if selected_school_year == last_school_year %}
+                                                                                    <!-- <div class="button-group">
+                                                                                        <a href="#" class="edit-description btn btn-primary" data-id="{{ description.id }}" data-text="{{ description.text }}">
+                                                                                            <i class="fas fa-edit icon-gap"></i> Edit
+                                                                                        </a>
+                                                                                        <a href="#" class="delete-description btn btn-danger" data-id="{{ description.id }}">
+                                                                                            <i class="fas fa-trash-alt icon-gap"></i> Delete
+                                                                                        </a>
+                                                                                    </div> -->
+                                                                                {% endif %}
+                                                                            </fieldset>
+                                                                        </li>
+                                                                    {% empty %}
+                                                                        <li class="text-muted text-gray-500">No descriptions available</li>
+                                                                        {% if selected_school_year == last_school_year %}
+                                                                            <!-- <div>
+                                                                                <a href="#" class="add-description btn btn-modal mt-3 w-26 text-center py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition" data-criterion-id="{{ criterion.id }}">Add New Description</a>
+                                                                            </div> -->
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                    {% if selected_school_year == last_school_year %}
+                                                                        {% if description_count == 0 %}
+                                                                            <!-- <div>
+                                                                                <a href="#" class="add-description btn btn-modal mt-3 w-26 text-center py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition" data-criterion-id="{{ criterion.id }}">Add New Description</a>
+                                                                            </div> -->
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                </ul>
+                                                            </li>
+                                                        </fieldset>
+                                                        
+                                                    {% endfor %}
+                                                </ul>
+                                                {% if selected_school_year == last_school_year %}
+                                                    <!-- <div>
+                                                        <button class="add-criteria btn btn-primary mt-4 w-26 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition" data-section-id="{{ section.id }}">Add Criteria</button>
+                                                    </div> -->
+                                                {% endif %}
+                                                
+                                            </li>
+                                        </fieldset>
+                                        
+                                    {% endfor %}
+                                </ul>
+                                {% if selected_school_year == last_school_year %}
+                                    <div>
+                                        <button id="add-section-btn" class="btn btn-modal mt-6 w-26 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Add New Rubric</button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <br><br>
+                        
+
+                        <fieldset>
+                            <legend class="text-base font-bold mb-6">Verdict (Final Defense)</legend>
+                            <ul class="space-y-6">
+                                {% for verdict in verdicts %}
+                                    <fieldset class="verdict-item p-6 border rounded-lg shadow-sm transition duration-200 hover:shadow-md">
+                                        <legend>Verdict {{ forloop.counter }}</legend>
+                                        <li>
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">{{ verdict.name }} - {{ verdict.percentage|floatformat:0 }}%</span>
+                                                {% if selected_school_year == last_school_year %}
+                                                    <div class="button-group">
+                                                        <a href="#" class="edit-verdict btn btn-primary" data-id="{{ verdict.id }}" onclick="openEditVerdictModal(event, '{{ verdict.id }}' )">
+                                                            <i class="fas fa-edit icon-gap"></i> Edit
+                                                        </a>
+                                                        <a href="#" class="delete-verdict btn btn-danger" data-id="{{ verdict.id }}">
+                                                            <i class="fas fa-trash-alt icon-gap"></i> Delete
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <ul class="mt-3 space-y-2">
+                                                {% for checkbox in verdict.fcheckboxes.all %}
+                                                    <li class="flex items-center">
+                                                        <input type="checkbox" {% if checkbox.is_checked %}checked{% endif %} disabled class="mr-2">
+                                                        <span class="text-gray-800">{{ checkbox.label }}</span>
+                                                    </li>
+                                                {% empty %}
+                                                    <li class="text-muted text-gray-500">No checkboxes available</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    </fieldset>
+                                    
+                                {% endfor %}
+                            </ul>
+                            {% if selected_school_year == last_school_year %}
+                                <div>
+                                    <button id="add-verdict-btn" class="btn btn-modal mt-6 w-26 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Add New Verdict</button>
+                                </div>
+                            {% endif %}
+                        </fieldset>
+                    </div>
+                </main>
+                <footer class="footer">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
+        </div>
+    </div>
+
+<!-- confirmation modal for the usage of the previous form -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="modalLabel">
+                    <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i>
+                    Confirm Action
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-light text-dark">
+                <p class="mb-3 ms-6">
+                    <i class="fas fa-info-circle" style="color: blue; margin-right: 10px;"></i>Are you sure you want to use the previous evaluation form?</p>
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <div><b>Note:</b> Currently Added Content in this form will be deleted!</div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="{% url 'final_clone_records' %}" class="btn btn-primary" id="confirmButton">Yes, Proceed</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Section Modal -->
+<!-- <div id="addSectionModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-plus-circle" style="color: #1E90FF; margin-right: 10px;"></i>
+                    Add Evaluation Section
+                </h3>
+                {% comment %} <span class="close-button" onclick="closeAddSectionModal()">&times;</span> {% endcomment %}
+            </div>
+            <div class="modal-body">
+                <form id="add-section-form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="section_name">Name:</label>
+                        <input type="text" class="form-control" name="name" required id="section_name" placeholder="Enter section name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'final_view_section' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" form="add-section-form" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<div id="addSectionModal" class="modal">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document"><!-- Added 'modal-lg' for larger modal -->
+        <div class="modal-content" style="max-width: 90vw;"> <!-- Set maximum width to make it more horizontal -->
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-plus-circle" style="color: #1E90FF; margin-right: 10px;"></i>
+                    Add Main Rubric
+                </h3>
+            </div>
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;"> <!-- Restrict height and enable scrolling -->
+                <form id="add-section-form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="section_name">Main Rubric:</label>
+                        <input type="text" class="form-control" name="name" required id="section_name" placeholder="Enter main rubric name">
+                    </div>
+                    
+                    <div id="subcriteria-container"></div>
+                    
+                    <button type="button" id="add-subcriteria-btn" class="btn btn-info">Add Subcriteria</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeAddModal">Cancel</button>
+                <button type="submit" form="add-section-form" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section Modal -->
+<!-- <div id="editSectionModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-pencil-alt" style="color: #10B981; margin-right: 10px;"></i>
+                    Edit Evaluation Section
+                </h3>
+            </div>
+            <div class="modal-body">
+                <form id="edit-section-form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="edit_section_name">Name:</label>
+                        <input type="text" class="form-control" name="name" required id="edit_section_name" placeholder="Enter section name">
+                    </div>
+                    <input type="hidden" name="id" id="edit_section_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'final_view_section' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" form="edit-section-form" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<div id="editSectionModal" class="modal">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content" style="max-width: 90vw;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-edit" style="color: #1E90FF; margin-right: 10px;"></i>
+                    Edit Main Rubric
+                </h3>
+            </div>
+            <div class="modal-body">
+                <form id="edit-section-form" method="post">
+                    {% csrf_token %}
+                    <!-- <input type="hidden" name="id" id="edit_section_id"> -->
+                    <div class="form-group">
+                        <label for="edit_section_name">Main Rubric:</label>
+                        <input type="text" class="form-control" name="name" required id="edit_section_name" placeholder="Enter main rubric name">
+                    </div>
+
+                    <div id="edit-subcriteria-container"></div>
+
+                    <button type="button" id="add-edit-subcriteria-btn" class="btn btn-info">Add Subcriteria</button>
+                    <input type="hidden" name="id" id="edit_section_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeEditModal">Cancel</button>
+                <button type="submit" form="edit-section-form" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Section Confirmation Modal -->
+<div id="deleteSectionModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i>
+                    Delete Confirmations
+                </h3>
+                {% comment %} <span class="close-button" onclick="closeDeleteSectionModal()">&times;</span> {% endcomment %}
+            </div>
+            <div class="modal-body">
+                <p id="delete-section-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteSectionModal()">Cancel</button>
+                <button id="confirm-delete-section-button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Criteria Modal -->
+<div id="addCriteriaModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-plus-circle" style="color: #1E90FF; margin-right: 10px;"></i>
+                    Add Criteria
+                </h3>
+                {% comment %} <span class="close-button" id="closeAddCriteriaModal">&times;</span> {% endcomment %}
+            </div>
+            <div class="modal-body">
+                <form id="add-criteria-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="section_id" id="criteria_section_id">
+                    <div class="form-group">
+                        <label for="criteria_name">Name:</label>
+                        <input type="text" class="form-control" name="name" required id="criteria_name" placeholder="Enter criteria name">
+                    </div>
+                    <div class="form-group">
+                        <label for="criteria_percentage">Percentage:</label>
+                        <input type="number" class="form-control" name="percentage" required id="criteria_percentage" min="0" max="100" placeholder="Enter percentage">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'final_view_section' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" form="add-criteria-form" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Criteria Modal -->
+<div id="editCriteriaModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-pencil-alt" style="color: #10B981; margin-right: 10px;"></i>
+                    Edit Criteria
+                </h3>
+                {% comment %} <span class="close-button" id="closeEditCriteriaModal" onclick="closeEditCriteriaModal()">&times;</span> {% endcomment %}
+            </div>
+            <div class="modal-body">
+                <form id="edit-criteria-form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="edit_criteria_name">Name:</label>
+                        <input type="text" class="form-control" name="name" required id="edit_criteria_name" placeholder="Enter criteria name">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_criteria_percentage">Percentage:</label>
+                        <input type="number" class="form-control" name="percentage" required id="edit_criteria_percentage" min="0" max="100" placeholder="Enter percentage">
+                    </div>
+                    <input type="hidden" name="id" id="edit_criteria_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'final_view_section' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" form="edit-criteria-form" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Criteria Confirmation Modal -->
+<div id="deleteCriteriaModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i>
+                    Delete Confirmation
+                </h3>
+            </div>
+            <div class="modal-body">
+                <p id="delete-criteria-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteCriteriaModal()">Cancel</button>
+                <button id="confirm-delete-criteria-button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Criteria Description Modal -->
+<div id="addDescriptionModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-plus-circle" style="color: #1E90FF; margin-right: 10px;"></i>
+                    Add Criteria Description
+                </h3>
+                {% comment %} <span class="close-button" id="closeAddDescriptionModal" onclick="closeAddDescriptionModal()">&times;</span> {% endcomment %}
+            </div>
+            <div class="modal-body">
+                <form id="add-description-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="criterion_id" id="description_criterion_id">
+                    <div class="form-group">
+                        <label for="description_text">Description:</label>
+                        <textarea class="form-control italic-placeholder" name="text" required id="description_text" placeholder="Enter description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'final_view_section' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" form="add-description-form" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Criteria Description Modal -->
+<div id="editDescriptionModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-pencil-alt" style="color: #10B981; margin-right: 10px;"></i>
+                    Edit Criteria Description
+                </h3>
+                {% comment %} <span class="close-button" id="closeEditDescriptionModal">&times;</span> {% endcomment %}
+            </div>
+            <div class="modal-body">
+                <form id="edit-description-form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="edit_description_text">Description:</label>
+                        <textarea class="form-control italic-placeholder" name="text" required id="edit_description_text" placeholder="Enter description"></textarea>
+                    </div>
+                    <input type="hidden" name="id" id="edit_description_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'final_view_section' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" form="edit-description-form" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Description Confirmation Modal -->
+<div id="deleteDescriptionModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i>
+                    Delete Confirmation
+                </h3>
+                <span class="close-button" onclick="closeDeleteDescriptionModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="delete-description-message">Are you sure you want to delete this description?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteDescriptionModal()">Cancel</button>
+                <button id="confirm-delete-description-button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Verdict Modal -->
+<div id="addVerdictModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-plus-circle" style="color: #1E90FF; margin-right: 10px;"></i>
+                    Add New Verdict
+                </h3>
+                {% comment %} <span class="close-button" id="closeAddVerdictModal" onclick="closeAddVerdictModal()">&times;</span> {% endcomment %}
+            </div>
+            <div class="modal-body">
+                <form id="add-verdict-form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="verdict_name">Name:</label>
+                        <input type="text" class="form-control" name="name" required id="verdict_name" placeholder="Enter verdict name">
+                    </div>
+                    <div class="form-group">
+                        <label for="verdict_percentage">Percentage:</label>
+                        <input type="number" class="form-control" name="percentage" required id="verdict_percentage" min="0" max="100" placeholder="Enter percentage">
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle" style="color: #1E90FF;"></i> Set the percentage in the minimum value.
+                        </small>
+                    </div>
+                    <h3>Checkboxes</h3>
+                    <div id="checkboxes-container"></div>
+                    <button type="button" id="add-checkbox-btn" class="btn btn-secondary">Add Checkbox</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'final_view_section' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" form="add-verdict-form" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Verdict Modal -->
+<div id="editVerdictModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-pencil-alt" style="color: #10B981; margin-right: 10px;"></i>
+                    Edit Verdict
+                </h3>
+                {% comment %} <span class="close-button" onclick="closeModal()">&times;</span> {% endcomment %}
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- The form will be injected here -->
+                <form id="edit-verdict-form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="verdict_name">Name:</label>
+                        <input type="text" class="form-control" name="name" required id="verdict_name" placeholder="Enter verdict name">
+                    </div>
+                    <div class="form-group">
+                        <label for="verdict_percentage">Percentage:</label>
+                        <input type="number" class="form-control" name="percentage" required id="verdict_percentage" min="0" max="100" placeholder="Enter percentage">
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle" style="color: #1E90FF;"></i> Set the percentage in the minimum value.
+                        </small>
+                    </div>
+                    <h3>Checkboxes</h3>
+                    <div id="checkbox-container">
+                        <!-- Static checkboxes will be added here -->
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="checkboxes[0][is_checked]" id="verdict_checkbox_0">
+                            <input type="text" name="checkboxes[0][label]" placeholder="Enter label" style="margin-left: 5px;" required>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="checkboxes[1][is_checked]" id="verdict_checkbox_1">
+                            <input type="text" name="checkboxes[1][label]" placeholder="Enter label" style="margin-left: 5px;" required>
+                        </div>
+                        <!-- Add more static checkboxes as needed -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitEditVerdict(event)">Save Verdict</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteVerdictModal" class="modal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i>
+                    Delete Confirmation
+                </h3>
+                {% comment %} <span class="close-button" onclick="closeDeleteModal()">&times;</span> {% endcomment %}
+            </div>
+            <div class="modal-body">
+                <p id="delete-verdict-message">Are you sure you want to delete this verdict?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button id="confirm-delete-button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+    
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show Add Section Modal
+        $(document).ready(function() {
+            let subcriteriaCount = 0;
+
+            // Show Add Section Modal
+            $('#add-section-btn').on('click', function () {
+                $('#addSectionModal').css('display', 'block');
+            });
+
+            // Close Add Section Modal
+            $('#closeAddModal').on('click', function () {
+                $('#addSectionModal').css('display', 'none');
+            });
+
+            // Add new subcriteria fields
+            $('#add-subcriteria-btn').on('click', function () {
+                subcriteriaCount++;
+
+                const subcriteriaHtml = `
+                    <div class="subcriteria-group" id="subcriteria-group-${subcriteriaCount}">
+                        <fieldset>
+                            <legend>Subcriteria ${subcriteriaCount}</legend>
+                            <div class="form-row">
+                                <div class="form-group col-md-5">
+                                    <input type="text" class="form-control" name="criteria_name_${subcriteriaCount}" required placeholder="Criteria name ${subcriteriaCount}">
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <input type="number" step="0.01" max="100" class="form-control percentage-label" name="criteria_percentage_${subcriteriaCount}" required placeholder="Percentage">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <textarea class="form-control bullet-textarea" name="criteria_description_${subcriteriaCount}" rows="3" placeholder="Enter description"></textarea>
+                                </div>
+                                <button type="button" class="btn btn-danger remove-subcriteria-btn" data-target="#subcriteria-group-${subcriteriaCount}">Remove</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                `;
+
+                $('#subcriteria-container').append(subcriteriaHtml);
+
+                // Initialize bullet points for the new textarea
+                const newTextarea = $('#subcriteria-container').find(`textarea[name="criteria_description_${subcriteriaCount}"]`)[0];
+                initializeBulletTextarea(newTextarea);
+            });
+
+            // Remove subcriteria group and reset the numbering
+            $(document).on('click', '.remove-subcriteria-btn', function () {
+                const target = $(this).data('target');
+                $(target).remove();
+                resetSubcriteriaCount(); // Reset numbering after removal
+            });
+
+            // Function to reset the subcriteria numbering
+            function resetSubcriteriaCount() {
+                let newCount = 0;
+
+                // Loop through each subcriteria-group and update the IDs, legends, and names
+                $('.subcriteria-group').each(function() {
+                    newCount++;
+                    $(this).attr('id', 'subcriteria-group-' + newCount);
+                    $(this).find('legend').text('Subcriteria ' + newCount);
+                    
+                    // Update the input and textarea fields to reflect the new numbering
+                    $(this).find('input, textarea').each(function() {
+                        const currentName = $(this).attr('name');
+                        if (currentName) {
+                            const newName = currentName.replace(/\d+/, newCount); // Replace the old number with newCount
+                            $(this).attr('name', newName);
+                        }
+                    });
+
+                    // Update the Remove button's data-target attribute
+                    $(this).find('.remove-subcriteria-btn').attr('data-target', '#subcriteria-group-' + newCount);
+                });
+
+                // Update the subcriteriaCount variable to reflect the new number of subcriteria
+                subcriteriaCount = newCount;
+            }
+
+            // Handle form submission for adding section with subcriteria
+            $('#add-section-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const formData = $(this).serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'final_add_section' %}", // Update this to your actual URL endpoint
+                    data: formData,
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            location.reload(); // Reload to reflect changes
+                        } else if (response.status === 'error') {
+                            alert('Error updating section: ' + response.message);
+                        }
+                    },
+                    error: function (error) {
+                        alert('Error adding section: ' + JSON.stringify(error));
+                    }
+                });
+            });
+
+            // Function to initialize the bullet textarea
+            function initializeBulletTextarea(textarea) {
+                // Initialize the textarea with a bullet if empty
+                function initializeTextarea() {
+                    const content = textarea.value.trim();
+                    if (!content) {
+                        textarea.value = '• '; // Start with a bullet if empty
+                    }
+                }
+
+                // Handle pressing 'Enter' to start a new bullet point
+                textarea.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();  // Prevent the default new line behavior
+
+                        // Get cursor position
+                        const cursorPosition = textarea.selectionStart;
+                        const textBeforeCursor = textarea.value.substring(0, cursorPosition);
+                        const textAfterCursor = textarea.value.substring(cursorPosition);
+
+                        // Split the text before cursor into lines
+                        const lines = textBeforeCursor.split('\n');
+                        const currentLine = lines[lines.length - 1].trim();
+
+                        // Check if the current line has content (not just a bullet)
+                        if (currentLine.length === 0 || currentLine === '•') {
+                            // Prevent adding a new line if the current line is just a bullet without content
+                            return;
+                        }
+
+                        // Insert a new bullet point
+                        textarea.value = textBeforeCursor + '\n• ' + textAfterCursor;
+
+                        // Move cursor to the end of the new line
+                        textarea.selectionStart = textarea.selectionEnd = cursorPosition + ('\n• '.length);
+                    }
+                });
+
+                // Format the recommendations when textarea loses focus (optional)
+                textarea.addEventListener('blur', function() {
+                    formatRecommendations();  // Optional: format and clean up the input on blur
+                });
+
+                // Format the recommendations
+                function formatRecommendations() {
+                    const lines = textarea.value.split('\n').filter(line => line.trim().length > 0 && line.trim() !== '•'); // Filter out empty lines or lines with just the bullet
+                    const formattedLines = lines.map(line => line.replace(/^•\s*/, '')); // Ensure leading bullets are removed
+                    textarea.value = formattedLines.map(line => `• ${line}`).join('\n'); // Add bullets back to formatted lines
+                }
+
+                // Set cursor to the end of the textarea content
+                function setCursorToEnd() {
+                    textarea.focus(); // Focus on the textarea
+                    const length = textarea.value.length; // Get the length of the content
+                    textarea.setSelectionRange(length, length); // Set the cursor position
+                }
+
+                // Initialize and set cursor position when the page loads
+                initializeTextarea();
+                setCursorToEnd();
+            }
+        
+            // Close Edit Section Modal
+            $('#closeAddModal').on('click', function () {
+                $('#editSectionModal').css('display', 'none');
+            });
+        });
+
+        // Show Edit Section Modal
+        $(document).ready(function() {
+            let subcriteriaCount = 0;
+
+            // Function to initialize bullet textarea
+            function initializeBulletTextarea(textarea) {
+                // Initialize the textarea with a bullet if empty
+                function initializeTextarea() {
+                    const content = textarea.value.trim();
+                    if (!content) {
+                        textarea.value = '• '; // Start with a bullet if empty
+                    }
+                }
+
+                // Handle pressing 'Enter' to start a new bullet point
+                textarea.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();  // Prevent the default new line behavior
+
+                        // Get cursor position
+                        const cursorPosition = textarea.selectionStart;
+                        const textBeforeCursor = textarea.value.substring(0, cursorPosition);
+                        const textAfterCursor = textarea.value.substring(cursorPosition);
+
+                        // Split the text before cursor into lines
+                        const lines = textBeforeCursor.split('\n');
+                        const currentLine = lines[lines.length - 1].trim();
+
+                        // Check if the current line has content (not just a bullet)
+                        if (currentLine.length === 0 || currentLine === '•') {
+                            // Prevent adding a new line if the current line is just a bullet without content
+                            return;
+                        }
+
+                        // Insert a new bullet point
+                        textarea.value = textBeforeCursor + '\n• ' + textAfterCursor;
+
+                        // Move cursor to the end of the new line
+                        textarea.selectionStart = textarea.selectionEnd = cursorPosition + ('\n• '.length);
+                    }
+                });
+
+                // Format the recommendations when textarea loses focus (optional)
+                textarea.addEventListener('blur', function() {
+                    formatRecommendations();  // Optional: format and clean up the input on blur
+                });
+
+                // Format the recommendations
+                function formatRecommendations() {
+                    const lines = textarea.value.split('\n').filter(line => line.trim().length > 0 && line.trim() !== '•'); // Filter out empty lines or lines with just the bullet
+                    const formattedLines = lines.map(line => line.replace(/^•\s*/, '')); // Ensure leading bullets are removed
+                    textarea.value = formattedLines.map(line => `• ${line}`).join('\n'); // Add bullets back to formatted lines
+                }
+
+                // Set cursor to the end of the textarea content
+                function setCursorToEnd() {
+                    textarea.focus(); // Focus on the textarea
+                    const length = textarea.value.length; // Get the length of the content
+                    textarea.setSelectionRange(length, length); // Set the cursor position
+                }
+
+                // Initialize and set cursor position when the page loads
+                initializeTextarea();
+                setCursorToEnd();
+            }
+
+            // Open the Edit Section Modal
+            $('.edit-section').on('click', function() {
+                const sectionId = $(this).data('id');
+                const sectionName = $(this).data('name');
+                
+                // Set the section name in the modal
+                $('#edit_section_name').val(sectionName);
+                $('#edit_section_id').val(sectionId);
+                $('#edit-subcriteria-container').html('');  // Clear previously loaded subcriteria
+
+                // Load existing subcriteria via AJAX
+                $.ajax({
+                    type: 'GET',
+                    url: `/final_get_section_details/${sectionId}/`,  // Your Django URL to fetch section details
+                    success: function(response) {
+                        const subcriteria = response.subcriteria;
+                        subcriteriaCount = subcriteria.length;
+                        subcriteria.forEach((criterion, index) => {
+                            const subcriteriaHtml = `
+                                <fieldset id="edit-subcriteria-group-${index + 1}">
+                                    <legend>Subcriteria ${index + 1}</legend>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-5">
+                                            <input type="text" class="form-control" name="criteria_name_${index + 1}" required value="${criterion.name}" placeholder="Criteria name${index + 1}">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <input type="number" step="0.01" max="100" class="form-control percentage-label" name="criteria_percentage_${index + 1}" required value="${criterion.percentage}" placeholder="percentage">
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <textarea class="form-control bullet-textarea" name="criteria_description_${index + 1}" rows="3" placeholder="Description Here...">${criterion.description}</textarea>
+                                        </div>
+                                        <button type="button" class="btn btn-danger remove-subcriteria-btn_old" data-target="#edit-subcriteria-group-${index + 1}">Remove</button>
+                                    </div>
+                                </fieldset><br>
+                            `;
+                            $('#edit-subcriteria-container').append(subcriteriaHtml);
+                            const newTextarea = $('#edit-subcriteria-container').find(`textarea[name="criteria_description_${index + 1}"]`)[0];
+                            initializeBulletTextarea(newTextarea);  // Initialize bullet points for each existing textarea
+                        });
+
+                        // Show the modal
+                        $('#editSectionModal').css('display', 'block');
+                    },
+                    error: function(error) {
+                        alert('Error loading section details.');
+                    }
+                });
+            });
+
+            // Remove subcriteria group from the existing record
+            $(document).on('click', '.remove-subcriteria-btn_old', function () {
+                const target = $(this).data('target');
+                alert(target)
+                $(target).remove();
+            });
+
+            // Add new subcriteria fields dynamically
+            $('#add-edit-subcriteria-btn').on('click', function () {
+                subcriteriaCount++;
+                
+                const subcriteriaHtml = `
+                    <fieldset class="subcriteria-group" id="edit-subcriteria-group-${subcriteriaCount}">
+                        <legend>Subcriteria ${subcriteriaCount}</legend>
+                        <div class="form-row">
+                            <div class="form-group col-md-5">
+                                <input type="text" class="form-control" name="criteria_name_${subcriteriaCount}" required placeholder="Criteria name${subcriteriaCount}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <input type="number" step="0.01" max="100" class="form-control" name="criteria_percentage_${subcriteriaCount}" required placeholder="Percentage">
+                            </div>
+                            <div class="form-group col-md-12">
+                                <textarea class="form-control bullet-textarea" name="criteria_description_${subcriteriaCount}" rows="3" placeholder="description here..."></textarea>
+                            </div>
+                            <button type="button" class="btn btn-danger remove-subcriteria-btn_new" data-target="#edit-subcriteria-group-${subcriteriaCount}">Remove</button>
+                        </div>
+                        <hr>
+                    </fieldset>
+                `;
+
+                $('#edit-subcriteria-container').append(subcriteriaHtml);
+
+                // Initialize bullet points for the new textarea
+                const newTextarea = $('#edit-subcriteria-container').find(`textarea[name="criteria_description_${subcriteriaCount}"]`)[0];
+                initializeBulletTextarea(newTextarea);
+            });
+
+
+            // Remove newly added subcriteria group
+            $(document).on('click', '.remove-subcriteria-btn_new', function () {
+                const target = $(this).data('target');
+                alert(target)
+                $(target).remove();
+            });
+
+            // Handle form submission for editing section
+            $('#edit-section-form').on('submit', function (e) {
+                e.preventDefault();
+                const sectionId = $('#edit_section_id').val();
+                const formData = $(this).serializeArray();
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'final_edit_section' section_id=0 %}".replace('0', sectionId),  // Update this with the actual URL endpoint for editing
+                    data: formData,
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            location.reload();  // Reload to reflect changes
+                        } else if (response.status === 'error') {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function (error) {
+                        alert('Error: ' + JSON.stringify(error));
+                    }
+                });
+            });
+        
+            // Close Edit Section Modal
+            $('#closeEditModal').on('click', function () {
+                $('#editSectionModal').css('display', 'none');
+            });
+        });
+
+        // delete section
+        let currentSectionId = null; // Store the current section ID
+        let currentSectionName = null;
+
+        $('.delete-section').on('click', function () {
+            currentSectionId = $(this).data('id');
+            currentSectionName = $(this).data('name'); // Store the ID of the section to be deleted
+            document.getElementById('delete-section-message').innerText = `You are about to delete rubric name: "${currentSectionName}." This action cannot be undone.`;
+            document.getElementById('deleteSectionModal').style.display = 'block'; // Show the modal
+        });
+
+        // Function to close the delete section modal
+        function closeDeleteSectionModal() {
+            document.getElementById('deleteSectionModal').style.display = 'none';
+        }
+
+        // Confirm deletion
+        document.getElementById('confirm-delete-section-button').addEventListener('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'final_delete_section' section_id=0 %}".replace('0', currentSectionId),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token if required
+                },
+                success: function (response) {
+                    //alert('Section deleted successfully!');
+                    location.reload(); // Reload to reflect changes
+                },
+                error: function (error) {
+                    alert('Error deleting section: ' + JSON.stringify(error));
+                }
+            });
+        });
+
+
+
+        // Show Add Criteria Modal
+        $(document).on('click', '.add-criteria', function () {
+            const sectionId = $(this).data('section-id');
+            $('#criteria_section_id').val(sectionId);
+            $('#addCriteriaModal').css('display', 'block');
+        });
+    
+        // Close Add Criteria Modal
+        $('#closeAddCriteriaModal').on('click', function () {
+            $('#addCriteriaModal').css('display', 'none');
+        });
+    
+        // Handle form submission for adding criteria
+        $('#add-criteria-form').on('submit', function (e) {
+            e.preventDefault();
+    
+            const formData = $(this).serialize();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'final_add_criteria' section_id=0 %}".replace('0', $('#criteria_section_id').val()), // Update this to your actual URL endpoint
+                data: formData,
+                success: function (response) {
+                    //alert('Criteria added successfully!');
+                    location.reload(); // Reload to reflect changes
+                },
+                error: function (error) {
+                    alert('Error adding criteria: ' + JSON.stringify(error));
+                }
+            });
+        });
+    
+        // Show Edit Criteria Modal
+        $(document).on('click', '.edit-criteria', function () {
+            const id = $(this).data('id');
+            const name = $(this).data('name');
+            const percentage = $(this).data('percentage');
+    
+            $('#edit_criteria_id').val(id);
+            $('#edit_criteria_name').val(name);
+            $('#edit_criteria_percentage').val(percentage);
+            $('#editCriteriaModal').css('display', 'block');
+        });
+    
+        // Close Edit Criteria Modal
+        $('#closeEditCriteriaModal').on('click', function () {
+            $('#editCriteriaModal').css('display', 'none');
+        });
+    
+        // Handle form submission for editing criteria
+        $('#edit-criteria-form').on('submit', function (e) {
+            e.preventDefault();
+    
+            const criterionId = $('#edit_criteria_id').val();
+    
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'final_edit_criteria' criterion_id=0 %}".replace('0', criterionId), // Update this to your actual URL endpoint
+                data: $(this).serialize(),
+                success: function (response) {
+                   // alert('Criteria updated successfully!');
+                    location.reload(); // Reload to reflect changes
+                },
+                error: function (error) {
+                    alert('Error updating criteria: ' + JSON.stringify(error));
+                }
+            });
+        });
+        
+        // delete criteria
+        let currentCriterionId = null; // Store the current criterion ID
+
+        $('.delete-criteria').on('click', function () {
+            currentCriterionId = $(this).data('id'); // Store the ID of the criterion to be deleted
+            document.getElementById('delete-criteria-message').innerText = `You are about to delete criterion ID: ${currentCriterionId}. This action cannot be undone.`;
+            document.getElementById('deleteCriteriaModal').style.display = 'block'; // Show the modal
+        });
+
+        // Function to close the delete criteria modal
+        function closeDeleteCriteriaModal() {
+            document.getElementById('deleteCriteriaModal').style.display = 'none';
+        }
+
+        // Confirm deletion
+        document.getElementById('confirm-delete-criteria-button').addEventListener('click', function () {
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'final_delete_criteria' criterion_id=0 %}".replace('0', currentCriterionId),
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}', // Ensure the CSRF token is included
+        },
+        success: function (response) {
+            //alert('Criteria deleted successfully!');
+            location.reload(); // Reload to reflect changes
+        },
+        error: function (error) {
+            alert('Error deleting criteria: ' + JSON.stringify(error));
+        }
+    });
+});
+
+
+
+        // Show Add Criteria Description Modal
+        $(document).on('click', '.add-description', function () {
+            const criterionId = $(this).data('criterion-id');
+            $('#description_criterion_id').val(criterionId);
+            $('#addDescriptionModal').css('display', 'block');
+        });
+    
+        // Close Add Description Modal
+        $('#closeAddDescriptionModal').on('click', function () {
+            $('#addDescriptionModal').css('display', 'none');
+        });
+    
+        // Handle form submission for adding description
+        $('#add-description-form').on('submit', function (e) {
+            e.preventDefault();
+    
+            const formData = $(this).serialize();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'final_add_criteria_description' criterion_id=0 %}".replace('0', $('#description_criterion_id').val()), // Update this to your actual URL endpoint
+                data: formData,
+                success: function (response) {
+                   // alert('Description added successfully!');
+                    location.reload(); // Reload to reflect changes
+                },
+                error: function (error) {
+                    alert('Error adding description: ' + JSON.stringify(error));
+                }
+            });
+        });
+    
+        // Show Edit Description Modal
+        $(document).on('click', '.edit-description', function () {
+            const id = $(this).data('id');
+            const text = $(this).data('text');
+    
+            $('#edit_description_id').val(id);
+            $('#edit_description_text').val(text);
+            $('#editDescriptionModal').css('display', 'block');
+        });
+    
+        // Close Edit Description Modal
+        $('#closeEditDescriptionModal').on('click', function () {
+            $('#editDescriptionModal').css('display', 'none');
+        });
+    
+        // Handle form submission for editing description
+        $('#edit-description-form').on('submit', function (e) {
+            e.preventDefault();
+    
+            const descriptionId = $('#edit_description_id').val();
+    
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'final_edit_criteria_description' description_id=0 %}".replace('0', descriptionId), // Update this to your actual URL endpoint
+                data: $(this).serialize(),
+                success: function (response) {
+                   // alert('Description updated successfully!');
+                    location.reload(); // Reload to reflect changes
+                },
+                error: function (error) {
+                    alert('Error updating description: ' + JSON.stringify(error));
+                }
+            });
+        });
+    
+        // delete description
+        let currentDescriptionId = null; // Store the current description ID
+
+        // Trigger the modal for deleting descriptions
+        $('.delete-description').on('click', function (e) {
+            e.preventDefault(); // Prevent default anchor behavior
+            currentDescriptionId = $(this).data('id'); // Store the ID of the description to be deleted
+            document.getElementById('delete-description-message').innerText = `You are about to delete description ID: ${currentDescriptionId}. This action cannot be undone.`;
+            document.getElementById('deleteDescriptionModal').style.display = 'block'; // Show the modal
+        });
+
+        // Function to close the delete description modal
+        function closeDeleteDescriptionModal() {
+            document.getElementById('deleteDescriptionModal').style.display = 'none';
+        }
+
+        // Confirm deletion
+        document.getElementById('confirm-delete-description-button').addEventListener('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'final_delete_criteria_description' description_id=0 %}".replace('0', currentDescriptionId),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}', // Ensure CSRF token is included
+                },
+                success: function (response) {
+                   // alert('Description deleted successfully!');
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function (error) {
+                   //alert('Error deleting description: ' + JSON.stringify(error));
+                }
+            });
+        });
+
+
+
+        // CSRF Token Setup for AJAX Requests
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                }
+            }
+        });
+
+        // Show Add Verdict Modal
+        $('#add-verdict-btn').on('click', function () {
+            $('#addVerdictModal').css('display', 'block');
+        });
+
+        // Close Add Verdict Modal
+        $('#closeAddVerdictModal').on('click', function () {
+            $('#addVerdictModal').css('display', 'none');
+        });
+
+        // Add Checkbox Functionality in Verdict Modal
+        $('#add-checkbox-btn').on('click', function () {
+            const checkboxCount = $('#checkboxes-container .checkbox-item').length;
+            const newCheckboxHtml = `
+                <div class="checkbox-item">
+                    <input type="checkbox" name="verdict_checkboxes_${checkboxCount}" id="verdict_checkbox_${checkboxCount}">
+                    <input type="text" name="verdict_checkbox_label_${checkboxCount}" placeholder="Label" style="margin-left: 5px;" required>
+                    <button type="button" class="remove-checkbox-btn btn btn-danger" style="margin-left: 5px;">Remove</button>
+                </div>
+            `;
+            $('#checkboxes-container').append(newCheckboxHtml);
+        });
+
+        // Remove Checkbox Functionality
+        $(document).on('click', '.remove-checkbox-btn', function () {
+            $(this).closest('.checkbox-item').remove();
+        });
+
+        // Handle form submission for adding verdict
+        $('#add-verdict-form').on('submit', function (e) {
+        e.preventDefault();
+
+        // Serialize form data excluding checkboxes
+        const formData = $(this).serializeArray();
+        const checkboxData = [];
+
+        // Manually gather checkbox data
+        $('#checkboxes-container .checkbox-item').each(function () {
+            const isChecked = $(this).find('input[type=checkbox]').is(':checked');
+            const label = $(this).find('input[type=text]').val();
+
+            checkboxData.push({
+                'label': label,
+                'is_checked': isChecked
+            });
+        });
+
+        // Append checkbox data as a JSON string to the form data
+        formData.push({
+            name: 'checkboxes',
+            value: JSON.stringify(checkboxData)
+        });
+
+        // Send AJAX request
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'final_add_verdict' %}", // Update this to your actual URL endpoint
+            data: $.param(formData),  // Convert to URL-encoded string
+            success: function (response) {
+               // alert('Verdict added successfully!');
+                location.reload(); // Reload to reflect changes
+            },
+            error: function (error) {
+                try {
+                    const responseText = JSON.parse(error.responseText);
+                    if (responseText.errors) {
+                        alert('Error adding verdict: ' + JSON.stringify(responseText.errors));
+                    } else {
+                        alert('An unknown error occurred.');
+                    }
+                } catch (e) {
+                    alert('An unexpected error occurred: ' + error.responseText);
+                }
+            }
+        });
+    });
+    
+        // delete verdict
+        let currentVerdictId = null; // Store the current verdict ID
+
+        $('.delete-verdict').on('click', function () {
+            currentVerdictId = $(this).data('id'); // Store the ID of the verdict to be deleted
+            document.getElementById('delete-verdict-message').innerText = `You are about to delete verdict ID: ${currentVerdictId}. This action cannot be undone.`;
+            document.getElementById('deleteVerdictModal').style.display = 'block'; // Show the modal
+        });
+
+        // Function to close the delete modal
+        function closeDeleteModal() {
+            document.getElementById('deleteVerdictModal').style.display = 'none';
+        }
+
+        // Confirm deletion
+        document.getElementById('confirm-delete-button').addEventListener('click', function () {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'final_delete_verdict' verdict_id=0 %}".replace('0', currentVerdictId),
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+            },
+            success: function (response) {
+                // alert('Verdict deleted successfully!');
+                location.reload(); // Reload to reflect changes
+            },
+            error: function (error) {
+                alert('Error deleting verdict: ' + JSON.stringify(error));
+            }
+        });
+    });
+
+    </script>
+    <script>
+        function openEditVerdictModal(event, verdictId) {
+            event.preventDefault(); // Prevent the default anchor behavior
+    
+            // Make an AJAX call to fetch the form
+            fetch(`{% url 'final_edit_verdict' 0 %}`.replace('0', verdictId), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' // Indicate that it's an AJAX request
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.form) {
+                    // Ensure the form tag is present when injecting into the modal
+                    document.getElementById('modal-body').innerHTML = `
+                        <form id="edit-verdict-form" action="${data.submit_url}" method="POST" data-verdict-id="${verdictId}">
+                            ${data.form} <!-- The form fields from the server -->
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${data.csrf_token}">
+                            <div id="checkbox-container"></div>
+                            <button type="button" class="btn btn-secondary" onclick="addCheckbox()">Add Checkbox</button>
+                        </form>
+                    `;
+    
+                    // Populate existing checkboxes
+                    const checkboxData = JSON.parse(data.checkbox_data);
+                    const checkboxContainer = document.getElementById('checkbox-container');
+                    checkboxData.forEach((checkbox, index) => {
+                        checkboxContainer.innerHTML += `
+                            <div id="checkbox-${index}">
+                                <input type="checkbox" name="checkboxes[${index}][is_checked]" ${checkbox.is_checked ? 'checked' : ''}>
+                                <input type="text" name="checkboxes[${index}][label]" value="${checkbox.label}" required>
+                                <button class="remove-button btn btn-danger" onclick="removeCheckbox(${index})">Remove</button>
+                            </div>
+                        `;
+                    });
+    
+                    // Show the modal
+                    document.getElementById('editVerdictModal').style.display = 'block';
+                } else {
+                    console.error('Form not returned:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching form:', error);
+            });
+        }
+    
+        function closeModal() {
+            document.getElementById('editVerdictModal').style.display = 'none';
+            document.getElementById('modal-body').innerHTML = ''; // Clear modal content
+        }
+    
+        function submitEditVerdict(event) {
+            event.preventDefault(); // Prevent default form submission
+    
+            const form = document.getElementById('edit-verdict-form');
+            if (!form) {
+                console.error('Form not found!');
+                return;
+            }
+    
+            // Reset previous error indications
+            const previousErrors = form.querySelectorAll('.error');
+            previousErrors.forEach(input => {
+                input.classList.remove('error'); // Remove error class
+                input.style.borderColor = ''; // Reset border color
+            });
+    
+            // Check for empty checkbox labels
+            const checkboxes = form.querySelectorAll('input[name^="checkboxes"]');
+            let hasEmptyLabels = false;
+    
+            checkboxes.forEach((checkbox) => {
+                const labelInput = checkbox.closest('div').querySelector('input[type="text"]');
+                if (labelInput && labelInput.value.trim() === '') {
+                    hasEmptyLabels = true;
+                    labelInput.classList.add('error'); // Add error class for styling
+                    labelInput.style.borderColor = 'red'; // Change border color to red
+                }
+            });
+    
+            if (hasEmptyLabels) {
+                return; // Prevent submission if there are empty labels
+            }
+    
+            // Create FormData object from the form
+            const formData = new FormData(form);
+            const verdictId = form.dataset.verdictId;
+    
+            // Send the AJAX request
+            fetch(`/final-edit-verdict/${verdictId}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest', // Indicate that it's an AJAX request
+                    'X-CSRFToken': form.querySelector('input[name="csrfmiddlewaretoken"]').value // Include CSRF token
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Reset the form or hide the modal if needed
+                    //alert(data.message);
+                    location.reload(); // Reload the page to reflect changes
+                } else {
+                    console.error('Errors:', data.errors);
+                    // Display server-side errors (if any)
+                    Object.values(data.errors).forEach(error => {
+                        // You can handle server-side errors here if needed
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle network or other errors
+            });
+        }
+    
+        function addCheckbox() {
+            const checkboxContainer = document.getElementById('checkbox-container');
+            const index = checkboxContainer.children.length; // Get current number of checkboxes
+    
+            checkboxContainer.innerHTML += `
+               <div id="checkbox-${index}" class="checkbox-item">
+                  <input type="checkbox" name="checkboxes[${index}][is_checked]">
+                  <input type="text" name="checkboxes[${index}][label]" placeholder="Checkbox label">
+                  <button class="remove-button btn btn-danger" onclick="removeCheckbox(${index})">Remove</button>
+               </div>
+            `;
+        }
+    
+        function removeCheckbox(index) {
+            const checkboxDiv = document.getElementById(`checkbox-${index}`);
+            if (checkboxDiv) {
+                checkboxDiv.remove(); // Remove the checkbox element
+            }
+        }
+    
+        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+            event.preventDefault();
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("hidden");
+        });
+    </script>
+
+    <!-- use for the dynamic description -->
+    <script>
+        function initializeBulletTextarea(textarea) {
+            // Initialize the textarea with a bullet if empty
+            function initializeTextarea() {
+                const content = textarea.value.trim();
+                if (!content) {
+                    textarea.value = '• '; // Start with a bullet if empty
+                }
+            }
+        
+            // Handle pressing 'Enter' to start a new bullet point
+            textarea.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();  // Prevent the default new line behavior
+        
+                    // Get cursor position
+                    const cursorPosition = textarea.selectionStart;
+                    const textBeforeCursor = textarea.value.substring(0, cursorPosition);
+                    const textAfterCursor = textarea.value.substring(cursorPosition);
+        
+                    // Split the text before cursor into lines
+                    const lines = textBeforeCursor.split('\n');
+                    const currentLine = lines[lines.length - 1].trim();
+        
+                    // Check if the current line has content (not just a bullet)
+                    if (currentLine.length === 0 || currentLine === '•') {
+                        // Prevent adding a new line if the current line is just a bullet without content
+                        return;
+                    }
+        
+                    // Insert a new bullet point
+                    textarea.value = textBeforeCursor + '\n• ' + textAfterCursor;
+        
+                    // Move cursor to the end of the new line
+                    textarea.selectionStart = textarea.selectionEnd = cursorPosition + ('\n• '.length);
+                }
+            });
+        
+            // Format the recommendations when textarea loses focus (optional)
+            textarea.addEventListener('blur', function() {
+                formatRecommendations();  // Optional: format and clean up the input on blur
+            });
+        
+            // Format the recommendations
+            function formatRecommendations() {
+                const lines = textarea.value.split('\n').filter(line => line.trim().length > 0 && line.trim() !== '•'); // Filter out empty lines or lines with just the bullet
+                const formattedLines = lines.map(line => line.replace(/^•\s*/, '')); // Ensure leading bullets are removed
+                textarea.value = formattedLines.map(line => `• ${line}`).join('\n'); // Add bullets back to formatted lines
+            }
+        
+            // Set cursor to the end of the textarea content
+            function setCursorToEnd() {
+                textarea.focus(); // Focus on the textarea
+                const length = textarea.value.length; // Get the length of the content
+                textarea.setSelectionRange(length, length); // Set the cursor position
+            }
+        
+            // Initialize and set cursor position when the page loads
+            window.addEventListener('load', function() {
+                initializeTextarea();
+                setCursorToEnd();
+            });
+        }
+        
+        // Initialize the textareas
+        const editTextarea = document.getElementById('edit_description_text');
+        const addTextarea = document.getElementById('description_text');
+        
+        // Call the function for each textarea
+        if (editTextarea) {
+            initializeBulletTextarea(editTextarea);
+        }
+        if (addTextarea) {
+            initializeBulletTextarea(addTextarea);
+        }
+    </script>
+</body>
+</html>

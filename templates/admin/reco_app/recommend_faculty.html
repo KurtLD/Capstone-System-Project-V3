@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommend Adviser</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'admin/reco_app/recommend_faculty.css' %}" rel="stylesheet">
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <!-- <div class="upload-wrapper">
+                    <div class="upload-container">
+                        <h1 class="upload-title">Upload a file</h1>
+                        <div class="upload-box">
+                            <div class="upload-border">
+                                <div class="upload-icons">
+                                    <i class="fas fa-file-image" data-fa-transform="shrink-3 down-2 left-6 rotate--45"></i>
+                                    <i class="fas fa-file-alt" data-fa-transform="shrink-2 up-4"></i>
+                                    <i class="fas fa-file-pdf" data-fa-transform="shrink-3 down-2 right-6 rotate-45"></i>
+                                </div>
+                                <input type="file" id="file-upload">
+                                <p class="upload-text">Drag and drop files here, or 
+                                    <a href="#" id="file-browser" class="upload-link">browse</a> your computer.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+                  
+                <main class="flex-1 overflow-auto p-6">
+                    <div class="container mt-5">
+                        <form method="post">
+                            {% csrf_token %}
+                            <fieldset class="fieldset">
+                                <div class="fieldset-header">
+                                    <i class="fas fa-user-plus"></i> Recommend Adviser
+                                </div>
+                                <div class="textarea-container">
+                                    <textarea id="title" name="title" class="textarea" rows="4" placeholder="Type your title here..." required></textarea>
+                                </div>
+                                <div class="button-container">
+                                    <a href="{% url 'admin_dashboard' %}" class="button back-button">
+                                      Back
+                                    </a>
+                                    <button type="submit" class="button recommend-button">
+                                        <i class="fas fa-check"></i> Recommend
+                                    </button>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </main>
+                <footer class="footer">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+            event.preventDefault();
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("hidden");
+        });
+
+        $("#file-upload").css("opacity", "0");
+    
+        $("#file-browser").click(function(e) {
+            e.preventDefault();
+            $("#file-upload").trigger("click");
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

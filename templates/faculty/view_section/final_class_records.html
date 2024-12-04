@@ -1,0 +1,169 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Class Record</title>
+    <!-- Include AdminLTE CSS and dependencies -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'faculty/pre_oral_class_records.css' %}" />
+    <style>
+        .dropdown {
+            float: right;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'faculty/faculty_sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <main class="main-content p-4">
+                    <div>
+                        <div class="content-wrapper">
+                            <div class="container-fluid mt-4">
+                                <div class="row justify-content-center">
+                                    <div class="col-12 full-height">
+                                        <div class="card">
+                                            <div class="no-print">
+                                                <select class="dropdown form-select" id="groupSelector" onchange="location = this.value;">
+                                                    <option value="" disabled selected>Select Group</option>
+                                                    <option value="{% url 'class_record' %}">Pre Oral Group</option>
+                                                    <option value="{% url 'mock_class_record' %}">Mock Group</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <h3 class="card-title">Class Record for Final Defense</h3>
+                                            </div>
+                                            <div class="card-body">
+                                                {% if page_obj %}
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Section</th>
+                                                                    <th>Members</th>
+                                                                    <th>Title</th>
+                                                                    <th>Graded</th>
+                                                                    <th>Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for record in page_obj %}
+                                                                <tr>
+                                                                    <td>{{ record.section }}</td>
+                                                                    <td>{{ record.member1 }}<br>{{ record.member2 }}<br>{{ record.member3 }}</td>
+                                                                    <td>{{ record.title }}</td>
+                                                                    {% with graded_count_threshold=3 %}
+                                                                    <td>
+                                                                        {% if record.is_graded and record.graded_count == graded_count_threshold %}
+                                                                            <span class="graded"><i>Yes</i></span>
+                                                                        {% elif record.is_graded and record.graded_count != graded_count_threshold %}
+                                                                            <span class="graded"><i>Incomplete</i></span>
+                                                                        {% else %}
+                                                                            <span class="not-graded"><i>Not Yet</i></span>
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    {% endwith %}
+                                                                    <td>
+                                                                        <div class="btn-group" role="group" aria-label="Action Buttons">
+                                                                            <a href="{% url 'final_grade_view' record.id %}" class="btn btn-warning btn-sm">
+                                                                                View
+                                                                            </a>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <!-- Pagination Controls -->
+                                                    <div class="pagination" id="pagination-title-hearing">
+                                                        <span class="step-links">
+                                                            {% if page_obj.has_previous %}
+                                                                <a href="?page=1">&laquo;</a>
+                                                                <a href="?page={{ page_obj.previous_page_number }}">&lsaquo;</a>
+                                                            {% endif %}
+                                                            <span class="current">
+                                                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                                            </span>
+                                                            {% if page_obj.has_next %}
+                                                                <a href="?page={{ page_obj.next_page_number }}">&rsaquo;</a>
+                                                                <a href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+                                                            {% endif %}
+                                                        </span>
+                                                    </div>
+                                                {% else %}
+                                                    <p>No Class Records Available.</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="footer">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
+        </div>
+    </div>
+<!-- Bootstrap Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://adminlte.io/themes/v3/plugins/jquery/jquery.min.js"></script>
+<script src="https://adminlte.io/themes/v3/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://adminlte.io/themes/v3/dist/js/adminlte.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+            event.preventDefault();
+            var sidebar = document.getElementById("sidebar");
+            var navbar = document.querySelector(".main-header.navbar");
+            sidebar.classList.toggle("hidden");
+            sidebar.classList.toggle("no-hover");
+            navbar.classList.toggle("navbar-expanded");
+            toggleMenuIcon();
+        });
+
+        function toggleMenuIcon() {
+            const menuIcon = document.getElementById('menu-icon');
+            menuIcon.classList.toggle('fa-bars');
+            menuIcon.classList.toggle('fa-times');
+        }
+
+        // Show the default section
+        showSection('grades');
+    });
+
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.content').forEach(function (section) {
+            section.style.display = 'none';
+        });
+
+        // Show the selected section
+        document.getElementById(sectionId).style.display = 'block';
+    }
+</script>
+</body>
+</html>

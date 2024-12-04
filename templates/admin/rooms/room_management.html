@@ -1,0 +1,226 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Room/s</title>
+    <!-- Bootstrap CSS (you can use a local or CDN version) -->
+    <link href="{% static 'admin/title_hearing/faculty_tally.css' %}" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <main class="flex-1 overflow-auto p-6 main-content">
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <p>{{ field|capfirst }}: {{ error }}</p>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="container mt-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <center><h2>Manage Room</h2></center>
+
+                                <!-- Add Room Button -->
+                                <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#addRoomModal">
+                                    <i class="fas fa-plus"></i> Add Room
+                                </button>
+
+                                <!-- Add Room Modal -->
+                                <div class="modal fade" id="addRoomModal" tabindex="-1" role="dialog" aria-labelledby="addRoomModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addRoomModalLabel">Add Room</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form method="post" action="{% url 'room_list' %}">
+                                                <div class="modal-body">
+                                                    {% csrf_token %}
+                                                    <div class="form-group">
+                                                        <label for="name">Name</label>
+                                                        <input type="text" class="form-control" id="name" name="name" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="status">Select Status</label>
+                                                        <select class="form-control" id="status" name="status">
+                                                            {% for key, value in form.fields.status.choices %}
+                                                                <option value="{{ key }}"
+                                                                    {% if key|add:"0"|is_in:taken_statuses %}
+                                                                        class="disabled-option" disabled
+                                                                    {% endif %}>
+                                                                    {% if key|add:"0"|is_in:taken_statuses %}
+                                                                    {{ value }} <i>(Not Available)</i>
+                                                                    {% else %}
+                                                                        {{ value }}
+                                                                    {% endif %}
+                                                                </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-danger">Add Room</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br><br>
+                                
+                                <table class="table table-striped text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Prioritization Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for room in rooms %}
+                                            <tr>
+                                                <td>{{ room.name }}</td>
+                                                <td>{{ room.status|ordinal_status }}</td>
+                                                <td>
+                                                    <!-- Edit Button -->
+                                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editRoomModal{{ room.id }}">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </button>
+                                                    
+                                                    <!-- Delete Button -->
+                                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal{{ room.id }}">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Edit Room Modal -->
+                                            <div class="modal fade" id="editRoomModal{{ room.id }}" tabindex="-1" role="dialog" aria-labelledby="editRoomModalLabel{{ room.id }}" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editRoomModalLabel{{ room.id }}">Edit Room</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <form method="post" action="{% url 'room_edit' room.id %}">
+                                                            <div class="modal-body">
+                                                                {% csrf_token %}
+                                                                <div class="form-group">
+                                                                    <label for="name{{ room.id }}">Name</label>
+                                                                    <input type="text" class="form-control" id="name{{ room.id }}" name="name" value="{{ room.name }}" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="currentStatus{{ room.id }}">Current Status</label>
+                                                                    <input type="text" class="form-control" id="currentStatus{{ room.id }}" value="{{ room.status|ordinal_status }}" readonly>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="status{{ room.id }}">Select New Status</label>
+                                                                    <select class="form-control" id="status{{ room.id }}" name="status">
+                                                                        {% for key, value in form.fields.status.choices %}
+                                                                            <option value="{{ key }}"
+                                                                                {% if room.status|stringformat:"d" == key or key|add:"0"|is_in:taken_statuses %}
+                                                                                    class="disabled-option" disabled
+                                                                                {% endif %}>
+                                                                                {% if room.status|stringformat:"d" == key or key|add:"0"|is_in:taken_statuses %}
+                                                                                    {{ value }} <i>(Not Available)</i>
+                                                                                {% else %}
+                                                                                    {{ value }}
+                                                                                {% endif %}
+                                                                            </option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                <button type="submit" class="btn btn-danger">Save changes</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Delete Confirmation Modal -->
+                                            <div class="modal fade" id="deleteRoomModal{{ room.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteRoomModalLabel{{ room.id }}" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteRoomModalLabel{{ room.id }}">Delete Room</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Are you sure you want to delete <strong>{{ room.name }}</strong>?</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <form method="post" action="{% url 'room_delete' room.id %}">
+                                                                {% csrf_token %}
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="submit" class="btn btn-danger">Yes, delete</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="footer no-print">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            const sidebar = document.getElementById("sidebar");
+
+            // Retrieve the sidebar state from localStorage
+            const sidebarState = localStorage.getItem("sidebarState");
+            if (sidebarState === "closed") {
+                sidebar.classList.add("hidden");
+            }
+
+            // Sidebar toggle functionality
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    sidebar.classList.toggle("hidden");
+
+                    // Store the sidebar state in localStorage
+                    localStorage.setItem("sidebarState", sidebar.classList.contains("hidden") ? "closed" : "open");
+                });
+            }
+        });
+    </script>
+</body>
+</html>

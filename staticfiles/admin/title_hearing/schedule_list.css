@@ -1,0 +1,504 @@
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+    --text-dark: #000000;
+    --header-color: #555454;
+    --sidebar-hover: #606060;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* General styles */
+body {
+    background-color: var(--primary-bg);
+    margin: 0;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.modal-btn {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+}
+
+.error-message {
+    color: red;
+    display: none;
+    margin-top: 10px;
+}
+
+
+/* Navigation link styles */
+.nav-link {
+    transition: opacity 0.3s, background-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+}
+
+.nav-link:hover {
+    background-color: var(--sidebar-hover);
+    transform: scale(1.0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    color: var(--text-light);
+    border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+    opacity: 0.9;
+}
+
+nav:hover .nav-link {
+    opacity: 1;
+}
+
+/* Sidebar styles */
+#sidebar {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    background-color: var(--header-color);
+}
+
+#sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+/* Footer styles */
+.footer {
+    background-color: var(--header-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: center;
+}
+
+/*School Year*/
+.section-container {
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    background-color: #2d3748;
+    /* bg-gray-800 */
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    font-family: 'Poppins', sans-serif;
+}
+
+.section-container form {
+    margin-bottom: 0.5rem;
+    /* mb-2 */
+}
+
+.section-container label {
+    display: block;
+    margin-bottom: 0.25rem;
+    /* mb-1 */
+    color: #ffffff;
+    /* text-white */
+}
+
+.section-container select {
+    width: 100%;
+    /* w-full */
+    padding: 10px !important;
+    /* p-2 */
+    border: 1px solid #ccc;
+    /* border */
+    border-radius: 0.25rem;
+    /* rounded */
+    color: #000000;
+    /* text-black */
+}
+
+.section-container button {
+    font-size: 0.875rem;
+    /* text-sm */
+    font-weight: 600;
+    /* font-semibold */
+    color: #63b3ed;
+    /* text-blue-400 */
+    display: flex;
+    /* flex */
+    align-items: center;
+    /* items-center */
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.section-container button:hover {
+    color: #4299e1;
+    /* hover:text-blue-500 */
+}
+
+.section-container .fa-plus-circle {
+    margin-right: 0.5rem;
+    /* mr-2 */
+    font-size: 1.125rem;
+    /* text-lg */
+    color: #4299e1;
+    /* text-blue-500 */
+}
+
+
+h3,
+h4 {
+    color: var(--header-color);
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+}
+
+.highlight {
+    color: var(--highlighted-color);
+}
+
+
+.header {
+    text-align: center;
+    color: var(--header-color);
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+}
+
+.buttons {
+    margin-bottom: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+.date-picker {
+    margin-bottom: 10px;
+}
+
+.date-picker label {
+    font-weight: bold;
+    margin-left: 4%;
+}
+
+.date-picker input {
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+buttons,
+a.buttons {
+    background-color: var(--header-color);
+    color: var(--text-light);
+    padding: 8px 12px;
+    /* Reduced padding */
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    margin: 1px;
+    /* Reduced margin */
+    text-align: center;
+    text-decoration: none;
+    margin-top: 5px;
+    /* Reduced margin-top */
+    display: inline-block;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+buttons:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+a.buttons:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.custom-no-button {
+    background-color: #EFEFEF;
+    /* Custom background color */
+    color: black;
+    /* Text color */
+    border-color: #dcdcdc;
+    /* Border color */
+}
+
+.custom-no-button:hover {
+    background-color: #dcdcdc;
+    /* Hover background color */
+    border-color: #c0c0c0;
+    /* Hover border color */
+}
+
+.btn-modal {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.btn-modal:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.modal-content {
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-dialog {
+    max-width: 600px;
+}
+
+.lunch-break {
+    background-color: #EFEFEF;
+    color: var()
+}
+
+td.no-print {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    margin-left: 4%;
+}
+
+.same-size-button {
+    width: 150px;
+    height: 40px;
+    background-color: var(--header-color);
+    color: var(--text-light);
+    padding: 4px 8px;
+    /* Reduced padding */
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    margin: 1px;
+    /* Reduced margin */
+    text-align: center;
+    text-decoration: none;
+    margin-top: 5px;
+    /* Reduced margin-top */
+    display: inline-block;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.same-size-button:hover {
+    background-color: var(--highlighted-color) !important;
+    color: var(--text-light);
+}
+
+.button-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .container table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .container th {
+        padding: 5px;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .buttons .button-group {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .buttons .button-group button {
+        margin: 5px 0;
+    }
+
+    .date-picker {
+        width: 100%;
+        text-align: center;
+    }
+
+    .date-picker label {
+        margin-left: 0;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .date-picker input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 600px) {
+    .button-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .same-size-button,
+    .button-link button {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .date-picker label {
+        margin-left: 0;
+    }
+}
+
+@media print {
+    @page {
+        size: landscape;
+    }
+
+    .no-print {
+        display: none;
+    }
+
+    .table thead th {
+        background-color: var(--highlighted-color) !important;
+        color: var(--text-light) !important;
+    }
+
+    tr.lunch-break {
+        background-color: var(--primary-bg) !important;
+    }
+
+    .table th.no-print,
+    .table td.no-print {
+        display: none;
+    }
+
+    table {
+        width: 100%;
+    }
+}
+
+@media print {
+
+    /* Hide the action column when printing */
+    .action-column {
+        display: none;
+    }
+
+    /* Adjust the table layout to prevent issues */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        border: 1px solid black;
+        padding: 10px;
+        text-align: left;
+    }
+}
+
+.highlights {
+    background-color: #FFD700;
+    /* Highlight background color */
+    color: black;
+    /* Text color */
+    font-weight: bold;
+    /* Optional: Make text bold */
+}
+
+.container1 {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    margin-bottom: 20px;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+th,
+td {
+    border: 1px solid var(--header-color);
+    padding: 12px;
+    text-align: center;
+    border-radius: 2px;
+    vertical-align: middle;
+}
+
+td {
+    padding: 10px;
+}
+
+td.group-members,
+td.panels {
+    text-align: center;
+}
+
+th {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+    padding: 10px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 15px;
+}
+
+.table th {
+    background-color: var(--highlighted-color);
+    color: #FFFFFF;
+    white-space: nowrap;
+    border-radius: 8px;
+    border: 1px solid var(--text-light) !important;
+}
+
+.table tr {
+    background-color: #EFEFEF;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table td {
+    border: none;
+    white-space: nowrap;
+}
+
+tr:nth-child(even) {
+    background-color: var(--secondary-bg);
+}
+
+tr:hover {
+    background-color: var(--primary-bg);
+}

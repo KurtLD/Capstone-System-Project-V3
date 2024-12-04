@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333;
+}
+
+.container {
+    width: 80%;
+    max-width: 1000px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 1em;
+    height: auto;
+    
+}
+
+h1 {
+    color: #333;
+    font-size: 20px;
+    /* Increased font size */
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -10px;
+}
+
+.col-md-4,
+.col-md-12 {
+    padding: 10px;
+    flex: 1;
+}
+
+form {
+    font-size: 15px;
+    /* Increased font size */
+    font-weight: 600;
+}
+
+form .form-group {
+    margin-bottom: 1.5em;
+}
+
+form .form-control {
+    font-size: 25px;
+    /* Increased font size */
+    padding: 10px;
+    /* Increased padding */
+    border-radius: 5px;
+}
+
+button,
+.btn {
+    background-color: #007bff;
+    color: black;
+    border: none;
+    padding: 15px 40px;
+    /* Increased padding */
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 15px;
+    /* Increased margin */
+    font-size: 20px
+        /* Increased font size */
+}
+
+button:hover,
+.btn:hover {
+    background-color: #007bff;
+    color: white;
+}

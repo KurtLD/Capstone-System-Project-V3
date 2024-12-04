@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #f3f2eb;
+    --header-color: #333;
+    --highlighted-color: #900303;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+}
+
+body {
+    background-color: var(--primary-bg);
+    color: var(--header-color);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-size: 75%;
+    /* Set font size to 75% of the default 16px, which is 12px */
+}
+
+.form-container {
+    max-width: 400px;
+    background-color: var(--secondary-bg);
+    padding: 32px 24px;
+    font-size: 1rem;
+    /* 1rem now equals 12px */
+    font-family: 'Poppins', sans-serif;
+    color: var(--header-color);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin: auto;
+}
+
+.form-container button:active {
+    transform: scale(0.95);
+}
+
+.form-container .logo-container {
+    text-align: center;
+    font-weight: 600;
+    font-size: 2rem;
+    /* 3rem now equals 36px */
+    color: var(--highlighted-color);
+}
+
+.form-container .otp-subheading {
+    text-align: center;
+    font-size: 13px;
+    color: var(--header-color);
+    font-weight: 600;
+}
+
+.otp-subheadings {
+    text-align: center;
+    font-size: 13px;
+    color: var(--header-color);
+}
+
+.form-container .form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+}
+
+.form-container .form-group p {
+    margin: 0;
+    width: 100%;
+}
+
+.form-container .form-group input {
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-family: 'Poppins', sans-serif;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+}
+
+.form-container .form-group input::placeholder {
+    opacity: 0.5;
+}
+
+.form-container .form-group input:focus {
+    outline: none;
+    border-color: var(--highlighted-color);
+    padding: 14px 16px;
+}
+
+.form-container .form-submit-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-light);
+    background-color: var(--header-color);
+    border: none;
+    width: 100%;
+    padding: 6px 10px;
+    font-size: inherit;
+    gap: 8px;
+    margin: 12px 0;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 6px;
+    box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.084), 0px 2px 3px rgba(0, 0, 0, 0.168);
+}
+
+.form-container .form-submit-btn:hover {
+    background-color: var(--highlighted-color);
+}
+
+.form-container .link {
+    color: var(--highlighted-color);
+    text-decoration: none;
+}
+
+.form-container .signup-link {
+    align-self: center;
+    font-weight: 500;
+}
+
+.form-container .signup-link .link {
+    font-weight: 400;
+}
+
+.form-container .link:hover {
+    text-decoration: underline;
+}

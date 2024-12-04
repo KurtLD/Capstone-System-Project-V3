@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Faculty Detail</title>
+</head>
+<body>
+    <h1>Faculty Detail</h1>
+    <p>Name: {{ faculty.name }}</p>
+    <p>Years of Teaching: {{ faculty.years_of_teaching }}</p>
+    <h2>Expertise:</h2>
+    <ul>
+        {% if faculty.mobile_web_dev %}<li>Mobile and Web Application Development</li>{% endif %}
+        {% if faculty.database_management %}<li>Database Management and Information Systems</li>{% endif %}
+        {% if faculty.ai_ml %}<li>Artificial Intelligence and Machine Learning</li>{% endif %}
+        {% if faculty.iot %}<li>Internet of Things (IoT)</li>{% endif %}
+        {% if faculty.cybersecurity %}<li>Cybersecurity</li>{% endif %}
+        {% if faculty.gis %}<li>Geographic Information Systems (GIS)</li>{% endif %}
+        {% if faculty.data_analytics %}<li>Data Analytics and Business Intelligence</li>{% endif %}
+        {% if faculty.ecommerce_digital_marketing %}<li>E-commerce and Digital Marketing</li>{% endif %}
+        {% if faculty.educational_technology %}<li>Educational Technology</li>{% endif %}
+        {% if faculty.healthcare_informatics %}<li>Healthcare Informatics</li>{% endif %}
+        {% if faculty.game_development %}<li>Game Development</li>{% endif %}
+        {% if faculty.hci %}<li>Human-Computer Interaction</li>{% endif %}
+        {% if faculty.agricultural_technology %}<li>Agricultural Technology</li>{% endif %}
+        {% if faculty.smart_city_technologies %}<li>Smart City Technologies</li>{% endif %}
+        {% if faculty.fintech %}<li>Financial Technology (FinTech)</li>{% endif %}
+        {% if faculty.computer_networks %}<li>Computer Networks</li>{% endif %}
+        {% if faculty.software_engineering %}<li>Software Engineering</li>{% endif %}
+        {% if faculty.multimedia_graphics %}<li>Multimedia and Graphics</li>{% endif %}
+    </ul>
+    <a href="{% url 'faculty_list' %}">Back to Faculty List</a>
+</body>
+</html>

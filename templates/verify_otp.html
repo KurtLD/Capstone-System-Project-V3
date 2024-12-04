@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Verify OTP</title>
+    <link rel="stylesheet" href="{% static 'verify_otp.css' %}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="form-container">
+        <div class="logo-container">Verify OTP</div>
+        <div class="otp-subheading">We have sent a verification code to your email</div>
+        <form method="post" action="{% url 'verify_otp' %}" class="form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_otp"><i class="fas fa-key"></i> OTP</label>
+                {{ form.otp }}
+            </div>
+            <button type="submit" class="form-submit-btn">Verify OTP</button>
+        </form>
+    </div>
+</body>
+</html>

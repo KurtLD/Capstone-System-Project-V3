@@ -1,0 +1,388 @@
+{% load static %}
+{% load users_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAPSTONE PROJECT AND RESEARCH 2 - MOCK DEFENSE EVALUATION FORM(UPDATE)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'faculty/input_grade.css' %}" />
+    
+    <script>
+        function updateHiddenInputs() {
+            const member1Total = document.getElementById('overall_grade1_{{ forloop.counter }}').textContent || 0;
+            const member2Total = document.getElementById('overall_grade2_{{ forloop.counter }}').textContent || 0;
+            const member3Total = document.getElementById('overall_grade3_{{ forloop.counter }}').textContent || 0;
+    
+            document.getElementById('member1_grades').value = member1Total;
+            document.getElementById('member2_grades').value = member2Total;
+            document.getElementById('member3_grades').value = member3Total;
+        }
+    
+        function updateTotalScore(sectionId, hasIndividualGrading) {
+            if (hasIndividualGrading) {
+                for (let member = 1; member <= 3; member++) {
+                    let total = 0;
+                    const inputs = document.querySelectorAll(`input[name^="criteria_"][name$="_member${member}"]`);
+                    inputs.forEach(input => {
+                        total += parseFloat(input.value) || 0;
+                    });
+                    document.getElementById(`overall_grade${member}_${sectionId}`).textContent = total.toFixed(0);
+                    document.getElementById(`member${member}_grades`).value = total.toFixed(0);
+                }
+            } else {
+                let total = 0;
+                const inputs = document.querySelectorAll(`table[data-section-id="${sectionId}"] input[type="number"]`);
+                inputs.forEach(input => {
+                    total += parseFloat(input.value) || 0;
+                });
+                document.getElementById(`overall_grade_${sectionId}`).textContent = total.toFixed(0);
+            }
+        }
+    
+        function addInputEventListeners() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach((input) => {
+                input.addEventListener("input", function() {
+                    const table = this.closest("table");
+                    const sectionId = table.dataset.sectionId;
+                    const hasIndividualGrading = table.dataset.hasIndividualGrading === "true";
+                    updateTotalScore(sectionId, hasIndividualGrading);
+                });
+            });
+        }
+    
+        window.addEventListener("load", function() {
+            addInputEventListeners();
+            updateHiddenInputs();
+        });
+    </script>
+
+</head>
+<body>
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'faculty/faculty_sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <main class="main-content p-4">
+                    <div class="container">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                {% if verdict_message %}
+                                    <div class="messages">
+                                        <h3 style="color: red;">*{{ verdict_message }}</h3>
+                                    </div>
+                                {% endif %}
+
+                                <h1><strong>CAPSTONE PROJECT AND RESEARCH 2</strong></h1>
+                                <h2><strong>Mock Defense Evaluation Form</strong></h2>
+
+                                <!-- Display project title and group members -->
+                                <table class="table table-bordered table-striped">
+                                    <tr>
+                                        <td colspan="2">CAPSTONE PROJECT TITLE: <strong style="color: #FFFFFF; background-color: #7C0404; padding: 5px;">{{ schedule.title }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">GROUP MEMBERS</td>
+                                    </tr>
+                                    <tr><td>Member 1:</td><td>{{ schedule.group.member1 }}</td></tr>
+                                    <tr><td>Member 2:</td><td>{{ schedule.group.member2 }}</td></tr>
+                                    <tr><td>Member 3:</td><td>{{ schedule.group.member3 }}</td></tr>
+                                    <tr><td>DATE OF DEFENSE:</td><td>{{ schedule.date }}</td></tr>
+                                    <tr><td>TIME OF DEFENSE:</td><td>{{ schedule.slot }}</td></tr>
+                                    <tr><td>FACULTY PANEL:</td><td>{{ faculty_member.name }}</td></tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        {% if is_lead_panel %}
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h3><strong>Summary of Points:</strong></h3>
+                                <table class="table table-bordered table-striped">
+                                    <tr>
+                                        <th>Criteria</th>
+                                        <th>Percentage</th>
+                                        <th>Earned Points (%)</th>
+                                    </tr>
+                                    {% for section in criteria_list %}
+                                    <tr>
+                                        <td>{{ section.name }}</td>
+                                        <td>{{ section.total_criteria_percentage }}</td>
+                                        <td id="{{ section.name|slugify }}_summary">
+                                            {% with total=summary_totals|get_item:section.name %}
+                                            {{ total|floatformat:2 }}
+                                            {% endwith %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td><strong>TOTAL</strong></td>
+                                        <td><strong>{{total_points}}</strong></td>
+                                        <td id="overall_grade">{{total_earned_points}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h3><strong>VERDICT (Mock Defense)</strong></h3>
+                                <p>The verdict is a unanimous decision among the defense panel. Once issued, it is final and irrevocable.</p>
+                                <br />
+
+                                {% if selected_verdict %}
+                                <h3>System Selected Verdict: <span style="background-color: rgb(214, 214, 75);">{{ selected_verdict }}</span></h3>
+                                {% endif %}
+
+                                <form method="post" action="{% url 'mock_update_evaluate_capstone' schedule_id=schedule.id %}" onsubmit="return showSuccessMessage()">
+                                    {% csrf_token %}
+                                    {% if is_lead_panel %}
+                                    <fieldset>
+                                        <legend>Select the appropriate verdict:</legend>
+                                        {% for verdict in verdicts %}
+                                        <div>
+                                            <input type="radio" 
+                                            id="verdict_{{ forloop.counter }}" 
+                                            name="verdict" 
+                                            value="{{ verdict.name }}"
+                                            style="cursor: not-allowed; color: #999;"
+                                            {% if selected_verdict and verdict_name == verdict.name %}checked{% endif %} disabled/>
+                                            <label for="verdict_{{ forloop.counter }}">{{ verdict.name }} - {{ verdict.percentage }}%</label>
+                                        </div>
+                                        {% if verdict_name == verdict.name %}
+                                        <div id="checkboxes-container" tabindex="0">
+                                            {% for checkbox in all_checkboxes %}
+                                            {% if checkbox.verdict == verdict %}
+                                            <div style="margin-left: 10px;">
+                                                {% if verdict_has_changed %}
+                                                <input type="checkbox" id="checkbox_{{ checkbox.id }}" name="checkbox_{{ checkbox.id }}"
+                                                onchange="toggleOtherInput('{{ checkbox.id }}', '{{ checkbox.label }}')">
+                                                {% else %}
+                                                <input type="checkbox" id="checkbox_{{ checkbox.id }}" name="checkbox_{{ checkbox.id }}"
+                                                {% if existing_checkbox_data and existing_checkbox_data|get_item:checkbox.id %}
+                                                checked
+                                                {% endif %}
+                                                onchange="toggleOtherInput('{{ checkbox.id }}', '{{ checkbox.label }}')">
+                                                {% endif %}
+                                                <label for="checkbox_{{ checkbox.id }}">{{ checkbox.label }}</label>
+                                                {% if 'other' in checkbox.label|lower or 'specify' in checkbox.label|lower %}
+                                                <textarea type="text" id="other_input_{{ checkbox.id }}" name="other_input_{{ checkbox.id }}" 
+                                                style="display: none;" placeholder="Please specify..." 
+                                                required>{{ grade_entry.othervalue }}</textarea>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </fieldset>
+                                    {% endif %}
+
+                                    {% if not is_lead_panel %}
+                                    <div>
+                                        {% for verdict in verdicts %}
+                                        {% for checkbox in all_checkboxes %}
+                                        {% if checkbox.verdict == verdict and existing_checkbox_data|get_item:checkbox.id %}
+                                        <input type="checkbox" id="checkbox_{{ checkbox.id }}" name="checkbox_{{ checkbox.id }}" checked disabled>
+                                        <label for="checkbox_{{ checkbox.id }}">{{ checkbox.label }}</label><br>
+                                        {% if 'other' in checkbox.label|lower or 'specify' in checkbox.label|lower %}
+                                        <textarea type="text" style="padding: 1%;" readonly>{{ grade_entry.othervalue }}</textarea>
+                                        {% endif %}
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <br>
+
+                                    <fieldset>
+                                        <legend>Evaluation Rubric</legend>
+                                        {% for section in criteria_list %}
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <h4>{{ section.name }}</h4>
+                                                {% if "oral presentation" in section.name|lower or "individual grade" in section.name|lower %}
+                                                <table class="table table-bordered table-striped" data-section-id="{{ forloop.counter }}" data-has-individual-grading="true">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Criteria</th>
+                                                            <th>Percentage</th>
+                                                            <th class ="members"><center>Member 1:<br>{{ schedule.group.member1 }}</center></th>
+                                                            <th class ="members"><center>Member 2:<br>{{ schedule.group.member2 }}</center></th>
+                                                            <th class ="members"><center>Member 3:<br>{{ schedule.group.member3 }}</center></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for criteria in section.mcriteria.all %}
+                                                        <tr>
+                                                            <td>
+                                                                <h4>{{ criteria.name }}</h4>
+                                                                <ul>
+                                                                    {% for description in criteria.mdescriptions.all %}
+                                                                    <li>{{ description.text }}</li>
+                                                                    {% endfor %} 
+                                                                </ul>
+                                                            </td>
+                                                            <td>{{ criteria.percentage|floatformat:0 }}%</td>
+                                                            <td>
+                                                                {% with key_member1=criteria.id|stringformat:"s"|add:"_member1" %}
+                                                                <input type="number" 
+                                                                name="criteria_{{ criteria.id }}_member1" 
+                                                                min="0" 
+                                                                max="{{ criteria.percentage }}" 
+                                                                value="{{ existing_grades_data|get_item:key_member1|floatformat:0|default:'0' }}" />
+                                                                {% endwith %}
+                                                            </td>
+                                                            <td>
+                                                                {% with key_member2=criteria.id|stringformat:"s"|add:"_member2" %}
+                                                                <input type="number" 
+                                                                name="criteria_{{ criteria.id }}_member2" 
+                                                                min="0" 
+                                                                max="{{ criteria.percentage }}" 
+                                                                value="{{ existing_grades_data|get_item:key_member2|floatformat:0|default:'0' }}" />
+                                                                {% endwith %}
+                                                            </td>
+                                                            <td>
+                                                                {% if schedule.group.member3 == None %}
+                                                                    {% with key_member3=criteria.id|stringformat:"s"|add:"_member3" %}
+                                                                        <input type="hidden" 
+                                                                        name="criteria_{{ criteria.id }}_member3" 
+                                                                        min="0" 
+                                                                        max="{{ criteria.percentage }}" 
+                                                                        step="0.01"
+                                                                        value="{{ existing_grades_data|get_item:key_member3|floatformat:0|default:'0' }}" />
+                                                                        <center>None</center>
+                                                                    {% endwith %}
+                                                                {% else %}
+                                                                    {% with key_member3=criteria.id|stringformat:"s"|add:"_member3" %}
+                                                                        <input type="number" 
+                                                                        name="criteria_{{ criteria.id }}_member3" 
+                                                                        min="0" 
+                                                                        max="{{ criteria.percentage }}" 
+                                                                        step="0.01"
+                                                                        value="{{ existing_grades_data|get_item:key_member3|floatformat:0|default:'0' }}" />
+                                                                    {% endwith %}
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                        <tr>
+                                                            <td><strong>TOTAL</strong></td>
+                                                            <td><strong>{{ section.total_criteria_percentage|floatformat:0 }}%</strong></td>
+                                                            <td id="overall_grade1_{{ forloop.counter }}">{{member_totals.member1}}</td>
+                                                            <td id="overall_grade2_{{ forloop.counter }}">{{member_totals.member2}}</td>
+                                                            {% if schedule.group.member3 == None %}
+                                                                <td><center>None</center></td>
+                                                            {% else %}
+                                                                <td id="overall_grade3_{{ forloop.counter }}">{{member_totals.member3}}</td>
+                                                            {% endif %}
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                {% else %}
+                                                <table class="table table-bordered table-striped" data-section-id="{{ forloop.counter }}" data-has-individual-grading="false">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Criteria</th>
+                                                            <th>Percentage</th>
+                                                            <th>Input Grade</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for criteria in section.mcriteria.all %}
+                                                        <tr>
+                                                            <td>
+                                                                <h4>{{ criteria.name }}</h4>
+                                                                <ul>
+                                                                    {% for description in criteria.mdescriptions.all %}
+                                                                    <li>{{ description.text }}</li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            </td>
+                                                            <td>{{ criteria.percentage|floatformat:0 }}%</td>
+                                                            <td>
+                                                                <input type="number" name="criteria_{{ criteria.id }}" min="0" max="{{ criteria.percentage }}" 
+                                                                value="{{ existing_grades_data|get_item:criteria.id|floatformat:0|default:'0' }}" />
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                        <tr>
+                                                            <td><strong>TOTAL</strong></td>
+                                                            <td><strong>{{ section.total_criteria_percentage|floatformat:0 }}%</strong></td>
+                                                            <td id="overall_grade_{{ forloop.counter }}">
+                                                                {% with total=totals|get_item:section.name %}
+                                                                {{ total|floatformat:0 }}
+                                                                {% endwith %}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </fieldset>
+
+                                    <div style="opacity: 0;">
+                                        <input type="hidden" id="member1_grades" name="member1_grades" value="{{ member_totals.member1 }}" />
+                                        <input type="hidden" id="member2_grades" name="member2_grades" value="{{ member_totals.member2 }}" />
+                                        <input type="hidden" id="member3_grades" name="member3_grades" value="{{ member_totals.member3 }}" />
+                                        <input type="hidden" id="success_message" name="success_message" />
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Submit Evaluation</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="footer">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSuccessMessage() {
+            alert('Evaluation Updated Successfully!')
+            return true;
+        }
+        document
+        .getElementById("sidebarToggle")
+        .addEventListener("click", function (event) {
+          event.preventDefault();
+          var sidebar = document.getElementById("sidebar");
+          sidebar.classList.toggle("hidden");
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const descriptionElements = document.querySelectorAll('li');
+    
+            descriptionElements.forEach(function(element) {
+                const text = element.innerHTML;
+                if (text.includes('•')) {
+                    element.innerHTML = text.replace(/•/g, '<br>•').replace('<br>', ''); // Remove the first <br>
+                }
+            });
+        });
+    </script>
+</body>
+</html>

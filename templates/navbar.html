@@ -1,0 +1,133 @@
+<nav style="background-color: #900303; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; font-size: 12px; height: 50px;">
+    <ul style="display: flex; align-items: center; list-style: none; margin: 0; padding: 0;">
+        <li style="margin-right: 1rem;">
+            <a id="sidebarToggle" style="color: white; text-decoration: none;" href="#">
+                <i class="fas fa-bars"></i>
+            </a>
+        </li>
+        <li>
+            <div class="flex items-center justify-center">
+                <a href="https://www.evsu.edu.ph/" class="border-none bg-transparent p-0">
+                    <img src="https://www.evsu.edu.ph/wp-content/uploads/2021/10/logo_long_white_wo-slogan.png" alt="EVSU Logo" style="width: 100%; height: 25px;" />
+                </a>
+            </div>
+        </li>
+    </ul>
+    <ul style="display: flex; align-items: center; list-style: none; margin: 0; padding: 0;">
+        <li style="margin-right: 2.5rem;">
+            <a style="color:white; text-decoration: none;" href="#">
+                {% comment %} <i class="fas fa-bell"></i> {% endcomment %}
+            </a>
+        </li>
+        <li class="dropdowns">
+            <button id="profileDropdownButton" style="background-color: black; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: none; padding: 10px;">
+                <span style="color: white; text-transform: uppercase; font-weight: bold;">
+                    {{ user.first_name|slice:":1" }}<span style="padding-right: 2px;"></span>{{ user.last_name|slice:":1" }}
+                </span>
+            </button>
+            <div id="profileDropdownMenu" class="dropdown-menus">
+                <button onclick="window.location.href='{% url 'account_settings' %}'" class="flex items-center">
+                    <span class="fa-stack fa-md">
+                        <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                        <i class="fas fa-cog fa-stack-1x" style="color: #900303;"></i>
+                    </span>
+                    <span class="ml-2 custom-span">Settings</span>
+                </button>
+
+                <button onclick="window.location.href='{% url 'faq_list' %}'" class="flex items-center">
+                    <span class="fa-stack fa-md">
+                        <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                        <i class="fas fa-question-circle fa-stack-1x" style="color: #900303;"></i>
+                    </span>
+                    <span class="ml-2 custom-span">FAQ's</span>
+                </button>                
+
+                <button class="dropdown-items" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <span class="fa-stack fa-md">
+                        <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                        <i class="fas fa-sign-out-alt fa-stack-1x" style="color: #900303;"></i>
+                    </span>
+                    <span class="ml-2 custom-span">Logout</span>
+                </button>
+                <form id="logout-form" action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                </form>
+            </div>
+        </li>
+    </ul>
+</nav>
+<style>
+    #profileDropdownMenu {
+        border: none !important;
+    }
+    .dropdowns {
+        position: relative;
+        border: none;
+        text-decoration: none;
+    }
+    .dropdown-menus {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        z-index: 1000;
+        flex-direction: column;
+        padding: 2px;
+        min-width: 50px; /* Adjusted for better visibility */
+        color: black;
+        border-radius: 5px;
+        right: 0; /* Ensure the dropdown aligns to the right */
+    }
+
+    .dropdown-menus button {
+        display: flex;
+        align-items: center;
+        padding: 6px 10px;
+        color: #333;
+        text-decoration: none;
+        background: none;
+        border: none;
+        text-align: left;
+        vertical-align: middle;
+        font-weight: 600;
+    }
+
+    .dropdown-menus button:hover {
+        background-color: #333;
+        color: white;
+        border: none;
+    }
+
+    .dropdown-menus .fa-stack {
+        margin-right: 0.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dropdown-menus .custom-span {
+        display: flex;
+        align-items: center;
+        border: none;
+    }
+    .icon {
+        display: flex;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1rem; /* Adjust the size as needed */
+        color: white; /* Adjust the color as needed */
+    }
+</style>
+<script>
+    document.getElementById('profileDropdownButton').addEventListener('click', function(event) {
+        event.stopPropagation();
+        var dropdownMenu = document.getElementById('profileDropdownMenu');
+        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    window.addEventListener('click', function(event) {
+        var dropdownMenu = document.getElementById('profileDropdownMenu');
+        if (!event.target.closest('#profileDropdownButton') && !event.target.closest('#profileDropdownMenu')) {
+            dropdownMenu.style.display = 'none';
+        }
+    });
+</script>

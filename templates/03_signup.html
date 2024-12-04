@@ -1,0 +1,350 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static '02_signup.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+</head>
+<body class="d-flex align-items-center justify-content-center vh-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 custom-margin-top">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h2><i class="fas fa-user-plus"></i> Create Your Account</h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'signup' %}">
+                            {% csrf_token %}
+                            <!-- Page 1: Personal Information -->
+                            <div id="page1" class="form-page active">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <fieldset class="form-group">
+                                            <legend class="custom-legend"><i class="fas fa-user"></i> Full Name</legend>
+                                            
+                                            <div class="form-group">
+                                                <label for="{{ form.last_name.id_for_label }}" class="custom-label">Last Name:</label>
+                                                {{ form.last_name }}
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="{{ form.first_name.id_for_label }}" class="custom-label">First Name:</label>
+                                                {{ form.first_name }}
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="{{ form.middle_name.id_for_label }}" class="custom-label">Middle Name:</label>
+                                                {{ form.middle_name }}
+                                            </div>
+                                        </fieldset>
+                                        <div class="form-group">
+                                            <label for="{{ form.email.id_for_label }}" class="custom-label"><i class="fas fa-envelope"></i> Email:
+                                                {% if form.email.errors %}
+                                                    {% for error in form.email.errors %}
+                                                        <span style="color: red;">{{ error }}</span>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </label>
+                                            {{ form.email }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ form.date_of_birth.id_for_label }}" class="custom-label"><i class="fas fa-calendar-alt"></i> Date of Birth:</label>
+                                            {{ form.date_of_birth }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ form.address.id_for_label }}" class="custom-label"><i class="fas fa-map-marker-alt"></i> Address:</label>
+                                            {{ form.address }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ form.years_of_teaching.id_for_label }}" class="custom-label"><i class="fas fa-chalkboard-teacher"></i> Years of Teaching:</label>
+                                            {{ form.years_of_teaching }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="button-container">
+                                    <button type="button" class="btn btn-primary" onclick="validatePage1()">Next</button>
+                                </div>
+                                <div class="button-container">Already have an account? <a href="{% url 'login' %}">Login here</a></div>
+                            </div>
+                            <!-- Page 2: Expertise and Educational Attainment -->
+                            <div id="page2" class="form-page">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3><i class="fas fa-graduation-cap"></i> Educational Attainment:</h3>
+                                        <div class="form-group">
+                                            <div class="form-check" style="margin-left: 20px;">
+                                                {{ form.has_master_degree }}
+                                                <label class="form-check-label" for="{{ form.has_master_degree.id_for_label }}">Master's Degree</label>
+                                            </div>
+                                            <div class="degree-choices row" style="gap: 1px;">
+                                                {% for choice in form.highest_degrees %}
+                                                <div class="col-md-6 form-check" style="margin-left: 20px;">
+                                                    {{ choice.tag }}
+                                                    <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <h3><i class="fas fa-lightbulb"></i> List of Expertise:</h3>
+                                        <div class="form-group expertise-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;">
+                                            {% for expertise in form.expertise %}
+                                            <div class="form-check" style="break-inside: avoid;">
+                                                {{ expertise.tag }}
+                                                <label class="form-check-label" for="{{ expertise.id_for_label }}">{{ expertise.choice_label }}</label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        <h3><i class="fas fa-plus-circle"></i> Other Expertise:</h3>
+                                        <div class="form-group">
+                                            <label for="{{ form.new_expertise.id_for_label }}" class="custom-label">New Expertise</label>
+                                            {{ form.new_expertise }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="button-container">
+                                    <button type="button" class="btn btn-secondary" onclick="showPage(1)">Back</button>
+                                    <button type="button" class="btn btn-primary" onclick="validatePage2()">Next</button>
+                                </div>
+                            </div>
+                            <!-- Page 3: Passwords -->
+                            <div id="page3" class="form-page">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="{{ form.password1.id_for_label }}" class="custom-label"><i class="fas fa-lock"></i> Password:</label>
+                                            {{ form.password1|as_crispy_field }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ form.password2.id_for_label }}" class="custom-label"><i class="fas fa-lock"></i> Confirm Password:</label>
+                                            {{ form.password2|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="button-container">
+                                    <button type="button" class="btn btn-secondary" onclick="showPage(2)">Back</button>
+                                    <button type="submit" class="btn btn-primary" onclick="validatePage3(event)">Register</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    
+    <script>
+        function showPage(pageNumber) {
+            document.querySelectorAll(".form-page").forEach((page) => {
+                page.classList.remove("active");
+            });
+            document.getElementById(`page${pageNumber}`).classList.add("active");
+        }
+    
+        function displayErrorMessage(field, message) {
+            let label = field.previousElementSibling;
+            if (label && label.tagName === 'LABEL') {
+                if (!label.querySelector('.error-asterisk')) {
+                    let asterisk = document.createElement('span');
+                    asterisk.classList.add('error-asterisk');
+                    asterisk.style.color = 'red';
+                    asterisk.innerText = ' *';
+                    label.appendChild(asterisk);
+                }
+            }
+            field.classList.add('error-input');
+        }
+        
+        function clearErrorMessage(field) {
+            let label = field.previousElementSibling;
+            if (label && label.tagName === 'LABEL') {
+                let asterisk = label.querySelector('.error-asterisk');
+                if (asterisk) {
+                    label.removeChild(asterisk);
+                }
+            }
+            field.classList.remove('error-input');
+        }
+        
+        function validatePage1() {
+            let valid = true;
+            let firstInvalidField = null;
+        
+            let requiredFields = [
+                '{{ form.last_name.id_for_label }}', 
+                '{{ form.first_name.id_for_label }}', 
+                '{{ form.middle_name.id_for_label }}', 
+                '{{ form.email.id_for_label }}', 
+                '{{ form.date_of_birth.id_for_label }}', 
+                '{{ form.address.id_for_label }}', 
+                '{{ form.years_of_teaching.id_for_label }}'
+            ];
+        
+            requiredFields.forEach(function(fieldId) {
+                let field = document.getElementById(fieldId);
+                if (field.value.trim() === '') {
+                    field.classList.add('is-invalid');
+                    displayErrorMessage(field, 'This field is required.');
+                    valid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                } else {
+                    field.classList.remove('is-invalid');
+                    clearErrorMessage(field);
+                }
+            });
+        
+            // Name validation (only letters and spaces)
+            let nameFields = [
+                '{{ form.last_name.id_for_label }}', 
+                '{{ form.first_name.id_for_label }}', 
+                '{{ form.middle_name.id_for_label }}'
+            ];
+        
+            nameFields.forEach(function(fieldId) {
+                let field = document.getElementById(fieldId);
+                let namePattern = /^[a-zA-Z\s]+$/;
+                if (!namePattern.test(field.value.trim())) {
+                    field.classList.add('is-invalid');
+                    displayErrorMessage(field, 'This field is required.');
+                    valid = false;
+                    if (!firstInvalidField) {
+                        firstInvalidField = field;
+                    }
+                } else {
+                    field.classList.remove('is-invalid');
+                    clearErrorMessage(field);
+                }
+            });
+        
+            // Email validation
+            let emailField = document.getElementById('{{ form.email.id_for_label }}');
+            let emailValue = emailField.value.trim();
+            let validDomains = ['gmail.com', 'email.com', 'evsu.edu.ph'];
+            let emailPattern = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+            let domain = emailValue.split('@')[1];
+        
+            if (!emailPattern.test(emailValue) || !validDomains.includes(domain)) {
+                emailField.classList.add('is-invalid');
+                displayErrorMessage(emailField, 'Please enter a valid email.');
+                valid = false;
+                if (!firstInvalidField) {
+                    firstInvalidField = emailField;
+                }
+            } else {
+                emailField.classList.remove('is-invalid');
+                clearErrorMessage(emailField);
+            }
+        
+            if (valid) {
+                showPage(2); // Proceed if valid
+            } else {
+                if (firstInvalidField) {
+                    setTimeout(() => firstInvalidField.focus(), 200); // Focus after a delay
+                }
+            }
+        }
+        
+        function validatePage2() {
+            let degreeSelected = false;
+            document.querySelectorAll('#page2 .degree-choices input[type="checkbox"]').forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    degreeSelected = true;
+                }
+            });
+        
+            let newExpertiseField = document.getElementById('{{ form.new_expertise.id_for_label }}');
+            let newExpertiseFilled = newExpertiseField.value.trim() !== '';
+        
+            let expertiseSelected = false;
+            document.querySelectorAll('#page2 .expertise-grid input[type="checkbox"]').forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    expertiseSelected = true;
+                }
+            });
+
+            // this comment code is used to required the degree attainment
+            // if (!degreeSelected) {
+            //     displayErrorMessage(newExpertiseField, 'Please select at least one degree.');
+            //     setTimeout(() => newExpertiseField.focus(), 200);
+            //     showPage(2); // Stay on page 2 if there’s an error
+            // } 
+            if (!expertiseSelected && !newExpertiseFilled) {
+                displayErrorMessage(newExpertiseField, 'Please select at least one expertise or provide a new one.');
+                setTimeout(() => newExpertiseField.focus(), 200);
+                showPage(2); // Stay on page 2 if there’s an error
+            } else {
+                clearErrorMessage(newExpertiseField);
+                showPage(3); // Proceed if valid
+            }
+        }
+        
+        function validatePage3(event) {
+        let password1 = document.getElementById('{{ form.password1.id_for_label }}');
+        let password2 = document.getElementById('{{ form.password2.id_for_label }}');
+        let valid = true;
+        
+        // Clear existing error states
+        password1.classList.remove('is-invalid');
+        password2.classList.remove('is-invalid');
+        clearErrorMessage(password1);
+        clearErrorMessage(password2);
+
+        // Validate password1 (ensure it's not empty)
+        if (password1.value.trim() === '') {
+            password1.classList.add('is-invalid');
+            displayErrorMessage(password1, 'Password is required.');
+            valid = false;
+        }
+
+        // Validate password2 (ensure it's not empty)
+        if (password2.value.trim() === '') {
+            password2.classList.add('is-invalid');
+            displayErrorMessage(password2, 'Confirm password is required.');
+            valid = false;
+        }
+
+        // Check if passwords match
+        if (password1.value !== password2.value) {
+            displayErrorMessage(password1, 'Passwords do not match.');
+            displayErrorMessage(password2, 'Passwords do not match.');
+            password1.classList.add('is-invalid');
+            password2.classList.add('is-invalid');
+            
+            // Clear both password fields
+            password1.value = '';
+            password2.value = '';
+            valid = false;
+        }
+
+        // If not valid, prevent form submission
+        if (!valid) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    }
+
+        // Add event listeners to restrict input to letters and spaces only for name fields
+        document.addEventListener('DOMContentLoaded', function() {
+            let nameFields = [
+                '{{ form.last_name.id_for_label }}', 
+                '{{ form.first_name.id_for_label }}', 
+                '{{ form.middle_name.id_for_label }}'
+            ];
+        
+            nameFields.forEach(function(fieldId) {
+                let field = document.getElementById(fieldId);
+                field.addEventListener('input', function(event) {
+                    let value = field.value;
+                    field.value = value.replace(/[^a-zA-Z\s]/g, '');
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>

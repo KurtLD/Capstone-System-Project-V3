@@ -1,0 +1,462 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Schedules</title>
+    
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'faculty/faculty_dashboard.css' %}" />
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'faculty/faculty_sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <div class="p-2">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                </div>
+                <!-- Content -->
+                <main class="main-content p-4">
+                    <div class="content-wrapper">
+                        <div class="container-fluid mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-12 full-height">
+                                    <div class="card">
+                                        <div>
+                                            <h3 class="card-title">Title Hearing Schedule</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if page_obj_th %}
+                                                <div class="table-responsive">
+                                                    <table id="titleHearingTable" class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Date</th>
+                                                                <th>Time</th>
+                                                                <th>Room</th>
+                                                                <th>Group Members</th>
+                                                                <th>Panelists</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for schedule in page_obj_th %}
+                                                                <tr>
+                                                                    <td data-label="Date">({{ schedule.day_of_week }}) {{ schedule.date }}</td>
+                                                                    <td data-label="Time">{{ schedule.slot }}</td>
+                                                                    <td data-label="Room">{{ schedule.room }}</td>
+                                                                    <td data-label="Group Members">{{ schedule.group|replace_commas|safe }}</td>
+                                                                    <td data-label="Panelists">
+                                                                        <div>
+                                                                            {{ schedule.faculty1.name }} {% if schedule.faculty1 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                        <div>
+                                                                            {{ schedule.faculty2.name }} {% if schedule.faculty2 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                        <div>
+                                                                            {{ schedule.faculty3.name }} {% if schedule.faculty3 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="pagination" id="pagination-title-hearing">
+                                                    <span class="step-links">
+                                                        {% if page_obj_th.has_previous %}
+                                                            <a href="?page_th=1">&laquo;</a>
+                                                            <a href="?page_th={{ page_obj_th.previous_page_number }}">&lsaquo;</a>
+                                                        {% endif %}
+                                                        <span class="current">
+                                                            Page {{ page_obj_th.number }} of {{ page_obj_th.paginator.num_pages }}
+                                                        </span>
+                                                        {% if page_obj_th.has_next %}
+                                                            <a href="?page_th={{ page_obj_th.next_page_number }}">&rsaquo;</a>
+                                                            <a href="?page_th={{ page_obj_th.paginator.num_pages }}">&raquo;</a>
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <p>No schedules available.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-wrapper">
+                        <div class="container-fluid mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-12 full-height">
+                                    <div class="card">
+                                        <div>
+                                            <h3 class="card-title">Pre-Oral Defense Schedule</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if page_obj_pod %}
+                                                <div class="table-responsive">
+                                                    <table id="preOralDefenseTable" class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Date</th>
+                                                                <th>Time</th>
+                                                                <th>Room</th>
+                                                                <th>Group Members</th>
+                                                                <th>Title</th>
+                                                                <th>Panelists</th>
+                                                                <th>Adviser</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for schedule in page_obj_pod %}
+                                                                <tr>
+                                                                    <td data-label="Date">({{ schedule.day_of_week }}) {{ schedule.date }}</td>
+                                                                    <td data-label="Time">{{ schedule.slot }}</td>
+                                                                    <td data-label="Room">{{ schedule.room }}</td>
+                                                                    <td data-label="Group Members">{{ schedule.group|replace_commas|safe }}</td>
+                                                                    <td data-label="Title">{{ schedule.title }}</td>
+                                                                    <td data-label="Panelists">
+                                                                        <div>
+                                                                            {{ schedule.faculty1.name }} {% if schedule.faculty1 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                        <div>
+                                                                            {{ schedule.faculty2.name }} {% if schedule.faculty2 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                        <div>
+                                                                            {{ schedule.faculty3.name }} {% if schedule.faculty3 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td data-label="Adviser">{{ schedule.adviser.name }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="pagination" id="pagination-pre-oral-defense">
+                                                    <span class="step-links">
+                                                        {% if page_obj_pod.has_previous %}
+                                                            <a href="?page_pod=1">&laquo;</a>
+                                                            <a href="?page_pod={{ page_obj_pod.previous_page_number }}">&lsaquo;</a>
+                                                        {% endif %}
+                                                        <span class="current">
+                                                            Page {{ page_obj_pod.number }} of {{ page_obj_pod.paginator.num_pages }}
+                                                        </span>
+                                                        {% if page_obj_pod.has_next %}
+                                                            <a href="?page_pod={{ page_obj_pod.next_page_number }}">&rsaquo;</a>
+                                                            <a href="?page_pod={{ page_obj_pod.paginator.num_pages }}">&raquo;</a>
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <p>No schedules available.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-wrapper">
+                        <div class="container-fluid mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-12 full-height">
+                                    <div class="card">
+                                        <div>
+                                            <h3 class="card-title">Mock Defense Schedule</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if page_obj_md %}
+                                                <div class="table-responsive">
+                                                    <table id="mockDefenseTable" class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Date</th>
+                                                                <th>Time</th>
+                                                                <th>Room</th>
+                                                                <th>Group Members</th>
+                                                                <th>Title</th>
+                                                                <th>Panelists</th>
+                                                                <th>Adviser</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for schedule in page_obj_md %}
+                                                                <tr>
+                                                                    <td data-label="Date">({{ schedule.day_of_week }}) {{ schedule.date }}</td>
+                                                                    <td data-label="Time">{{ schedule.slot }}</td>
+                                                                    <td data-label="Room">{{ schedule.room }}</td>
+                                                                    <td data-label="Group Members">{{ schedule.group|replace_commas|safe }}</td>
+                                                                    <td data-label="Title">{{ schedule.title }}</td>
+                                                                    <td data-label="Panelists">
+                                                                        <div>
+                                                                            {{ schedule.faculty1.name }} {% if schedule.faculty1 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                        <div>
+                                                                            {{ schedule.faculty2.name }} {% if schedule.faculty2 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                        <div>
+                                                                            {{ schedule.faculty3.name }} {% if schedule.faculty3 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td data-label="Adviser">{{ schedule.adviser.name }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="pagination" id="pagination-mock-defense">
+                                                    <span class="step-links">
+                                                        {% if page_obj_md.has_previous %}
+                                                            <a href="?page_md=1">&laquo;</a>
+                                                            <a href="?page_md={{ page_obj_md.previous_page_number }}">&lsaquo;</a>
+                                                        {% endif %}
+                                                        <span class="current">
+                                                            Page {{ page_obj_md.number }} of {{ page_obj_md.paginator.num_pages }}
+                                                        </span>
+                                                        {% if page_obj_md.has_next %}
+                                                            <a href="?page_md={{ page_obj_md.next_page_number }}">&rsaquo;</a>
+                                                            <a href="?page_md={{ page_obj_md.paginator.num_pages }}">&raquo;</a>
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <p>No schedules available.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-wrapper">
+                        <div class="container-fluid mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-12 full-height">
+                                    <div class="card">
+                                        <div>
+                                            <h3 class="card-title">Final Defense Schedule</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if page_obj_fd %}
+                                                <div class="table-responsive">
+                                                    <table id="finalDefenseTable" class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Date</th>
+                                                                <th>Time</th>
+                                                                <th>Room</th>
+                                                                <th>Group Members</th>
+                                                                <th>Title</th>
+                                                                <th>Panelists</th>
+                                                                <th>Adviser</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for schedule in page_obj_fd %}
+                                                                <tr>
+                                                                    <td data-label="Date">({{ schedule.day_of_week }}) {{ schedule.date }}</td>
+                                                                    <td data-label="Time">{{ schedule.slot }}</td>
+                                                                    <td data-label="Room">{{ schedule.room }}</td>
+                                                                    <td data-label="Group Members">{{ schedule.group|replace_commas|safe }}</td>
+                                                                    <td data-label="Title">{{ schedule.title }}</td>
+                                                                    <td data-label="Panelists">
+                                                                        <div>
+                                                                            {{ schedule.faculty1.name }} {% if schedule.faculty1 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                        <div>
+                                                                            {{ schedule.faculty2.name }} {% if schedule.faculty2 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                        <div>
+                                                                            {{ schedule.faculty3.name }} {% if schedule.faculty3 == faculty_member %}<span class="role">(You)</span>{% endif %}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td data-label="Adviser">{{ schedule.adviser.name }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="pagination" id="pagination-final-defense">
+                                                    <span class="step-links">
+                                                        {% if page_obj_fd.has_previous %}
+                                                            <a href="?page_fd=1">&laquo;</a>
+                                                            <a href="?page_fd={{ page_obj_fd.previous_page_number }}">&lsaquo;</a>
+                                                        {% endif %}
+                                                        <span class="current">
+                                                            Page {{ page_obj_fd.number }} of {{ page_obj_fd.paginator.num_pages }}
+                                                        </span>
+                                                        {% if page_obj_fd.has_next %}
+                                                            <a href="?page_fd={{ page_obj_fd.next_page_number }}">&rsaquo;</a>
+                                                            <a href="?page_fd={{ page_obj_fd.paginator.num_pages }}">&raquo;</a>
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <p>No schedules available.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <!-- Footer -->
+                <footer class="footer">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="https://adminlte.io/themes/v3/plugins/jquery/jquery.min.js"></script>
+    <script src="https://adminlte.io/themes/v3/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="https://adminlte.io/themes/v3/dist/js/adminlte.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Sidebar toggle logic
+            document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+                event.preventDefault();
+                var sidebar = document.getElementById("sidebar");
+                var navbar = document.querySelector(".main-header.navbar");
+                sidebar.classList.toggle("hidden");
+                sidebar.classList.toggle("no-hover");
+                navbar.classList.toggle("navbar-expanded");
+                toggleMenuIcon();
+                toggleLogo();
+            });
+
+            function toggleMenuIcon() {
+                const menuIcon = document.getElementById('menu-icon');
+                menuIcon.classList.toggle('fa-bars');
+                menuIcon.classList.toggle('fa-times');
+            }
+
+            function toggleLogo() {
+                const evsuLogo = document.getElementById('evsu-logo');
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar.classList.contains('hidden')) {
+                    evsuLogo.style.display = 'block';
+                } else {
+                    evsuLogo.style.display = 'none';
+                }
+            }
+            
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('keyup', function () {
+                var input = document.getElementById('searchInput');
+                var filter = input.value.toLowerCase();
+                var tables = document.querySelectorAll('table');
+
+                tables.forEach(function (table) {
+                    var tr = table.getElementsByTagName('tr');
+                    for (var i = 1; i < tr.length; i++) {
+                        var tds = tr[i].getElementsByTagName('td');
+                        var showRow = false;
+                        for (var j = 0; j < tds.length; j++) {
+                            if (tds[j]) {
+                                var txtValue = tds[j].textContent || tds[j].innerText;
+                                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                                    showRow = true;
+                                    break;
+                                }
+                            }
+                        }
+                        tr[i].style.display = showRow ? '' : 'none';
+                    }
+                });
+            });
+        });
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content').forEach(function (section) {
+                section.style.display = 'none';
+            });
+
+            // Show the selected section
+            document.getElementById(sectionId).style.display = 'block';
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            $('#pendingAdvisersModal').modal('show'); // jQuery-based Bootstrap 4 method
+        });
+    </script>
+
+
+    <!-- Adviser Confirmation Modal -->
+    {% if adviser_records %}
+        <div class="modal fade" id="pendingAdvisersModal" tabindex="-1" role="dialog" aria-labelledby="pendingAdvisersModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pendingAdvisersModalLabel">Pending Advisory  Approval</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {% if adviser_records %}
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Approved Title</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for record in adviser_records %}
+                                            <tr>
+                                                <td>{{ record.approved_title }}</td>
+                                                <td>
+                                                    <div style="display: flex; gap: 5px;">
+                                                        <a href="{% url 'accept_adviser' adviser_id=record.id %}" class="btn btn-success">
+                                                            <i class="fas fa-check"></i> Accept
+                                                        </a>
+                                                        <a href="{% url 'decline_adviser' adviser_id=record.id %}" class="btn btn-warning">
+                                                            <i class="fas fa-times"></i> Decline
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</body>
+</html>

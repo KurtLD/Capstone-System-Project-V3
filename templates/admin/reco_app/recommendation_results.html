@@ -1,0 +1,375 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendation Results</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{% static 'admin/reco_app/recommendation_results.css' %}">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            font-family: 'Poppins', sans-serif;
+        }
+        .select2-container--default .select2-results__option {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="no-print">
+        {% include 'navbar.html' %}
+    </div>
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar -->
+        <div id="sidebar" class="flex flex-col no-print">
+            {% include 'sidebar.html' %}
+        </div>
+        <!-- Main Content Wrapper -->
+        <div class="flex flex-col flex-1">
+            <!-- Content -->
+            <main class="flex-1 overflow-auto p-2 main-content">
+                    <!-- Page Title -->
+                    {% if keywords %}
+                    <div class="content-container">
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="page-title">Recommendation Result</h3>
+                                <div class="info-section">
+                                    <div class="title-info">
+                                        <h2 class="section-title">Approved Title</h2>
+                                        <ul class="approved-title-bullets">
+                                            <li class="title-item">{{ title }}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="expertise-info">
+                                        <h2 class="section-title">Needed/Matched Expertise</h2>
+                                        <ul class="expertise-list">
+                                            {% for expertise in needed_expertise %}
+                                            <li class="expertise-item">{{ expertise.name }}</li>
+                                            {% empty %}
+                                            <li class="no-expertise">No matched expertise.</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if faculty_scores|length > 0 %}
+                    <div class="content-container">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr class="align-middle">
+                                                <th class="align-middle">Top</th>
+                                                <th class="align-middle">Recommended Adviser/s</th>
+                                                <th class="align-middle">Expertise</th>
+                                                <th class="align-middle">Years of Teaching</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for index, faculty, expertise_list, years_of_teaching, advisee_count, score in faculty_scores|slice:":3" %}
+                                            <tr class="align-middle">
+                                                <td class="align-middle">{{ index }}</td>
+                                                <td class="align-middle">
+                                                    <div class="faculty-item" data-faculty-id="{{ faculty.id }}">
+                                                        <strong>{{ faculty.name }}</strong>
+                                                        <!-- {% if is_capstone_teacher %}
+                                                            <p>(Capstone Teacher)</p>
+                                                        {% endif %} -->
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <div class="faculty-item" data-faculty-id="{{ faculty.id }}">
+                                                        {% if expertise_list|length > 1 %}
+                                                        <ul class="custom-bullet-list">
+                                                            {% for exp in expertise_list %}
+                                                            <li>{{ exp }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                        {% elif expertise_list|length == 1 %}
+                                                        {{ expertise_list.0 }}
+                                                        {% else %}
+                                                        No expertise listed
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <div class="faculty-item" data-faculty-id="{{ faculty.id }}">
+                                                        <p>{{ years_of_teaching }}</p>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <p>Current Advisee Count: {{ faculty.advisee_count }}</p>
+                                                    <hr>
+                                                    <p>Advisee Limit: {{ adviser_limit_per_faculty }}</p>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if faculty_scores|length > 3 %}
+                    <div class="content-container">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr class="align-middle">
+                                                <th class="align-middle">Top</th>
+                                                <th class="align-middle">Recommended Adviser/s</th>
+                                                <th class="align-middle">Expertise</th>
+                                                <th class="align-middle">Years of Teaching</th>
+                                                <th class="align-middle">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for index, faculty, expertise_list, years_of_teaching, advisee_count, score  in faculty_scores|slice:"3:10" %}
+                                            <tr class="align-middle">
+                                                <td class="align-middle">{{ index }}</td>
+                                                <td class="align-middle">
+                                                    <div class="faculty-item" data-faculty-id="{{ faculty.id }}">
+                                                        <strong>{{ faculty.name }}</strong>
+                                                        <!-- {% if is_capstone_teacher %}
+                                                            <p>(Capstone Teacher)</p>
+                                                        {% endif %} -->
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <div class="faculty-item" data-faculty-id="{{ faculty.id }}">
+                                                        {% if expertise_list|length > 1 %}
+                                                        <ul class="custom-bullet-list">
+                                                            {% for exp in expertise_list %}
+                                                            <li>{{ exp }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                        {% elif expertise_list|length == 1 %}
+                                                        {{ expertise_list.0 }}
+                                                        {% else %}
+                                                        No expertise listed
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <div class="faculty-item" data-faculty-id="{{ faculty.id }}">
+                                                        <p>{{ years_of_teaching }}</p>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <p>Current Advisee Count: {{ faculty.advisee_count }}</p>
+                                                    <hr>
+                                                    <p>Advisee Limit: {{ adviser_limit_per_faculty }}</p>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="controls no-print">
+                        <!-- Group Info Selection -->
+                        <div class="group-info">
+                            <label for="group_info">Select Group Member:</label>
+                            <!-- <select id="group_info" name="group_info" required>
+                                {% for group in group_names_list %}
+                                <option value="{{ group.id }}">{{ group.member1 }}<br>
+                                    {{ group.member2 }}<br>
+                                    {{ group.member3 }}
+                                </option>
+                                {% endfor %}
+                            </select> -->
+                            <!-- Input Field 1 -->
+                            {% if not member1 %}
+                                <label for="member1">Member 1:</label>
+                                <select id="group_info1" name="group_info1" class="member-select" style="width: 100%;" required></select>
+
+                                <!-- Input Field 2 -->
+                                <label for="member2">Member 2:</label>
+                                <select id="group_info2" name="group_info2" class="member-select" style="width: 100%;" required></select>
+
+                                <!-- Input Field 3 -->
+                                <label for="member3">Member 3:</label>
+                                <select id="group_info3" name="group_info3" class="member-select" style="width: 100%;"></select>
+                            {% else %}
+                                <select id="group_info1" name="group_info1" required>
+                                    <option value="{{ member1 }}">{{ member1 }}</option>
+                                </select>
+
+                                <select id="group_info2" name="group_info2" required>
+                                    <option value="{{ member2 }}">{{ member2 }}</option>
+                                </select>
+
+                                <select id="group_info3" name="group_info3" required>
+                                    <option value="{{ member3 }}">{{ member3 }}</option>
+                                </select>
+                            {% endif %}
+                        </div>
+                        
+
+
+                        <!-- Buttons Container -->
+                        <div class="button-container">
+                            <!-- Back Button -->
+                            <a href="javascript:history.back()" class="back-button no-print">Back</a>
+                            <!-- Print Button -->
+                            <button id="printButton" class=" btn btn-printButton no-print">Print Results and Save Adviser</button> 
+                        </div>
+                    </div>
+                </main>
+                  <!-- Footer -->
+        <div class="footer no-print">
+            {% include 'footer.html' %}
+        </div>
+            </div>
+        </div>
+    </div>
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Success</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Adviser information successfully updated!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    An error occurred: <span id="errorMessage"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // CSRF Token Setup for AJAX
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            }
+        });
+    
+        // Sidebar toggle functionality
+        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+            event.preventDefault();
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("hidden");
+        });
+    
+        // Enable dropdown toggle for Bootstrap
+        $(document).ready(function () {
+            // Ensure collapse functionality works
+            $('[data-bs-toggle="collapse"]').on('click', function () {
+                var target = $(this).attr('data-bs-target');
+                $(target).collapse('toggle');
+            });
+
+            // Initialize Select2 for all fields
+            const membersList = JSON.parse('{{ members_list|escapejs }}');
+            const select2Data = membersList.map(name => ({ id: name, text: name }));
+
+            $('.member-select').select2({
+                data: select2Data,
+                placeholder: 'Select or Search for a Member',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Print button click event
+            $('#printButton').click(function() {
+                // Open the print dialog
+                window.print();
+
+                // After the print dialog is closed, proceed to save the data
+                setTimeout(function() {
+                    if (confirm('Did you successfully print the document?')) {
+                        var groupInfo1 = $('#group_info1').val();
+                        var groupInfo2 = $('#group_info2').val();
+                        var groupInfo3 = $('#group_info3').val();
+                        var facultyId = $('.faculty-item').data('faculty-id');
+                        var approvedTitle = "{{ title }}";  // Get the approved title from the context
+
+                        // Sending the data via AJAX
+                        $.ajax({
+                            url: "{% url 'save_adviser' %}",
+                            method: "POST",
+                            data: {
+                                faculty_id: facultyId,
+                                group_info1: groupInfo1,
+                                group_info2: groupInfo2,
+                                group_info3: group_info3,
+                                approved_title: approvedTitle,
+                                csrfmiddlewaretoken: '{{ csrf_token }}'  // Ensure the CSRF token is passed
+                            },
+                            success: function(response) {
+                                alert('Adviser information successfully updated!');
+                                 // Redirect to the adviser list page after success
+                                window.location.href = "{% url 'adviser_list' %}";
+                            },
+                            error: function(xhr, status, error) {
+                                alert('An error occurred: ' + error);
+                            }
+                        });
+                    }
+                }, 0);  // Use a minimal delay (could be increased if needed)
+            });
+        });
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Include Select2 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+</body>
+</html>

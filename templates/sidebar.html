@@ -1,0 +1,252 @@
+<!-- Modal Styles -->
+<style>
+    /* Disable an a tag */
+    .disabled-link {
+        pointer-events: none;  /* Prevent clicking */
+        color: gray !important;/* Make it look visually disabled */
+        text-decoration: none;
+    }
+
+    .group:hover #evaluationFormDropdown {
+        display: block;
+    }
+
+    /* Modal styles */
+    #confirmModal {
+        z-index: 1000; /* Ensure the modal is on top */
+    }
+    .btn-confirm {
+        background-color: #7C0404;
+        color: var(--text-light);
+    }
+    .modal-content {
+        max-width: 600px; /* Adjust the max-width as needed */
+        width: 100%;
+        font-family: 'Poppins', sans-serif;
+    }
+</style>
+<script>
+    function confirmAction() {
+        return confirm("Are you sure to add new school year?");
+    }
+</script>
+
+<!-- Modal HTML -->
+<div id="confirmModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="modal-content bg-white rounded-lg shadow-lg p-4">
+        <h2 class="text-xl font-semibold mb-4">Are you sure?</h2>
+        <p class="mb-4">Are you sure you want to add a new school year?</p>
+        <div class="flex justify-end">
+            <button id="cancelButton" class=" btn-cancel bg-gray-500 text-white px-4 py-2 rounded mr-2">Cancel</button>
+            <button id="confirmButton" class="btn-confirm px-4 py-2 rounded">Yes, add it!</button>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar with Add School Year button -->
+<aside id="sidebar" class="w-30 text-white flex flex-col h-full overflow-y-auto">
+    <section class="section-container">
+        <!-- <form action="{% url 'school_year_selection' %}" method="POST" class="form-container">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <label for="school_year" class="form-label">School Year:</label>
+            <select name="school_year" id="school_year" class="form-select" onchange="this.form.submit()">
+                {% for year in school_years %}
+                    <option value="{{ year.id }}" {% if year.is_active %}selected{% endif %}>
+                        {{ year.start_year }}-{{ year.end_year }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form> -->
+
+        <form action="{% url 'select_school_year' %}" method="POST" class="form-container">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <label for="school_year" class="form-label">School Year:</label>
+            <select name="school_year" id="school_year" class="form-select" onchange="this.form.submit()" style="max-height: 150px; overflow-y: auto;">
+                {% for year in school_years %}
+                    <option value="{{ year.id }}" {% if year.id == request.session.selected_school_year_id %}selected{% endif %}>
+                        {{ year.start_year }}-{{ year.end_year }}
+                    </option>
+                {% endfor %}
+            </select>            
+        </form>
+
+        {% if selected_school_year == last_school_year %}
+        <form id="addSchoolYearForm" action="{% url 'school_year_selection' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="add_new_school_year" value="true">
+            <button type="button" class="add-button" onclick="confirmAction()">
+                <span class="fa-stack fa-md">
+                    <i class="fas fa-circle fa-stack-2x" style="color: #fdfdfd;"></i>
+                    <i class="fas fa-plus-circle fa-stack-1x fa-inverse"></i>
+                </span> Start New School Year
+            </button>
+        </form>
+        {% endif %}
+    </section>
+    <nav class="mt-2">
+        <ul class="space-y-4">
+            <li>
+                <a href="{% url 'admin_dashboard' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                    <span class="fa-stack fa-md">
+                        <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                        <i class="fas fa-home fa-stack-1x" style="color: #900303"></i>
+                    </span>
+                    <span class="ml-2 custom-span">Dashboard</span>
+                </a>
+            </li>
+
+            {% if selected_school_year == last_school_year %}
+                <li>
+                    <a href="{% url 'recommend_adviser' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                            <i class="fas fa-chalkboard-teacher fa-stack-1x" style="color: #900303"></i>
+                        </span>
+                        <span class="ml-2 custom-span">Recommend Adviser</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'room_list' %}"  class="flex items-center px-2 py-2 nav-link text-md">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                            <i class="fas fa-door-open fa-stack-1x" style="color: #900303;"></i>
+                        </span>
+                        <span class="ml-2 custom-span">Add Room</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'add_group' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                            <i class="fas fa-users fa-stack-1x" style="color: #900303"></i>
+                        </span>
+                        <span class="ml-2 custom-span">Add Group Title Hearing</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'add_groupPOD' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                            <i class="fas fa-users fa-stack-1x" style="color: #900303"></i>
+                        </span>
+                        <span class="ml-2 custom-span">Add Group Pre-Oral Defense</span>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url 'recommend_adviser' %}" class="flex items-center px-2 py-2 nav-link text-md disabled-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x" style="color: #900303;"></i>
+                            <i class="fas fa-chalkboard-teacher fa-stack-1x text-white"></i>
+                        </span>
+                        <span class="ml-2 custom-span">Recommend Adviser</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'add_group' %}" class="flex items-center px-2 py-2 nav-link text-md disabled-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x" style="color: #900303;"></i>
+                            <i class="fas fa-users fa-stack-1x  text-white"></i>
+                        </span>
+                        <span class="ml-2 custom-span">Add Group Title Hearing</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'add_groupPOD' %}" class="flex items-center px-2 py-2 nav-link text-md disabled-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x" style="color: #900303;"></i>
+                            <i class="fas fa-users fa-stack-1x text-white"></i>
+                        </span>
+                        <span class="ml-2 custom-span">Add Group Pre-Oral Defense</span>
+                    </a>
+                </li>
+            {% endif %}
+            <li class="relative group">
+                <a href="#" class="flex items-center px-2 py-2 nav-link text-md">
+                    <span class="fa-stack fa-md">
+                        <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                        <i class="fas fa-file-alt fa-stack-1x" style="color: #900303"></i>
+                    </span>
+                    <span class="ml-2 custom-span">Create Evaluation Form</span>
+                </a>
+                <ul id="evaluationFormDropdown" class="hidden group-hover:block space-y-1 pl-1 absolute bg-gray-800 rounded-lg shadow-lg right-0">
+                    <li>
+                        <a href="{% url 'view_section' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                            <span class="fa-stack fa-sm">
+                                <i class="fas fa-circle fa-stack-2x text-red-500"></i>
+                                <i class="fas fa-file-alt fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <span class="ml-2 custom-span">Pre-Oral Defense</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'mock_view_section' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                            <span class="fa-stack fa-sm">
+                                <i class="fas fa-circle fa-stack-2x text-green-500"></i>
+                                <i class="fas fa-file-alt fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <span class="ml-2 custom-span">Mock Defense</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'final_view_section' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                            <span class="fa-stack fa-sm">
+                                <i class="fas fa-circle fa-stack-2x text-blue-500"></i>
+                                <i class="fas fa-file-alt fa-stack-1x fa-inverse"></i>
+                            </span>
+                            <span class="ml-2 custom-span">Final Defense</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="{% url 'audit_logs' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                    <span class="fa-stack fa-md">
+                        <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                        <i class="fas fa-clipboard fa-stack-1x" style="color: #900303;"></i>
+                    </span>
+                    <span class="ml-2 custom-span">Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'faculty_logs' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                    <span class="fa-stack fa-md">
+                        <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                        <i class="fas fa-history fa-stack-1x "style="color: #900303"></i>
+                    </span>
+                    <span class="ml-2 custom-span">All Faculty Logs</span>
+                </a>
+            </li>
+            {% comment %} <li>
+                <a href="{% url 'account_settings' %}" class="flex items-center px-2 py-2 nav-link text-md">
+                    <span class="fa-stack fa-md">
+                        <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                        <i class="fas fa-cog fa-stack-1x" style="color: #900303"></i>
+                    </span>
+                    <span class="ml-2 custom-span">Account Settings</span>
+                </a>
+            </li> {% endcomment %}
+        </ul>
+    </nav>
+</aside>
+
+<!-- JavaScript to handle modal interaction -->
+<script>
+    // Function to display the modal
+    function confirmAction() {
+        document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    // Cancel button hides the modal
+    document.getElementById('cancelButton').addEventListener('click', function() {
+        document.getElementById('confirmModal').classList.add('hidden');
+    });
+
+    // Confirm button submits the form
+    document.getElementById('confirmButton').addEventListener('click', function() {
+        document.getElementById('confirmModal').classList.add('hidden');
+        document.getElementById('addSchoolYearForm').submit(); // Submit the form
+    });
+</script>

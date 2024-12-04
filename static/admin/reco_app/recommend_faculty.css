@@ -1,0 +1,349 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+:root {
+  --primary-bg: #EFEFEF;
+  --secondary-bg: #FFFFFF;
+  --highlighted-color: #7C0404;
+  --text-light: #FFFFFF;
+  --border-color: #7D1E22;
+  --header-color: #333;
+  --sidebar-hover: #606060;
+}
+
+body {
+  background-color: var(--primary-bg);
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+/* Navigation link styles */
+.nav-link {
+  transition: opacity 0.3s, background-color 0.3s;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.nav-link:hover {
+  background-color: var(--sidebar-hover);
+  transform: scale(1.0);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  color: var(--text-light);
+  border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+  opacity: 0.9;
+}
+
+nav:hover .nav-link {
+  opacity: 1;
+}
+
+/* Footer styles */
+.footer {
+  background-color: var(--header-color);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 8px;
+  /* Set font size to 12px */
+  color: var(--text-light);
+  text-align: center;
+}
+
+label {
+  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  /* Set font size to 12px */
+  float: left;
+}
+
+/* Sidebar styles */
+#sidebar {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  background-color: var(--header-color);
+}
+
+#sidebar.hidden {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.section-container {
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  background-color: #2d3748;
+  /* bg-gray-800 */
+  border-radius: 0.5rem;
+  /* rounded-lg */
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.section-container form {
+  margin-bottom: 0.5rem;
+  /* mb-2 */
+}
+
+.section-container label {
+  display: block;
+  margin-bottom: 0.25rem;
+  /* mb-1 */
+  color: #ffffff;
+  /* text-white */
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.section-container select {
+  width: 100%;
+  /* w-full */
+  padding: 10px !important;
+  /* p-2 */
+  border: 1px solid #ccc;
+  /* border */
+  border-radius: 0.25rem;
+  /* rounded */
+  color: #000000;
+  /* text-black */
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.section-container button {
+  font-size: 12px;
+  /* Set font size to 12px */
+  font-weight: 600;
+  /* font-semibold */
+  color: #63b3ed;
+  /* text-blue-400 */
+  display: flex;
+  /* flex */
+  align-items: center;
+  /* items-center */
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.section-container button:hover {
+  color: #4299e1;
+  /* hover:text-blue-500 */
+}
+
+.section-container .fa-plus-circle {
+  margin-right: 0.5rem;
+  /* mr-2 */
+  font-size: 14px;
+  /* text-lg */
+  color: #4299e1;
+  /* text-blue-500 */
+}
+
+.container {
+  background-color: var(--secondary-bg);
+  margin-top: 10px !important;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 5% auto;
+  width: 80%;
+  max-width: 600px;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.fieldset {
+  border: 2px solid var(--header-color);
+  border-radius: 8px;
+  padding: 30px;
+  position: relative;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.fieldset-header {
+  color: var(--header-color);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 10px;
+  position: absolute;
+  top: -1.0em;
+  left: 10px;
+  display: inline-block;
+  background: var(--secondary-bg);
+  z-index: 1;
+  font-family: 'Poppins', sans-serif;
+  /* Set font size to 12px */
+}
+
+.textarea-container {
+  margin-bottom: 1rem;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.textarea {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 0.4rem;
+  resize: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.button {
+  padding: 6px 10px;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.back-button {
+  background-color: var(--header-color);
+  color: var(--text-light);
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.back-button:hover {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.recommend-button {
+  background-color: #c5c0a1;
+  color: var(--text-dark);
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.recommend-button:hover {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+    padding: 10px;
+  }
+
+  .fieldset {
+    padding: 15px;
+  }
+
+  .fieldset-header {
+    font-size: 12px;
+  }
+
+  .button-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 5px;
+  }
+
+  .button {
+    width: 100%;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: 95%;
+    padding: 5px;
+  }
+
+  .fieldset {
+    padding: 10px;
+  }
+
+  .fieldset-header {
+    font-size: 12px;
+  }
+
+  .button-container {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .button {
+    width: 100%;
+    padding: 6px;
+  }
+}
+
+.upload-wrapper {
+  margin: auto;
+  max-width: 640px;
+  padding-top: 60px;
+  text-align: center;
+}
+
+.upload-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.upload-title {
+  color: #130f40;
+  font-family: 'Varela Round', sans-serif;
+  letter-spacing: -.5px;
+  font-weight: 700;
+  padding-bottom: 10px;
+}
+
+.upload-box {
+  background-color: rgb(239, 239, 239);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.upload-border {
+  border: 5px dashed rgba(198, 198, 198, 0.65);
+  padding: 20px;
+}
+
+.upload-icons {
+  color: #95afc0;
+  opacity: 0.55;
+}
+
+.upload-text {
+  color: #130f40;
+  font-weight: 600;
+  font-size: 1.1em;
+  letter-spacing: -1px;
+  margin-top: 30px;
+  margin-bottom: 0;
+  opacity: 0.65;
+}
+
+.upload-link {
+  text-decoration: none;
+  color: rgb(22,42,255);
+  border-bottom: 3px dotted rgba(22, 22, 255, 0.85);
+}

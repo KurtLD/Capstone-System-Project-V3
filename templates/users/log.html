@@ -1,0 +1,156 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'log.css' %}" />
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'faculty/faculty_sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <main class="main-content p-2">
+                    <div class="content-wrapper">
+                        <div class="container-fluid mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-12 full-height">
+                                    <div class="card">
+                                        <div>
+                                            <h3 class="card-title">Audit Logs</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="pagination">
+                                                <span class="step-links">
+                                                    {% if audit_logs.has_previous %}
+                                                        <a href="?page=1&per_page={{ request.GET.per_page }}">&laquo;</a>
+                                                        <a href="?page={{ audit_logs.previous_page_number }}&per_page={{ request.GET.per_page }}">&lsaquo;</a>
+                                                    {% endif %}
+                                                    <span class="current">
+                                                        Page {{ audit_logs.number }} of {{ audit_logs.paginator.num_pages }}
+                                                    </span>
+                                                    {% if audit_logs.has_next %}
+                                                        <a href="?page={{ audit_logs.next_page_number }}&per_page={{ request.GET.per_page }}">&rsaquo;</a>
+                                                        <a href="?page={{ audit_logs.paginator.num_pages }}&per_page={{ request.GET.per_page }}">&raquo;</a>
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                            <div id="pst-time" class="float-right"></div>
+                                            {% if audit_logs %}
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Email</th>
+                                                                <th>Action</th>
+                                                                <th>Time</th>
+                                                                <th>IP Address</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for log in audit_logs %}
+                                                                <tr>
+                                                                    <td data-label="Email">{{ log.user }}</td>
+                                                                    <td data-label="Action">{{ log.action|safe }}</td>
+                                                                    <td data-label="Time">{{ log.time|date:"M d, Y, h:i A" }}</td>
+                                                                    <td data-label="Ip Address">{{ log.ip_address }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            {% else %}
+                                                <p>No audit logs found.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="footer">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
+        </div>
+    </div>
+
+<!-- Bootstrap Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://adminlte.io/themes/v3/plugins/jquery/jquery.min.js"></script>
+<script src="https://adminlte.io/themes/v3/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://adminlte.io/themes/v3/dist/js/adminlte.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+            event.preventDefault();
+            var sidebar = document.getElementById("sidebar");
+            var navbar = document.querySelector(".main-header.navbar");
+            sidebar.classList.toggle("hidden");
+            sidebar.classList.toggle("no-hover");
+            navbar.classList.toggle("navbar-expanded");
+            toggleMenuIcon();
+        });
+
+        function toggleMenuIcon() {
+            const menuIcon = document.getElementById('menu-icon');
+            menuIcon.classList.toggle('fa-bars');
+            menuIcon.classList.toggle('fa-times');
+        }
+
+        // Show the audit logs section by default
+        showSection('audit-logs-section');
+    });
+
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.content > div').forEach(function (section) {
+            section.style.display = 'none';
+        });
+
+        // Show the selected section
+        document.getElementById(sectionId).style.display = 'block';
+    }
+
+    // Function to get current time in Philippine Standard Time (PST)
+    function updatePSTTime() {
+        const pstTimeElement = document.getElementById('pst-time');
+        const now = new Date();
+        const options = { timeZone: 'Asia/Manila', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric', year: 'numeric', month: 'short', day: 'numeric', weekday: 'long' };
+        const pstTime = now.toLocaleString('en-US', options);
+        
+        // Check if today is a weekend
+        const dayOfWeek = now.getDay();
+        const isWeekend = (dayOfWeek === 6) || (dayOfWeek === 0); // 6 = Saturday, 0 = Sunday
+        const weekendText = isWeekend ? " (Weekend)" : "";
+
+        pstTimeElement.textContent = `Philippine Standard Time: ${pstTime}${weekendText}`;
+    }
+
+    // Update PST time every second
+    setInterval(updatePSTTime, 1000);
+    updatePSTTime(); // Initial call to set the time immediately
+</script>
+</body>
+</html>

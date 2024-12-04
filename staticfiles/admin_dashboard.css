@@ -1,0 +1,211 @@
+
+
+Define the new color palette
+:root {
+  --primary-bg: #EFEFEF;
+  --secondary-bg: #f3f2eb;
+  --header-color: #333;
+  --highlighted-color: #900303;
+  --text-light: #FFFFFF;
+  --border-color: #7D1E22;
+}
+
+/* General styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--primary-bg);
+}
+
+.highlighted-text {
+  color: var(--highlighted-color);
+}
+
+.bg-primary-custom {
+  background-color: var(--primary-bg);
+}
+
+/* Navbar styles */
+.navbar-container {
+  height: 15%;
+  width: 100%;
+}
+
+.navbar {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
+  height: 100%;
+  padding: 10px 20px;
+}
+
+.navbar,
+.navbar * {
+  color: var(--text-light) !important;
+}
+
+.navbar .nav-link:hover {
+  color: var(--border-color);
+}
+
+/* Sidebar styles */
+.sidebar-container {
+  height: 70%;
+  width: 250px;
+}
+
+.main-sidebar {
+  background-color: var(--header-color);
+  overflow: hidden;
+  /* Prevent scrolling */
+}
+
+.main-sidebar .nav-link {
+  color: var(--text-light);
+}
+
+.main-sidebar .nav-link:hover {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
+}
+
+/* Content styles */
+.content-container {
+  height: 70%;
+  width: 100%;
+  margin-right: 20%;
+}
+
+/* Card styles */
+.card-box {
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 40px;
+  background-color: var(--text-light);
+  color: var(--header-color);
+  box-shadow:
+    0 10px 15px rgba(0, 0, 0, 0.1),
+    /* Drop shadow */
+    0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Additional subtle shadow */
+  transition: transform 0.3s, box-shadow 0.3s;
+  font-weight: 600;
+}
+
+.card-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 0 10px rgba(51, 51, 51, 0.8), 0 0 20px rgba(51, 51, 51, 0.6);
+}
+
+.widget-bg-color-icon {
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  align-items: right;
+  flex-direction: column;
+  justify-content: right;
+  margin-bottom: auto;
+  text-align: right;
+  margin-right: 5px;
+}
+
+.bg-icon {
+  font-size: 3.5rem;
+  margin-bottom: 40px;
+  margin-right: 100px;
+}
+
+.text-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 20px;
+}
+
+.text-right h4 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  text-align: right;
+  margin-right: 20px;
+}
+
+.text-right p {
+  font-size: 1rem;
+  text-align: right;
+  margin-right: 20px;
+}
+
+.text-info {
+  color: var(--border-color) !important;
+}
+
+/* Footer styles */
+.footer-container {
+  height: 15%;
+  width: 100%;
+}
+
+.footer {
+  background: linear-gradient(40deg, var(--header-color), var(--highlighted-color), var(--header-color));
+  color: var(--text-light);
+  text-align: center;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  z-index: 10; /* Ensure footer is above other content */
+  padding: 5px 0; /* Add padding to create space */
+}
+
+.footer p {
+  margin-left: 15%;
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
+.two-color-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.two-color-icon::before {
+  content: attr(data-icon);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--header-color);
+  z-index: 1;
+}
+
+.two-color-icon::after {
+  content: attr(data-icon);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--highlighted-color);
+  clip-path: inset(0 50% 0 0);
+  z-index: 2;
+}
+
+.mirrored-icon {
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 50%; /* Adjust the width as needed */
+  z-index: -1;
+  /* Ensure it is behind other content */
+}
+
+.mirrored-icon .fas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scaleX(-1);
+  /* Mirror the icon */
+  font-size: 10em;
+  /* Adjust the size as needed */
+  color: #EFEFEF;
+  /* Adjust the color as needed */
+  z-index: -2; /* Ensure icon is behind other content */
+}

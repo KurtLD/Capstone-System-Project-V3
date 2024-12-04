@@ -1,0 +1,164 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'faculty/faculty_sidebar.css' %}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
+<!-- Sidebar with Add School Year button -->
+<div class="sidebar">
+    <aside id="sidebar" class="w-30 text-white flex flex-col h-full overflow-y-auto">
+        <section class="section-container">
+            <!-- <form action="{% url 'school_year_selection' %}" method="POST" class="form-container">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <label for="school_year" class="form-label">School Year:</label>
+                <select name="school_year" id="school_year" class="form-select" onchange="this.form.submit()" style="max-height: 150px; overflow-y: auto;">
+                    {% for year in school_years %}
+                        <option value="{{ year.id }}" {% if year.is_active %}selected{% endif %}>
+                            {{ year.start_year }}-{{ year.end_year }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form> -->
+            <form action="{% url 'select_school_year' %}" method="POST" class="form-container">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <label for="school_year" class="form-label">School Year:</label>
+                <select name="school_year" id="school_year" class="form-select" onchange="this.form.submit()" style="max-height: 150px; overflow-y: auto;">
+                    {% for year in school_years %}
+                        <option value="{{ year.id }}" {% if year.id == selected_school_year.id %}selected{% endif %}>
+                            {{ year.start_year }}-{{ year.end_year }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </section>
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a href="{% url 'faculty_dashboard' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-blue-500"></i>
+                            <i class="fas fa-home fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-teal-500">Dashboard</p>
+                    </a>
+                </li>
+                {% comment %} <li class="nav-item">
+                    <a href="{% url 'view_all_schedules' %}"  class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-pink-500"></i>
+                            <i class="fas fa-calendar fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-cyan-500">All Schedules</p>
+                    </a>
+                </li> {% endcomment %}
+                <li class="nav-item">
+                    <a href="{% url 'title_hearing' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-pink-500"></i>
+                            <i class="fas fa-calendar-alt fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-red-500">Title Hearing Schedule</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'pre_oral_defense' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-yellow-500"></i>
+                            <i class="fas fa-calendar-check fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-blue-500">Pre-Oral Schedule</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'mock_defense' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-indigo-500"></i>
+                            <i class="fas fa-shield-alt fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-gray-500">Mock Defense Schedule</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'final_defense' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-gray-500"></i>
+                            <i class="fas fa-user-shield fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-orange-500">Final Defense Schedule</p>
+                    </a>
+                </li>
+
+                {% if user.is_authenticated and adviser_records or adviser_records2 %}
+                    <li class="nav-item">
+                        <a href="{% url 'adviser_records' %}" class="nav-link">
+                            <span class="fa-stack fa-md">
+                                <i class="fas fa-circle fa-stack-2x text-red-500"></i>
+                                <i class="fas fa-user-graduate fa-stack-1x fa-inverse text-white"></i>
+                            </span>
+                            <p class="text-yellow-500">Advisee Record</p>
+                        </a>
+                    </li>
+                {% endif %}
+                <!-- <li class="nav-item">
+                    <a href="{% url 'class_record' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-green-500"></i>
+                            <i class="fas fa-chart-line fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-green-500">Class Records</p>
+                    </a>
+                </li> -->
+                {% if user.is_authenticated and user.faculty_profile.is_capstone_teacher %}
+                <li class="nav-item">
+                    <a href="{% url 'class_record' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-green-500"></i>
+                            <i class="fas fa-chart-line fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-green-500">Class Records</p>
+                    </a>
+                </li>
+                {% endif %}
+
+                <li class="nav-item">
+                    <a href="{% url 'audit_logs' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-purple-500"></i>
+                            <i class="fas fa-clipboard-list fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-purple-500">Logs</p>
+                    </a>
+                </li>
+                
+                {% comment %} <li class="nav-item">
+                    <a href="{% url 'account_settings' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x text-pink-500"></i>
+                            <i class="fas fa-cogs fa-stack-1x fa-inverse text-white"></i>
+                        </span>
+                        <p class="text-pink-500">Account Settings</p>
+                    </a>
+                </li> {% endcomment %}
+            </ul>
+        </nav>
+    </aside>
+</div>
+
+<!-- JavaScript to handle modal interaction -->
+<script>
+    // Function to display the modal
+    function confirmAction() {
+        document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    // Cancel button hides the modal
+    document.getElementById('cancelButton').addEventListener('click', function() {
+        document.getElementById('confirmModal').classList.add('hidden');
+    });
+
+    // Confirm button submits the form
+    document.getElementById('confirmButton').addEventListener('click', function() {
+        document.getElementById('confirmModal').classList.add('hidden');
+        document.getElementById('addSchoolYearForm').submit(); // Submit the form
+    });
+</script>

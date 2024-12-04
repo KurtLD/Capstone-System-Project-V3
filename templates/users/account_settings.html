@@ -1,0 +1,353 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'account_settings.css' %}">
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  </head>
+  <body class="bg-primary-bg font-poppins">
+    <div class="flex h-screen flex-col">
+      <!-- Navbar -->
+      <div class="no-print">
+          {% include 'navbar.html' %}
+      </div>
+      <div class="flex flex-1 overflow-hidden">
+          <!-- Sidebar -->
+          {% include 'sidebar.html' %}
+          <!-- Main Content Wrapper -->
+          <div class="flex flex-col flex-1">
+              <!-- Content -->
+        <main class="flex-1 overflow-auto p-4 md:p-8">
+          <div class="container mx-auto mt-4">
+            <div class="card">
+              <div class="card-body">
+                <h2 class="card-title text-xl font-semibold mb-4">General Information</h2>
+                <!-- Isometric Icon -->
+                <div class="isometric-icon"></div>
+                <form method="post" action="{% url 'account_settings' %}" id="account-settings-form">
+                  {% csrf_token %}
+                  {{ form.non_field_errors }}
+                  <div class="form-group mb-4">
+                    <label for="{{ form.username.id_for_label }}" class="block mb-2"><i class="fas fa-user"></i> {{ form.username.label }}</label>
+                    {% render_field form.username class="bg-highlight italic-placeholder" placeholder="Enter username" %}
+                  </div>
+                  <div class="form-group mb-4">
+                    <label for="{{ form.email.id_for_label }}" class="block mb-2"><i class="fas fa-envelope"></i> {{ form.email.label }}</label>
+                    {% render_field form.email class="bg-highlight italic-placeholder" placeholder="Enter email" %}
+                  </div>
+                  <fieldset class="form-group mb-4">
+                    <legend><i class="fas fa-user"></i> Full Name</legend>
+                
+                    <div class="form-group mb-4">
+                        <label for="{{ form.last_name.id_for_label }}" class="block mb-2">{{ form.last_name.label }}</label>
+                        {% render_field form.last_name class="bg-highlight italic-placeholder" placeholder="Enter last name" %}
+                    </div>
+                
+                    <div class="form-group mb-4">
+                        <label for="{{ form.first_name.id_for_label }}" class="block mb-2">{{ form.first_name.label }}</label>
+                        {% render_field form.first_name class="bg-highlight italic-placeholder" placeholder="Enter first name" %}
+                    </div>
+                
+                    <div class="form-group mb-4">
+                        <label for="{{ form.middle_name.id_for_label }}" class="block mb-2">{{ form.middle_name.label }}</label>
+                        {% render_field form.middle_name class="bg-highlight italic-placeholder" placeholder="Enter middle name" %}
+                    </div>
+                </fieldset>
+                
+                  <div class="form-group mb-4">
+                    <label for="{{ form.date_of_birth.id_for_label }}" class="block mb-2"><i class="fas fa-calendar-alt"></i> {{ form.date_of_birth.label }}</label>
+                    {% render_field form.date_of_birth class="bg-highlight italic-placeholder" placeholder="Enter date of birth" %}
+                  </div>
+                  <div class="form-group mb-4">
+                    <label for="{{ form.age.id_for_label }}" class="block mb-2"><i class="fas fa-birthday-cake"></i> {{ form.age.label }}</label>
+                    {% render_field form.age class="bg-highlight italic-placeholder" placeholder="Enter age" %}
+                  </div>
+                  <div class="form-group mb-4">
+                    <label for="{{ form.address.id_for_label }}" class="block mb-2"><i class="fas fa-map-marker-alt"></i> {{ form.address.label }}</label>
+                    {% render_field form.address class="bg-highlight italic-placeholder" placeholder="Enter address" %}
+                  </div>
+                  <div class="form-group mb-4">
+                    {{ form.years_of_teaching.label_tag }} {{ form.years_of_teaching }}
+                  </div>
+                  <div class="form-group form-check mb-4">
+                    {{ form.has_master_degree }}
+                    {{ form.has_master_degree.label_tag }}
+                  </div>
+                  <div class="form-group mb-4">
+                    {% if not user.is_superuser %}
+                    <label for="{{ form.highest_degrees.id_for_label }}" class="custom-label">Highest Degree:</label>
+                    {% endif %}
+                    <div class="degree-choices">
+                      {% for choice in form.highest_degrees %}
+                      <div class="form-check">
+                        {{ choice.tag }}
+                        <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="form-group mb-4">
+                    {{ form.new_expertise.label_tag }} {{ form.new_expertise }}
+                  </div>
+                  <div class="form-group mb-4">
+                    {{ form.expertise.label_tag }}
+                    <div class="form-group expertise-grid">
+                      {% for expertise in form.expertise %}
+                      <div class="form-check">
+                        {{ expertise.tag }}
+                        <label class="form-check-label" for="{{ expertise.id_for_label }}">{{ expertise.choice_label }}</label>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-start mt-3 btn-button">
+                    <div class="btn-group">
+                      {% if user.is_superuser %}
+                      <a class="btn btn-secondary" href="{% url 'admin_dashboard' %}">
+                        Back
+                      </a>
+                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newAccountModal">
+                        <i class="fas fa-user-plus"></i> Add New Account
+                      </button>
+                      {% else %}
+                      <a class="btn btn-secondary" href="{% url 'faculty_dashboard' %}">
+                        Back
+                      </a>
+                      {% endif %}
+                      <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+        <footer class="footer">
+          {% include 'footer.html' %}
+        </footer>
+      </div>
+    </div>
+    </div>
+
+    {% if user.is_superuser %}
+    <!-- New Account Modal -->
+    <div class="modal fade" id="newAccountModal" tabindex="-1" role="dialog" aria-labelledby="newAccountModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newAccountModalLabel"><i class="fas fa-user-plus"></i> Add New Account</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="new-account-form">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="new_username">Username</label>
+                <input type="text" class="form-control" id="new_username" name="username" placeholder="Enter username" required>
+              </div>
+              <div class="form-group">
+                <label for="new_email">Email</label>
+                <input type="email" class="form-control" id="new_email" name="email" placeholder="Enter email" required>
+              </div>
+              <div class="form-group">
+                <label for="new_password">Password</label>
+                <input type="password" class="form-control" id="new_password" name="password" placeholder="Enter password" required>
+              </div>
+              <div class="form-group">
+                <label for="new_first_name">First Name</label>
+                <input type="text" class="form-control" id="new_first_name" name="first_name" placeholder="Enter first name" required>
+              </div>
+              <div class="form-group">
+                <label for="new_middle_name">Middle Name</label>
+                <input type="text" class="form-control" id="new_middle_name" name="middle_name" placeholder="Enter middle name">
+              </div>
+              <div class="form-group">
+                <label for="new_last_name">Last Name</label>
+                <input type="text" class="form-control" id="new_last_name" name="last_name" placeholder="Enter last name" required>
+              </div>
+              <div class="form-group">
+                <label for="new_date_of_birth">Date of Birth</label>
+                <input type="date" class="form-control" id="new_date_of_birth" name="date_of_birth" required>
+              </div>
+              {% comment %} <div class="form-group">
+                <label for="new_age">Age</label>
+                <input type="number" class="form-control" id="new_age" name="age" placeholder="Enter age" readonly>
+              </div> {% endcomment %}
+              <div class="form-group">
+                <label for="new_address">Address</label>
+                <input type="text" class="form-control" id="new_address" name="address" placeholder="Enter address" required>
+              </div>
+              <button type="submit" class="btn btn-modal">Create Account</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="successModalLabel"><i class="fas fa-check-circle success-icon"></i> Success!</h5>
+              </div>
+              <div class="modal-body">
+                  Your action was successfully updated.
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-modal" id="modalConfirmButton">OK</button>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="errorModalLabel"><i class="fas fa-exclamation-circle"></i> Error</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="errorModalBody">
+            There was an error updating your account settings.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      // Function to calculate age based on date of birth
+      function calculateAge(dob) {
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        sidebarToggle.addEventListener('click', function () {
+          sidebar.classList.toggle('hidden');
+        });
+
+        const dobField = document.querySelector('input[name="date_of_birth"]');
+        const ageField = document.querySelector('input[name="age"]');
+
+        dobField.addEventListener('change', function () {
+          const age = calculateAge(dobField.value);
+          ageField.value = age;
+        });
+
+        document.getElementById("account-settings-form").onsubmit = function (event) {
+          event.preventDefault();
+          fetch(this.action, {
+            method: "POST",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-CSRFToken": document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+            },
+            body: new URLSearchParams(new FormData(this)).toString(),
+          })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              const formData = new FormData(document.getElementById("account-settings-form"));
+              for (const [key, value] of formData.entries()) {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field) {
+                  field.value = value;
+                }
+              }
+              if (data.new_age) {
+                document.querySelector('input[name="age"]').value = data.new_age;
+              }
+              $('#successModal').modal('show');
+            } else {
+              let errorMsg = "There was an error updating your account settings.";
+              if (data.errors) {
+                errorMsg = JSON.parse(data.errors);
+              }
+              document.getElementById('errorModalBody').innerText = errorMsg;
+              $('#errorModal').modal('show');
+            }
+          })
+          .catch((error) => {
+            document.getElementById('errorModalBody').innerText = "An unexpected error occurred.";
+            $('#errorModal').modal('show');
+          });
+        };
+
+        document.getElementById('modalConfirmButton').addEventListener('click', function() {
+          $('#successModal').modal('hide');
+        });
+
+        {% if user.is_superuser %}
+        document.getElementById("new-account-form").onsubmit = function (event) {
+          event.preventDefault();
+          fetch("{% url 'create_new_account' %}", {
+            method: "POST",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-CSRFToken": document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+            },
+            body: new URLSearchParams(new FormData(this)).toString(),
+          })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              $('#newAccountModal').modal('hide');
+              $('#successModal').modal('show');
+            } else {
+              let errorMsg = "There was an error creating the new account.";
+              if (data.errors) {
+                errorMsg = JSON.parse(data.errors);
+              }
+              document.getElementById('errorModalBody').innerText = errorMsg;
+              $('#errorModal').modal('show');
+            }
+          })
+          .catch((error) => {
+            document.getElementById('errorModalBody').innerText = "An unexpected error occurred.";
+            $('#errorModal').modal('show');
+          });
+        };
+        {% endif %}
+      });
+    </script>
+  </body>
+</html>

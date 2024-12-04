@@ -1,0 +1,870 @@
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+    --header-color: #333;
+    --sidebar-hover: #606060;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* General styles */
+body {
+    background-color: var(--primary-bg);
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+.modal-btn {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+}
+
+.modal-content {
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-dialog {
+    max-width: 600px;
+}
+
+.text-dangers {
+    color: red;
+    display: none;
+    margin-left: 20px;
+}
+
+/* Navigation link styles */
+.nav-link {
+    transition: opacity 0.3s, background-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Changed to 12px */
+}
+
+.nav-link:hover {
+    background-color: var(--sidebar-hover);
+    transform: scale(1.0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    color: var(--text-light);
+    border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+    opacity: 0.9;
+}
+
+nav:hover .nav-link {
+    opacity: 1;
+}
+
+/* Footer styles */
+.footer {
+    background-color: var(--header-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 8px;
+    color: var(--text-light);
+    text-align: center;
+}
+
+/* Sidebar styles */
+#sidebar {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    background-color: var(--header-color);
+}
+
+#sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+
+.main-content {
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
+.main-content::-webkit-scrollbar {
+    width: 12px;
+}
+
+.main-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+    background-color: maroon;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+}
+
+/* Customize scrollbar for Firefox */
+.main-content {
+    scrollbar-width: thin;
+    scrollbar-color: maroon #f1f1f1;
+}
+
+/*School Year*/
+.section-container {
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    background-color: #2d3748;
+    /* bg-gray-800 */
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
+
+.section-container form {
+    margin-bottom: 0.5rem;
+    /* mb-2 */
+}
+
+.section-container label {
+    display: block;
+    margin-bottom: 0.25rem;
+    /* mb-1 */
+    color: #ffffff;
+    /* text-white */
+}
+
+.section-container select {
+    width: 100%;
+    /* w-full */
+    padding: 10px !important;
+    /* p-2 */
+    border: 1px solid #ccc;
+    /* border */
+    border-radius: 0.25rem;
+    /* rounded */
+    color: #000000;
+    /* text-black */
+}
+
+.section-container button {
+    font-size: 12px;
+    /* Changed to 12px */
+    font-weight: 600;
+    color: #63b3ed;
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.section-container button:hover {
+    color: #4299e1;
+}
+
+.section-container .fa-plus-circle {
+    margin-right: 0.5rem;
+    font-size: 14px;
+    color: #4299e1;
+}
+
+h3,
+h4 {
+    color: var(--header-color);
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+}
+
+.header {
+    text-align: center;
+    color: var(--header-color);
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+
+}
+
+.buttons {
+    margin-bottom: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Changed to 12px */
+}
+
+.date-picker {
+    margin-bottom: 10px;
+}
+
+.date-picker label {
+    font-weight: bold;
+    margin-left: 4%;
+}
+
+.date-picker input {
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+buttons,
+a.buttons {
+    background-color: var(--header-color);
+    color: var(--text-light);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    margin: 1px;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 5px;
+    display: inline-block;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 12px;
+}
+
+buttons:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+a.buttons:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.custom-no-button {
+    background-color: #EFEFEF;
+    color: black;
+    border-color: #dcdcdc;
+}
+
+.custom-no-button:hover {
+    background-color: #a2a2a2;
+    border-color: #c0c0c0;
+}
+
+.highlights {
+    background-color: #FFD700;
+    color: black;
+    font-weight: bold;
+}
+
+.btn-modal {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.btn-modal:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.button-container {
+    display: flex;
+    gap: 5px;
+}
+
+td.no-print {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    margin-left: 4%;
+}
+
+.same-size-button {
+    width: 100px;
+    height: 30px;
+    background-color: var(--header-color);
+    color: var(--text-light);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    margin: 1px;
+    text-align: center;
+    text-decoration: none !important;
+    margin-top: 5px;
+    display: inline-block;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 12px;
+}
+
+.same-size-button:hover {
+    background-color: var(--highlighted-color) !important;
+    color: var(--text-light);
+}
+
+.button-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+
+.container {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 20px;
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.container1 {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 20px;
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+}
+
+table {
+    width: 100%;
+    margin: 0 auto 20px;
+    border-collapse: separate;
+    background-color: var(--secondary-bg);
+    overflow-x: auto;
+    border-radius: 5px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 15px;
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table th {
+    background-color: #900303;
+    color: #FFFFFF;
+    white-space: nowrap;
+    border-radius: 5px;
+    border: 1px solid var(--text-light) !important;
+    text-align: center;
+}
+
+.table tr {
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.table ul {
+    padding-left: 20px;
+}
+
+/* Card styles */
+.card {
+    background-color: var(--secondary-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow-x: auto;
+}
+
+
+/* Toggle button styles */
+.toggle-button {
+    background-color: var(--header-color) !important;
+    color: var(--text-light) !important;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.toggle-button:hover {
+    background-color: var(--highlighted-color) !important;
+    color: var(--text-light) !important;
+}
+
+/* Details section styles */
+.details-section {
+    display: block;
+    margin-top: 10px;
+}
+
+.details-section.open {
+    display: block;
+}
+
+.title-heading {
+    font-size: 24px;
+}
+
+/* Pagination styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0;
+    height: 100%;
+}
+
+.pagination .step-links {
+    display: flex;
+}
+
+.pagination .step-links a {
+    margin: 0 5px;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: var(--highlighted-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination .step-links a:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.pagination .step-links .current {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.modal-content {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
+
+.modal-title {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.modal-btn {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    font-size: 12px;
+}
+
+.modal-dialog {
+    max-width: 600px !important;
+    font-size: 12px;
+}
+
+.btn-danger {
+    color: var(--text-light);
+    padding: 6px 10px;
+    font-size: 12px;
+
+}
+.btn-secondary {
+    color: var(--text-light);
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.form-control {
+    font-size: 12px;
+}
+
+/* Make modal labels bold */
+.modal-content label {
+    font-weight: 600;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background-color: #FFFFFF;
+        color: #000000;
+    }
+
+    .container,
+    .container1 {
+        box-shadow: none;
+        border: none;
+        overflow: visible !important;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        page-break-inside: avoid;
+    }
+
+    .table th,
+    .table td {
+        padding: 10px;
+        text-align: center;
+        vertical-align: middle;
+        font-weight: 600;
+    }
+
+    .table td {
+        border-top: 1px solid #333;
+        border-bottom: 1px solid #333;
+        border-left: none;
+        border-right: none;
+    }
+
+    .table th {
+        background-color: var(--highlighted-color) !important;
+        color: var(--text-light) !important;
+        white-space: nowrap;
+        border-radius: 5px;
+    }
+
+    .table tr {
+        background-color: #FFFFFF;
+        box-shadow: none;
+        border-radius: 0;
+        page-break-inside: avoid;
+        /* Prevent table rows from splitting */
+    }
+
+    .table ul {
+        padding-left: 20px;
+    }
+
+    .highlights {
+        background-color: #FFD700 !important;
+        color: #000000 !important;
+        letter-spacing: 10px;
+        text-transform: uppercase;
+    }
+
+    #sidebar {
+        display: none;
+    }
+
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+    }
+
+    .header,
+    h3,
+    h4 {
+        color: #000000;
+    }
+
+    /* Page-specific settings */
+    @page {
+        size: portrait;
+        margin: 20mm;
+    }
+
+    .main-content {
+        width: 100%;
+        height: auto;
+        overflow: visible !important;
+    }
+
+    /* Page break styles */
+    .page-break {
+        page-break-before: always !important;
+    }
+
+    /* Ensure each table starts on a new page if it cannot fit in the remaining space */
+    .table {
+        page-break-after: auto;
+    }
+
+    .table tbody {
+        page-break-before: avoid;
+        page-break-after: avoid;
+    }
+}
+
+.small-text {
+    font-size: 12px !important;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 650px) {
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+}
+
+/* Responsive styles */
+@media screen and (max-width: 650px) {
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    tr {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-bottom: 10px;
+    }
+
+    th {
+        display: grid;
+    }
+
+    td {
+        display: grid;
+        padding: 10px;
+    }
+
+    td:first-child {
+        padding-top: 10px;
+    }
+
+    td:last-child {
+        padding-bottom: 10px;
+    }
+
+    td::before {
+        font-weight: 600;
+        text-transform: capitalize;
+        content: attr(data-label);
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    tr {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-bottom: 10px;
+    }
+
+    th {
+        display: grid;
+    }
+
+    td {
+        display: grid;
+        padding: 10px;
+    }
+
+    td:first-child {
+        padding-top: 10px;
+    }
+
+    td:last-child {
+        padding-bottom: 10px;
+    }
+
+    td::before {
+        font-weight: 600;
+        text-transform: capitalize;
+        content: attr(data-label);
+    }
+}
+
+@media screen and (max-width: 992px) {
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    tr {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-bottom: 10px;
+    }
+
+    th {
+        display: grid;
+    }
+
+    td {
+        display: grid;
+        padding: 10px;
+    }
+
+    td:first-child {
+        padding-top: 10px;
+    }
+
+    td:last-child {
+        padding-bottom: 10px;
+    }
+
+    td::before {
+        font-weight: 600;
+        text-transform: capitalize;
+        content: attr(data-label);
+    }
+}
+
+/* Additional styles for responsive design */
+@media screen and (max-width: 768px) {
+    .carousel {
+        gap: 15px;
+    }
+
+    .footer {
+        padding: 15px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .carousel {
+        gap: 10px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1,
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .buttons {
+        width: 100%;
+    }
+
+    .button-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .button-group .same-size-button {
+        margin: 5px 0;
+    }
+
+    .date-picker {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .date-picker label {
+        margin-left: 0;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .date-picker input {
+        box-sizing: border-box;
+    }
+    .footer {
+        padding: 2px;
+    }
+}
+
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+    z-index: 9998;
+    /* Ensure it is above other elements */
+    display: none;
+    /* Initially hidden */
+}
+
+.loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    max-width: 400px;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    /* Ensure it is above the overlay */
+    text-align: center;
+    /* Center the content */
+}
+
+.progress {
+    width: 100%;
+    height: 20px;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    /* Add some space below the progress bar */
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #7C0404;
+    transition: width 0.4s ease;
+}
+
+.success-icon {
+    font-size: 30px;
+    color: #28a745;
+    /* Green color for success */
+    display: none;
+    /* Initially hidden */
+}

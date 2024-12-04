@@ -1,0 +1,60 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Faculty</title>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'admin/reco_app/add_faculty.css' %}">
+</head>
+<body>
+    <div class="container mt-5 p-5">
+        <div class="container">
+            <h1 class="mb-4">Add Faculty</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-12">
+                        {{ form.name|as_crispy_field }}
+                        {{ form.years_of_teaching|as_crispy_field }}
+                        {{ form.has_master_degree|as_crispy_field }}
+                        {{ form.highest_degree|as_crispy_field }}
+                    </div>
+                </div>
+                <h3>Lists of Expertise</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        {{ form.mobile_web_dev|as_crispy_field }}
+                        {{ form.database_management|as_crispy_field }}
+                        {{ form.ai_ml|as_crispy_field }}
+                        {{ form.computer_networks|as_crispy_field }}
+                        {{ form.software_engineering|as_crispy_field }}
+                        {{ form.multimedia_graphics|as_crispy_field }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.iot|as_crispy_field }}
+                        {{ form.cybersecurity|as_crispy_field }}
+                        {{ form.gis|as_crispy_field }}
+                        {{ form.data_analytics|as_crispy_field }}
+                        {{ form.ecommerce_digital_marketing|as_crispy_field }}
+                        {{ form.educational_technology|as_crispy_field }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.healthcare_informatics|as_crispy_field }}
+                        {{ form.game_development|as_crispy_field }}
+                        {{ form.hci|as_crispy_field }}
+                        {{ form.agricultural_technology|as_crispy_field }}
+                        {{ form.smart_city_technologies|as_crispy_field }}
+                        {{ form.fintech|as_crispy_field }} 
+                      
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Save</button>
+                <button type="button" class="btn btn-secondary mt-3" onclick="window.location.href='{% url 'faculty_list' %}'">Go to Faculty List</button>
+            </form>
+        </div>
+    </div>
+    <!-- Custom JS -->
+    <script src="{% static 'js/custom_scripts.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+{% load static %}
+{% load users_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adviser Record Details</title>
+    <!-- Bootstrap CSS -->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'faculty/adviser_record_detailPOD.css' %}" />
+</head>
+<body>       
+    <div class="flex h-screen flex-col">
+      <!-- Navbar -->
+      <div class="no-print">
+          {% include 'navbar.html' %}
+      </div>
+      <div class="flex flex-1 overflow-hidden">
+          <!-- Sidebar -->
+          {% if user.is_superuser %}
+            {% include 'sidebar.html' %}
+          {% else %}
+            {% include 'faculty/faculty_sidebar.html' %}
+          {% endif %}
+          <!-- Main Content Wrapper -->
+          <div class="flex flex-col flex-1">
+              <!-- Content -->
+            <main class="flex-1 overflow-auto relative main-content">
+                <div class="container mt-4">
+                    <div class="card">
+                        <fieldset>
+                            <legend>Record Detail</legend>
+                            {% if error %}
+                                <p>{{ error }}: <span class="span">{{ title }}</p>
+                            {% else %}
+                                <h3>Title: <span class="span">{{ title }}</span></h3><br>
+                                <h3>Summary of Points:</h3>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Criteria</th>
+                                            <th>Percentage</th>
+                                            <th>Earned Points (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for section in criteria_list %}
+                                            <tr>
+                                                <td>{{ section.name }}</td>
+                                                <td>{{ section.total_criteria_percentage }}</td>
+                                                <td id="{{ section.name|slugify }}_summary">
+                                                    {% with total=summary_totals|get_item:section.name %}
+                                                        {{ total|floatformat:2 }}
+                                                    {% endwith %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        <tr>
+                                            <td><strong>TOTAL</strong></td>
+                                            <td><strong>{{ total_points }}</strong></td>
+                                            <td id="overall_grade">{{ total_earned_points }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <br />
+                            {% endif %}
+                        </fieldset>
+
+                        <fieldset>
+                            {% if member1_grade or member2_grade %}
+                                <legend>Individual Score</legend>
+                                <table class="table table-striped" style="text-align: center;">
+                                    <tbody>
+                                        <tr>
+                                            <th>Members</th>
+                                            <th>Score</th>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ member1 }}</td>
+                                            <td>{{ member1_grade|floatformat:2 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ member2 }}</td>
+                                            <td>{{ member2_grade|floatformat:2 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ member3 }}</td>
+                                            {% if member3 == None %}
+                                                <td>None</td>
+                                            {% else %}
+                                                <td>{{ member3_grade|floatformat:2 }}</td>
+                                            {% endif %}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <legend>Group Members</legend>
+                                <table class="table table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <th>Members</th>
+                                            <th>Name</th>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Member 1</strong></td>
+                                            <td>{{ member1 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Member 2</strong></td>
+                                            <td>{{ member2 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Member 3</strong></td>
+                                            <td>{{ member3 }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                        </fieldset>
+                        
+                        <fieldset>
+                            <legend>Verdicts</legend>
+                            <table class="table table-striped">
+                                {% if selected_verdict %}
+                                    <tr>
+                                      <td><h4 class="verdict-highlight">{{ selected_verdict }}</h4></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            {% for verdict in verdicts %}
+                                                {% for checkbox in all_checkboxes %}
+                                                    {% if checkbox.verdict == verdict and checkbox_data|get_item:checkbox.id %}
+                                                        <!-- Display only the associated and checked checkboxes -->
+                                                        <input type="checkbox" id="checkbox_{{ checkbox.id }}" name="checkbox_{{ checkbox.id }}" checked disabled>
+                                                        <label for="checkbox_{{ checkbox.id }}">{{ checkbox.label }}</label><br>
+                                                        {% if 'other' in checkbox.label|lower or 'specify' in checkbox.label|lower %}
+                                                            <textarea type="text" style="padding: 1%;" readonly>{{ checkbox_entry.othervalue }}</textarea>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <td><h4 class="verdict-highlight">NONE</h4></td>
+                                {% endif %}
+                            </table>
+                        </fieldset>
+
+                        {% if not user.is_superuser and adviser.faculty == faculty_member and selected_school_year == last_school_year %}
+                            <!-- Recommendation Input Section -->
+                            <h3><strong>Recommendation/s</strong></h3>
+                            <form method="POST" action="{% url 'adviser_record_detail' adviser_id=adviser.id %}">
+                                {% csrf_token %}
+                                <textarea 
+                                    id="recommendation-textarea" 
+                                    name="recommendation" 
+                                    placeholder="Enter your recommendations here">{% for reco in recos %}{{ reco.recommendation|escape }}{% endfor %}</textarea>
+                                <button type="submit" class="btn btn-custom mt-2">Submit Recommendation</button>
+                            </form>
+                        {% endif %}
+
+                        <h2><strong>Recommendations</strong></h2>
+                        <table class="table  table-striped">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        {% for reco in recos %}
+                                            {{ reco.recommendation|linebreaksbr }}
+                                        {% empty %}
+                                            <p>No Recommendations Yet!</p>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-start mt-3">
+                            <a href="{% if user.is_superuser %}{% url 'group_infoPOD' %}{% elif adviser.faculty != faculty_member %}{% url 'class_record' %}{% else %}{% url 'adviser_records' %}{% endif %}" class="btn btn-secondary mt-2">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer class="footer">
+                {% include 'footer.html' %}
+            </footer>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        const textarea = document.getElementById('recommendation-textarea');
+
+        // Initialize the textarea with number 1 if empty
+        function initializeTextarea() {
+            const content = textarea.value.trim();
+            if (!content) {
+                textarea.value = '1. '; // Start with number 1 if empty
+            }
+        }
+
+        // Handle pressing 'Enter' to start new numbered recommendation
+        textarea.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();  // Prevent the default new line behavior
+
+                // Get cursor position
+                const cursorPosition = textarea.selectionStart;
+                const textBeforeCursor = textarea.value.substring(0, cursorPosition);
+                const textAfterCursor = textarea.value.substring(cursorPosition);
+
+                // Split the text before cursor into lines
+                const lines = textBeforeCursor.split('\n');
+                const currentLine = lines[lines.length - 1].trim();
+
+                // Check if the current line has content (not just a number like '2.')
+                if (currentLine.length === 0 || /^\d+\.\s*$/.test(currentLine)) {
+                    // Prevent adding a new line if the current line is just a number label without content
+                    return;
+                }
+
+                // Insert a new numbered line
+                const nonEmptyLines = textarea.value.split('\n').filter(line => line.trim().length > 0 && !/^\d+\.\s*$/.test(line)); // Filter out empty or number-only lines
+                const nextNumber = nonEmptyLines.length + 1;
+                textarea.value = textBeforeCursor + `\n${nextNumber}. ` + textAfterCursor;
+
+                // Move cursor to the end of the new line
+                textarea.selectionStart = textarea.selectionEnd = cursorPosition + (`\n${nextNumber}. `.length);
+            }
+        });
+
+        // Format the recommendations when textarea loses focus (optional)
+        textarea.addEventListener('blur', function() {
+            formatRecommendations();  // Optional: format and clean up the input on blur
+        });
+
+        // Format the recommendations
+        function formatRecommendations() {
+            const lines = textarea.value.split('\n').filter(line => line.trim().length > 0 && !/^\d+\.\s*$/.test(line)); // Filter out empty lines or lines with only numbers
+            const formattedLines = lines.map((line, index) => `${index + 1}. ${line.replace(/^\d+\.\s*/, '')}`);  // Ensure correct numbering
+            textarea.value = formattedLines.join('\n');
+        }
+
+        // Set cursor to the end of the textarea content
+        function setCursorToEnd(textarea) {
+            textarea.focus(); // Focus on the textarea
+            const length = textarea.value.length; // Get the length of the content
+            textarea.setSelectionRange(length, length); // Set the cursor position
+        }
+
+        // Wait for the page to fully load before initializing the textarea and setting cursor
+        window.addEventListener('load', function() {
+            initializeTextarea();
+            if (textarea) {
+                setCursorToEnd(textarea);
+            }
+        });
+    </script>
+
+    <!-- script for the toggle of checkboxes -->
+    <script>
+        function toggleOtherInput(checkboxId, labelText) {
+            const checkbox = document.getElementById(`checkbox_${checkboxId}`);
+            const otherInput = document.getElementById(`other_input_${checkboxId}`);
+            
+            // Check if the label text includes 'other', 'others', or 'specify'
+            const isOtherCheckbox = labelText.toLowerCase().includes('other') || labelText.toLowerCase().includes('specify');
+            
+            if (isOtherCheckbox) {
+                // Show the input field if the checkbox is checked
+                if (checkbox.checked) {
+                    otherInput.style.display = 'inline-block';
+                } else {
+                    otherInput.style.display = 'none';
+                    otherInput.value = ''; // Clear the value if unchecked
+                }
+            }
+        }
+
+        // Run on page load to check the initial state
+        window.addEventListener("load", function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((checkbox) => {
+                const label = checkbox.nextElementSibling.textContent;
+                const checkboxId = checkbox.id.split('_')[1]; // Get the checkbox ID
+                toggleOtherInput(checkboxId, label);
+            });
+        });
+    </script>
+
+    <!-- Sidebar toggle script -->
+    <script>
+        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+            event.preventDefault();
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("hidden");
+        });
+    </script>
+</body>
+</html>

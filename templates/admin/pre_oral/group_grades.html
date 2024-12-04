@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Group Grades</title>
+    <!-- Bootstrap CSS -->
+    
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'admin/pre_oral/group_gradesPOD.css' %}" />
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Pre-Oral Grade</h1>
+        <br>
+        <h2>Title of the Study:{{ record.approved_title }}</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Proponent</th>
+                    <th>Section</th>
+                    <th>Computed Individual Grade</th>
+                    <th>Panelist</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for info in members %}
+                <tr>
+                    <td>{{ info.member }}</td>
+                    <td>{{ section }}</td>
+                    <td>{{ adviser_record_detail}}</td>
+                    <td>
+                        {{ info.faculty1 }}<br>
+                        {{ info.faculty2 }}<br>
+                        {{ info.faculty3 }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h3 class="mt-4">Overall Grouped Grade :</h3>
+          
+            <button class="btn btn-primary mt-2" onclick="window.print()">Print</button>
+            <button class="btn btn-secondary mt-2 no-print" onclick="window.location.href='{% url 'group_infoPOD' %}'">Back</button>
+      
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+</html>

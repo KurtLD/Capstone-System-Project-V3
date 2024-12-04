@@ -1,0 +1,461 @@
+:root {
+  --primary-bg: #EFEFEF;
+  --secondary-bg: #FFFFFF;
+  --header-color: #333;
+  --highlighted-color: #7C0404;
+  --text-light: #FFFFFF;
+  --border-color: #7D1E22;
+  --text-dark: #000000;
+  --primary-button: #7C0404;
+  --secondary-button: #5A6268;
+  --table-header-bg: #900303;
+  --table-header-text: #FFFFFF;
+  --table-row-bg: #FFFFFF;
+  --table-row-hover-bg: #F5F5F5;
+  --table-border-radius: 8px;
+  --table-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --header-color: #333;
+  --sidebar-hover: #606060;
+  /* Added font-size */
+}
+
+/* General Styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--primary-bg) !important;
+  font-size: 12px;
+}
+
+/* Navigation link styles */
+.nav-link {
+    transition: opacity 0.3s, background-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.nav-link:hover {
+    background-color: var(--sidebar-hover);
+    transform: scale(1.0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    color: var(--text-light);
+    border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+    opacity: 0.9;
+}
+
+nav:hover .nav-link {
+    opacity: 1;
+}
+
+/* Footer styles */
+.footer {
+    background-color: var(--header-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 8px;
+    /* Set font size to 12px */
+    color: var(--text-light);
+    text-align: center;
+}
+
+/* Sidebar styles */
+#sidebar {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    background-color: var(--header-color);
+}
+
+#sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+label {
+    font-weight: 400;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Set font size to 12px */
+    float: left;
+}
+
+.section-container {
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    background-color: #2d3748;
+    /* bg-gray-800 */
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.section-container form {
+    margin-bottom: 0.5rem;
+    /* mb-2 */
+}
+
+.section-container label {
+    display: block;
+    margin-bottom: 0.25rem;
+    /* mb-1 */
+    color: #ffffff;
+    /* text-white */
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.section-container select {
+    width: 100%;
+    /* w-full */
+    padding: 10px !important;
+    /* p-2 */
+    border: 1px solid #ccc;
+    /* border */
+    border-radius: 0.25rem;
+    /* rounded */
+    color: #000000;
+    /* text-black */
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.section-container button {
+    font-size: 12px;
+    /* Set font size to 12px */
+    font-weight: 600;
+    /* font-semibold */
+    color: #63b3ed;
+    /* text-blue-400 */
+    display: flex;
+    /* flex */
+    align-items: center;
+    /* items-center */
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.section-container button:hover {
+    color: #4299e1;
+    /* hover:text-blue-500 */
+}
+
+.section-container .fa-plus-circle {
+    margin-right: 0.5rem;
+    /* mr-2 */
+    font-size: 14px;
+    /* text-lg */
+    color: #4299e1;
+    /* text-blue-500 */
+}
+
+.card {
+  background-color: var(--secondary-bg);
+  border-radius: 8px;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+/* Page Title */
+.page-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--header-color);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.content-container {
+  background-color: var(--primary-bg);
+  padding: 20px;
+  border-radius: var(--table-border-radius);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+}
+
+.info-section {
+  background-color: var(--secondary-bg);
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--table-border-radius);
+  font-size: 12px;
+}
+
+.title-info,
+.expertise-info {
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+
+.section-title {
+  color: var(--header-color);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.approved-title-bullets,
+.expertise-list {
+  list-style-type: none;
+  padding: 0;
+  font-size: 12px;
+}
+
+.title-item,
+.expertise-item,
+.no-expertise {
+  background-color: var(--table-row-bg);
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--table-border-radius);
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.title-item {
+  color: var(--text-dark);
+}
+
+.expertise-item {
+  color: var(--highlighted-color);
+}
+
+.no-expertise {
+  color: var(--text-light);
+  background-color: var(--highlighted-color);
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  background-color: var(--primary-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+}
+
+.group-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.group-info label {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: var(--header-color);
+  font-size: 12px;
+}
+
+.group-info select {
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--secondary-bg);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+}
+
+.back-button,
+#printButton {
+  padding: 4px 6px;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  flex: 1;
+  font-size: 12px;
+}
+
+.back-button {
+  background-color: var(--secondary-button);
+  color: var(--text-light);
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-printButton {
+  background-color: var(--highlighted-color) !important;
+  color: var(--text-light) !important;
+  padding: 4px 6px !important;
+}
+
+.back-button:hover,
+#printButton:hover {
+  color: var(--text-light);
+  text-decoration: none;
+}
+
+/* Table styles */
+.table-responsive {
+  background-color: var(--secondary-bg);
+  padding: 10px;
+  border-radius: var(--table-border-radius);
+  font-size: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+}
+
+.table th,
+.table td {
+  padding: 15px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 12px;
+}
+
+.table th {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-text);
+  white-space: nowrap;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.table tr {
+  background-color: var(--table-row-bg);
+  box-shadow: var(--table-shadow);
+  border-radius: var(--table-border-radius);
+  overflow: hidden;
+  transition: background-color 0.3s;
+  font-size: 12px;
+}
+
+.table tr:hover {
+  background-color: var(--table-row-hover-bg);
+}
+
+.table ul {
+  padding-left: 20px;
+  font-size: 12px;
+}
+
+.table a {
+  color: #7D1E22;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.table a:hover {
+  text-decoration: none;
+}
+
+/* Custom bullet list styles */
+.custom-bullet-list li {
+  list-style-type: disc;
+  font-size: 12px;
+  color: #333;
+  margin-top: 5px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .table thead th {
+    background-color: var(--highlighted-color) !important;
+    color: var(--text-light) !important;
+  }
+
+  .table td {
+    background-color: var(--table-row-bg) !important;
+    color: var(--text-dark) !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+    /* Ensure thead is included in print */
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background-color: #FFFFFF;
+    color: #000000;
+  }
+
+  .container,
+  .container1 {
+    box-shadow: none;
+    border: none;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle !important;
+  }
+
+  .table th {
+    background-color: var(--highlighted-color) !important;
+    color: var(--text-light) !important;
+    white-space: nowrap;
+    border-radius: 5px;
+  }
+
+  .table tr {
+    background-color: #FFFFFF;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .highlights {
+    background-color: #FFD700 !important;
+    color: #000000;
+  } 
+
+  .header,
+  h3,
+  h4 {
+    color: #000000;
+  }
+
+  @page {
+    size: auto;
+    margin: 10mm;
+  }
+
+  .main-content {
+    width: 100%;
+    height: 100%;
+    transform: scale(1);
+    transform-origin: top left;
+    overflow: visible !important;
+  }
+
+  .container,
+  .container1,
+  .table {
+    overflow: visible !important;
+  }
+
+ 
+}

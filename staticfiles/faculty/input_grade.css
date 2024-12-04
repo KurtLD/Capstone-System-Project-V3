@@ -1,0 +1,95 @@
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --header-color: #333;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+}
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--header-color);
+    margin: 0;
+    padding: 20px;
+}
+
+h1,
+h2 {
+    color: var(--header-color);
+    font-weight: 600;
+    text-align: center;
+}
+
+h3,
+h4 {
+    color: var(--header-color);
+    font-weight: 600;
+    font-size: 1.5em;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th,
+td {
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: var(--secondary-bg);
+}
+
+.card {
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    margin-top: 0;
+}
+
+.card table {
+    margin: 0;
+}
+
+.card form {
+    margin: 0;
+}
+
+.card textarea,
+.card input[type="number"],
+.card input[type="radio"] {
+    width: auto;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+
+}
+
+.card button {
+    background-color: var(--header-color);
+    color: var(--text-light);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.card button:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}

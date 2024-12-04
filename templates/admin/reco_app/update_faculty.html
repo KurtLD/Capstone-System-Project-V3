@@ -1,0 +1,35 @@
+{% load static %} {% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Update Faculty</title>
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="{% static 'admin/reco_app/update_faculty.css' %}"
+    />
+  </head>
+  <body>
+    <div class="container mt-5 p-5">
+      <div class="container">
+        <h1 class="mb-4">Update Faculty</h1>
+        <form method="post" action="{% url 'update_faculty' faculty.pk %}">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-12">{{ form.name|as_crispy_field }}</div>
+          </div>
+          <button type="submit" class="btn btn-primary mt-3">Save</button>
+          <button
+            type="button"
+            class="btn btn-secondary mt-3"
+            onclick="window.location.href='{% url 'faculty_list' %}'"
+          >
+            Go to Faculty List
+          </button>
+        </form>
+      </div>
+    </div>
+    <!-- Custom JS -->
+    <script src="{% static 'js/custom_scripts.js' %}"></script>
+  </body>
+</html>

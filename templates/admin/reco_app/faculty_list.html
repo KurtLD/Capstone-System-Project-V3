@@ -1,0 +1,275 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'admin/reco_app/faculty_list.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            <div id="sidebar" class="flex flex-col">
+                {% include 'sidebar.html' %}
+            </div>
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <main class="flex-1 overflow-auto p-2 main-content">
+                    <div class="container mt-1">
+                        <div class="container container-with-border">
+                            <div class="row mb-2">
+                                <div class="col-md-2">
+                                    <h2 class="h2">Faculty List</h2>
+                                </div>
+                                <div class="col-md-10 parent-container">
+                                    <input type="text" id="myInput" class="form-control search-bar" placeholder="Search for faculty...">
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped" id="myTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Faculty</th>
+                                            <th>Years of Teaching</th>
+                                            <th>Expertise</th>
+                                            <th>Master Degree</th>
+                                            <th>Highest Educational Attainment</th>
+                                            <th>Capstone Teacher</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for faculty in page_obj %}
+                                            <tr id="faculty-row-{{ faculty.pk }}">
+                                                <td>{{ faculty.name }}</td>
+                                                <td>{{ faculty.years_of_teaching }}</td>
+                                                <td>
+                                                    {% if faculty.expertise.count > 1 %}
+                                                    <ul class="custom-bullet-list">
+                                                        {% for exp in faculty.expertise.all %}
+                                                            <li>{{ exp.name }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                    {% elif faculty.expertise.count == 1 %}
+                                                        {{ faculty.expertise.first.name }}
+                                                    {% else %}
+                                                        No expertise listed
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ faculty.has_master_degree|yesno:"Yes,No" }}</td>
+                                                <td>{{ faculty.highest_degree }}</td>
+                                                <td>{{ faculty.is_capstone_teacher|yesno:"Yes,No" }}</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-secondary btn-sm action-btn" data-id="{{ faculty.pk }}" data-is-capstone="{{ faculty.is_capstone_teacher }}">
+                                                        Options
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="pagination">
+                                    <span class="step-links">
+                                        {% if page_obj.has_previous %}
+                                            <a href="?page=1&per_page={{ request.GET.per_page }}">&laquo;</a>
+                                            <a href="?page={{ page_obj.previous_page_number }}&per_page={{ request.GET.per_page }}">&lsaquo;</a>
+                                        {% endif %}
+                                        <span class="current">
+                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                        </span>
+                                        {% if page_obj.has_next %}
+                                            <a href="?page={{ page_obj.next_page_number }}&per_page={{ request.GET.per_page }}">&rsaquo;</a>
+                                            <a href="?page={{ page_obj.paginator.num_pages }}&per_page={{ request.GET.per_page }}">&raquo;</a>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="mt-3">
+                                    {% comment %} <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Back</a> {% endcomment %}
+                                    <a href="{% url 'disabled_faculty_list' %}" class="btn btn-primary">View Inactive Faculty</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <!-- Footer -->
+                <footer class="footer">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
+        </div>
+    </div>
+<!-- Action Modal -->
+<div class="modal fade" id="actionModal" tabindex="-1" role="dialog" aria-labelledby="actionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actionModalLabel">Select Action for Capstone Teacher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+               <div class="modal-footer">
+                    <div class="modal-body d-flex justify-content-center mr-3">
+                        <button type="button" class="btn btn-modal disable-btn me-2" id="disableActionBtn">
+                            <i class="fas fa-ban"></i> Disable
+                        </button>
+                        <button type="button" class="btn btn-secondary capstone-btn" id="capstoneActionBtn">
+                            <i class="fas fa-graduation-cap"></i> Capstone
+                        </button>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+    <!-- Disable Confirmation Modal -->
+    <div class="modal fade" id="disableModal" tabindex="-1" role="dialog" aria-labelledby="disableModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="disableModalLabel">
+                        <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i>
+                        Confirm Disable</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to disable this faculty?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-modal" id="confirmDisableBtn">Yes, disable it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Capstone Confirmation Modal -->
+    <div class="modal fade" id="capstoneModal" tabindex="-1" role="dialog" aria-labelledby="capstoneModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="capstoneModalLabel">
+                        <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i>
+                        Confirm Action
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="capstoneModalBody">
+                    <!-- The text content will be inserted dynamically via JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-modal" id="confirmCapstoneBtn">Yes, proceed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+            event.preventDefault();
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("hidden");
+        });
+
+        document.querySelectorAll('.action-btn').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                var facultyId = this.getAttribute('data-id');
+                var isCapstone = this.getAttribute('data-is-capstone') === 'True';
+                var capstoneActionBtn = document.getElementById('capstoneActionBtn');
+                
+                if (isCapstone) {
+                    capstoneActionBtn.textContent = 'Unassign';
+                    capstoneActionBtn.classList.remove('btn-success');
+                    capstoneActionBtn.classList.add('btn-secondary');
+                    capstoneActionBtn.setAttribute('data-url', '/remove_capstone_teacher/' + facultyId + '/');
+                } else {
+                    capstoneActionBtn.textContent = 'Assign now!';
+                    capstoneActionBtn.classList.remove('btn-danger');
+                    capstoneActionBtn.classList.add('btn-success');
+                    capstoneActionBtn.setAttribute('data-url', '/assign_capstone_teacher/' + facultyId + '/');
+                }
+
+                document.getElementById('disableActionBtn').setAttribute('data-url', '/disable_faculty/' + facultyId + '/');
+                $('#actionModal').modal('show');
+            });
+        });
+
+        document.getElementById('capstoneActionBtn').addEventListener('click', function(event) {
+            event.preventDefault();
+            var url = this.getAttribute('data-url');
+            var isAssigning = this.classList.contains('btn-success');
+            var modalBodyText = isAssigning ? 
+                "Are you sure you want to assign this faculty as a Capstone Teacher?" : 
+                "Are you sure you want to remove this faculty from Capstone Teacher?";
+            
+            document.getElementById('capstoneModalBody').textContent = modalBodyText;
+            $('#capstoneModal').modal('show');
+
+            document.getElementById('confirmCapstoneBtn').onclick = function() {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        $('#capstoneModal').modal('hide');
+                        location.reload();
+                    },
+                    error: function(response) {
+                        alert('An error occurred while updating the capstone status.');
+                    }
+                });
+            };
+        });
+
+        document.getElementById('disableActionBtn').addEventListener('click', function(event) {
+            event.preventDefault();
+            var url = this.getAttribute('data-url');
+            $('#disableModal').modal('show');
+
+            document.getElementById('confirmDisableBtn').onclick = function() {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        $('#disableModal').modal('hide');
+                        location.reload();
+                    },
+                    error: function(response) {
+                        alert('An error occurred while disabling the faculty.');
+                    }
+                });
+            };
+        });
+
+        $(document).ready(function() {
+            $("#myInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+</body>
+</html>

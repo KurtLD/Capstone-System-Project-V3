@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --header-color: #333;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--primary-bg);
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+/* Navigation link styles */
+.nav-link {
+    transition: opacity 0.3s, background-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.nav-link:hover {
+    background-color: var(--highlighted-color);
+    transform: scale(1.0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    color: var(--text-light);
+    border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+    opacity: 0.9;
+}
+
+nav:hover .nav-link {
+    opacity: 1;
+}
+
+/* Footer styles */
+.footer {
+    background-color: var(--secondary-bg);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+/* Sidebar styles */
+#sidebar {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    background-color: var(--header-color);
+}
+
+#sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.container {
+    background-color: var(--secondary-bg);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--highlighted-color);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.header {
+    color: var(--header-color);
+    font-weight: 600;
+    font-size: 1.8em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 15px;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.table th {
+    background-color: var(--highlighted-color);
+    color: #FFFFFF;
+    white-space: nowrap;
+    border-radius: 8px;
+    border: 1px solid var(--text-light) !important;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.table tr {
+    background-color: #EFEFEF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.table td {
+    border: none;
+    white-space: nowrap;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+tr:nth-child(even) {
+    background-color: var(--secondary-bg);
+}
+
+tr:hover {
+    background-color: var(--primary-bg);
+}
+
+.btn {
+    border-radius: 4px;
+    padding: 6px 10px;
+    /* Reduced padding */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 2px 1px;
+    /* Reduced margin */
+    cursor: pointer;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.btn-warning {
+    background-color: #FFC107;
+    color: var(--header-color);
+    border: none;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.btn-danger {
+    background-color: #DC3545;
+    color: var(--text-light);
+    border: none;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: #c5c0a1 !important;
+    border-color: #800000 !important;
+    color: var(--border-color);
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.btn-primary:hover {
+    background-color: #800000 !important;
+    border-color: #982b1c !important;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.btn-secondary {
+    background-color: #6C757D;
+    color: var(--text-light);
+    border: none;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.pagination .page-link {
+    color: var(--header-color);
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--highlighted-color);
+    border-color: var(--highlighted-color);
+    color: var(--text-light);
+    font-size: 12px;
+    /* Set font size to 12px */
+}

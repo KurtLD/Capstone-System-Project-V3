@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --header-color: #333;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+    --button-color: #c5c0a1;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary-bg);
+    margin: 0;
+    padding: 20px;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: var(--secondary-bg);
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.card-header {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+    border-radius: 10px 10px 0 0;
+    padding: 15px;
+    text-align: center;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-weight: 700;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    margin-bottom: 5px;
+    display: block;
+}
+
+.form-control {
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: var(--highlighted-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(124, 4, 4, 0.25);
+}
+
+.degree-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Two columns of equal width */
+    grid-template-rows: auto;
+    /* Rows will adjust automatically based on content */
+    gap: 10px;
+    /* Space between the items */
+    margin-top: 10px;
+}
+
+.degree-choices .custom-checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.custom-label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--header-color);
+}
+
+.btn-primary {
+    background-color: var(--button-color);
+    color: var(--highlighted-color);
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 500;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.btn-secondary {
+    background-color: var(--header-color);
+    color: var(--text-light);
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 500;
+    width: 100%;
+}
+
+.btn-secondary:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+.button-container .btn {
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 500;
+    width: auto;
+}
+
+.custom-margin-top {
+    margin-top: 20px;
+}
+
+.form-page {
+    display: none;
+}
+
+.form-page.active {
+    display: block;
+}

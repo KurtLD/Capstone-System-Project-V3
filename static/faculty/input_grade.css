@@ -1,0 +1,397 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --header-color: #333;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+    --sidebar-hover: #606060;
+    /* Added missing variable */
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary-bg);
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+/* Navigation link styles */
+.nav-link {
+    transition: opacity 0.3s, background-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.nav-link:hover {
+    background-color: var(--sidebar-hover);
+    transform: scale(1.0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    color: var(--text-light);
+    border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+    opacity: 0.9;
+}
+
+nav:hover .nav-link {
+    opacity: 1;
+}
+
+/* Footer styles */
+.footer {
+    background-color: var(--header-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 8px;
+    /* Set font size to 12px */
+    color: var(--text-light);
+    text-align: center;
+}
+
+/* Sidebar styles */
+#sidebar {
+    transition: transform 0.9s ease, opacity 0.9s ease;
+    background-color: var(--header-color) !important;
+}
+
+#sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+/*School Year*/
+.section-container {
+    padding: 0.5rem;
+    margin-top: 8px;
+    background-color: #2d3748;
+    /* bg-gray-800 */
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.section-container form {
+    margin-bottom: 8px;
+    /* mb-2 */
+}
+
+.section-container label {
+    display: block;
+    /* mb-1 */
+    color: #ffffff;
+    margin-bottom: 4px;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.section-container select {
+    width: 100%;
+    /* w-full */
+    padding: 10px !important;
+    /* p-2 */
+    border: 1px solid #ccc;
+    /* border */
+    border-radius: 0.25rem;
+    /* rounded */
+    color: #000000;
+    /* text-black */
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.section-container button {
+    font-size: 12px;
+    /* Set font size to 12px */
+    font-weight: 600;
+    /* font-semibold */
+    color: #63b3ed;
+    /* text-blue-400 */
+    display: flex;
+    /* flex */
+    align-items: center;
+    /* items-center */
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.section-container button:hover {
+    color: #4299e1;
+    /* hover:text-blue-500 */
+}
+
+.section-container .fa-plus-circle {
+    margin-right: 0.5rem;
+    /* mr-2 */
+    font-size: 14px;
+    /* text-lg */
+    color: #4299e1;
+    /* text-blue-500 */
+}
+
+
+.main-content {
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
+.main-content::-webkit-scrollbar {
+    width: 12px;
+}
+
+.main-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+    background-color: maroon;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+}
+
+/* Customize scrollbar for Firefox */
+.main-content {
+    scrollbar-width: thin;
+    scrollbar-color: maroon #f1f1f1;
+}
+
+.modal-content h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.nav-item p {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    color: var(--text-light);
+    font-size: 12px;
+    /* Set font size to 12px */
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown {
+    margin: 10px 0;
+    display: flex;
+    justify-content: flex-end;
+    /* Aligns the dropdown to the right */
+
+}
+
+.form-selects {
+    width: auto;
+    padding: 6px;
+    border-radius: 8px;
+    background-color: #10B981 !important;
+    color: #000000;
+    /* Updated color to white */
+    font-size: 12px;
+    font-weight: 600;
+}
+
+h1,
+h2 {
+    color: var(--header-color);
+    font-weight: 600;
+    text-align: center;
+    font-size: 14px;
+    /* Set font size to 12px */
+}
+
+h3,
+h4 {
+    color: var(--header-color);
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+th,
+td {
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    text-align: left;
+    font-size: 12px;
+}
+
+th {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+.card {
+    width: 100%;
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 12px;
+}
+
+.card h3 {
+    margin-top: 0;
+    font-size: 12px;
+}
+
+.card table {
+    margin: 0;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.card form {
+    margin: 0;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.card textarea,
+.card input[type="number"],
+.card input[type="radio"] {
+    width: auto;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.card button {
+    background-color: var(--header-color);
+    color: var(--text-light);
+    border: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+.card button:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+    font-size: 12px;
+    /* Set font size to 12px */
+}
+
+legend {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--header-color);
+    padding: 0 10px;
+    background: var(--secondary-bg);
+    /* Set the background color to match the form */
+    margin-left: 10px;
+    /* Adjust the margin to align legend text with the form */
+    display: inline-block;
+    width: auto;
+}
+
+fieldset {
+    border: 1px solid var(--header-color);
+    padding: 20px;
+    /* Increase padding for better spacing */
+    border-radius: 5px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+fieldset legend {
+    top: -12px;
+    position: absolute;
+    left: 10px;
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        padding: 3px !important;
+    }
+
+    .card {
+        padding: 3px !important;
+        font-size: 10px !important;
+    }
+
+    .card-body {
+        padding: 10px !important;
+    }
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    tr {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-bottom: 10px;
+    }
+
+    th {
+        display: grid;
+        font-size: 12px;
+    }
+
+    td {
+        display: grid;
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    td:first-child {
+        padding-top: 10px;
+        font-size: 12px;
+    }
+
+    td:last-child {
+        padding-bottom: 10px;
+        font-size: 12px;
+    }
+
+    td::before {
+        font-weight: 600;
+        text-transform: capitalize;
+        content: attr(data-label);
+        font-size: 12px;
+    }
+
+    #sidebar {
+        overflow: hidden !important;
+        width: 250px !important;
+    }
+}
+
+.members {
+    /* background-color: #10B981; */
+    background-color: #FFD700;
+    color: #000000;
+}
+.adjusted-bullet {
+    padding-left: 10px; /* Adjust the padding as needed */
+    margin-bottom: 5px; /* Add bottom margin */
+}
