@@ -246,6 +246,11 @@ def add_group(request):
             if form.is_valid():
                 section = form.save(commit=False)  # Create the section instance but don't save yet
 
+                # Normalize names for the three members
+                section.member1 = normalize_name_improved(section.member1)
+                section.member2 = normalize_name_improved(section.member2)
+                section.member3 = normalize_name_improved(section.member3) if section.member3 else section.member3
+
                 # Get the current active school year
                 active_school_year = SchoolYear.get_active_school_year()
                 
@@ -301,32 +306,80 @@ def add_group(request):
     })
 
 
+# def normalize_name_improved(name):
+#     """
+#     Normalizes a name by handling cases like:
+#     - "Lastname, Firstname" → "Firstname Lastname"
+#     - "Firstname Middlename Lastname" → "Firstname Middlename Lastname"
+#     It strips unnecessary spaces, handles commas, and preserves middle names/initials.
+#     """
+#     # Convert name to a string to handle cases where it's not a string
+#     name = str(name).strip()
+    
+#     # Replace any sequences of whitespace with a single space
+#     name = re.sub(r'\s+', ' ', name)
+    
+#     # Handle "Last, First" format
+#     if ',' in name:
+#         last, first = name.split(',', 1)
+#         normalized_name = f"{first.strip()} {last.strip()}"
+#     else:
+#         # If it's already in "First Last" format, just use it
+#         normalized_name = name
+
+#     # Optionally, remove special characters
+#     normalized_name = re.sub(r'[^\w\s]', '', normalized_name)
+
+#     return normalized_name
+
 def normalize_name_improved(name):
     """
-    Normalizes a name by handling cases like:
-    - "Lastname, Firstname" → "Firstname Lastname"
-    - "Firstname Middlename Lastname" → "Firstname Middlename Lastname"
-    It strips unnecessary spaces, handles commas, and preserves middle names/initials.
+    Normalizes name to 'Lastname, Firstname, M.I.' format
+    
+    Handles various name formats more robustly:
+    - Single names
+    - First Last
+    - First Middle Last
+    - Last, First
+    - Last, First Middle
     """
-    # Convert name to a string to handle cases where it's not a string
+    # Convert to string and strip whitespace
     name = str(name).strip()
     
-    # Replace any sequences of whitespace with a single space
+    # Replace multiple spaces with single space
     name = re.sub(r'\s+', ' ', name)
     
     # Handle "Last, First" format
     if ',' in name:
         last, first = name.split(',', 1)
-        normalized_name = f"{first.strip()} {last.strip()}"
+        last = last.strip()
+        first = first.strip()
     else:
-        # If it's already in "First Last" format, just use it
-        normalized_name = name
-
-    # Optionally, remove special characters
-    normalized_name = re.sub(r'[^\w\s]', '', normalized_name)
-
-    return normalized_name
-
+        # Split name into parts
+        parts = name.split()
+        if len(parts) == 1:
+            return parts[0]  # Single name
+        
+        # More robust last name extraction
+        # Assume last name is the last part, but with some intelligence
+        last = parts[-1]
+        first_parts = parts[:-1]
+        first = ' '.join(first_parts)
+    
+    # Extract middle initial (if exists)
+    name_parts = first.split()
+    mi = ''
+    if len(name_parts) > 1:
+        # Check the last part for potential middle initial
+        potential_mi = name_parts[-1]
+        # If it's a single letter or single letter followed by a period
+        if len(potential_mi) == 1 or (len(potential_mi) == 2 and potential_mi[1] == '.'):
+            mi = potential_mi if potential_mi.endswith('.') else potential_mi + '.'
+            # Remove the middle initial from the first name
+            first = ' '.join(name_parts[:-1])
+    
+    # Return normalized name 
+    return f"{last}, {first}, {mi}".rstrip(', ')
 
 # Function to find matching faculty using normalized names and fuzzy logic
 def find_matching_faculty(subject_teacher_name):
@@ -1447,9 +1500,15 @@ def add_groupPOD(request):
             mock_form = GroupInfoMDForm(request.POST)
             final_form = GroupInfoFDForm(request.POST)
             if form.is_valid():
-                section = form.save(commit=False)  # Create the section instance from GroupInfoPOD but don't save yet
-                section2 = mock_form.save(commit=False)  # Create the section instance from GroupInfoMD but don't save yet
-                section3 = final_form.save(commit=False)  # Create the section instance from GroupInfoFD but don't save yet
+                section = form.save(commit=False)
+                section2 = mock_form.save(commit=False)
+                section3 = final_form.save(commit=False)
+
+                # Normalize names
+                section.member1 = normalize_name_improvedPOD(section.member1) if section.member1 else section.member1
+                section.member2 = normalize_name_improvedPOD(section.member2) if section.member2 else section.member2
+                section.member3 = normalize_name_improvedPOD(section.member3) if section.member3 else section.member3
+
 
                 # Get the selected capstone teacher from the form
                 capstone_teacher = section.capstone_teacher
@@ -1583,7 +1642,7 @@ def add_groupPOD(request):
         'error_message': error_message
     })
 
-# Helper function to normalize names (handles commas, extra spaces, and proper casing)
+# # Helper function to normalize names (handles commas, extra spaces, and proper casing)
 def normalize_name_improvedPOD(name):
     """
     Normalize the name for better matching by:
@@ -1614,6 +1673,53 @@ def normalize_name_improvedPOD(name):
 
     return normalized_name
 
+# def normalize_name_improvedPOD(name):
+#     """
+#     Normalizes name to 'Lastname, Firstname, M.I.' format.
+
+#     Handles various name formats robustly:
+#     - Single names
+#     - First Last
+#     - First Middle Last
+#     - Last, First
+#     - Last, First Middle
+#     - Handles middle initials correctly
+#     """
+#     # Convert to string and strip whitespace
+#     name = str(name).strip()
+
+#     # Replace multiple spaces with single space
+#     name = re.sub(r'\s+', ' ', name)
+
+#     # Handle "Last, First" format
+#     if ',' in name:
+#         last, first = name.split(',', 1)
+#         last = last.strip()
+#         first = first.strip()
+#     else:
+#         # Split name into parts
+#         parts = name.split()
+        
+#         if len(parts) == 1:  # Single name
+#             return parts[0]
+#         elif len(parts) == 2:  # First Last
+#             first, last = parts
+#             mi = ''
+#         else:  # First Middle Last or more
+#             first = parts[0]  # First part is always the first name
+#             last = parts[-1]  # Last part is always the last name
+#             potential_mi = parts[-2]  # Second-to-last part for potential middle initial
+            
+#             # Check if the second-to-last part is a middle initial
+#             if len(potential_mi) == 1 or (len(potential_mi) == 2 and potential_mi.endswith('.')):
+#                 mi = potential_mi if potential_mi.endswith('.') else potential_mi + '.'
+#                 first = ' '.join(parts[1:-2])  # Middle parts excluding MI and Last
+#             else:
+#                 mi = ''
+#                 first = ' '.join(parts[1:-1])  # Middle parts excluding Last
+
+#     # Return normalized name
+#     return f"{last}, {first} {mi}".strip()
 
 # Function to find matching faculty using normalized names and fuzzy logic
 def find_matching_faculty(teacher_or_adviser_name):
@@ -2681,7 +2787,9 @@ def grade_view(request, title_id):
     criteria_list = PreOral_EvaluationSection.objects.filter(school_year=selected_school_year).annotate(total_criteria_percentage=Sum('criteria__percentage'))
     criteria_percentage = PreOral_Criteria.objects.filter(school_year=selected_school_year)
     total_points = sum(criteria.percentage for criteria in criteria_percentage)
-    adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
+    adviser_records = ''
+    if not request.user.is_superuser:
+        adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
     
     if not grades.exists():
         member1 = groups.first().member1 if groups.exists() else None
@@ -4308,7 +4416,9 @@ def mock_grade_view(request, title_id):
     criteria_list = Mock_EvaluationSection.objects.filter(school_year=selected_school_year).annotate(total_criteria_percentage=Sum('mcriteria__percentage'))
     criteria_percentage = Mock_Criteria.objects.filter(school_year=selected_school_year)
     total_points = sum(criteria.percentage for criteria in criteria_percentage)
-    adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
+    adviser_records = ''
+    if not request.user.is_superuser:
+        adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
     
     if not grades.exists():
         member1 = groups.first().member1 if groups.exists() else None
@@ -5605,7 +5715,9 @@ def final_grade_view(request, title_id):
     criteria_list = Final_EvaluationSection.objects.filter(school_year=selected_school_year).annotate(total_criteria_percentage=Sum('fcriteria__percentage'))
     criteria_percentage = Final_Criteria.objects.filter(school_year=selected_school_year)
     total_points = sum(criteria.percentage for criteria in criteria_percentage)
-    adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
+    adviser_records = ''
+    if not request.user.is_superuser:
+        adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
     
     if not grades.exists():
         member1 = groups.first().member1 if groups.exists() else None

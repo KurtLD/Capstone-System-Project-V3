@@ -15,52 +15,116 @@ def normalize_members(members):
     """Normalize member names for comparison."""
     return sorted([member.strip().lower() for member in members if member])
 
+# def remove_faculties(excluded_faculty1, excluded_faculty2, members_pod, faculty_bookings, day, slot, faculty_loads):
+#     """Select faculties for the given group, avoiding those in the exclusion lists and preferring those with fewer assignments.
+#        Ensure the first faculty has a master's degree, highest years of teaching, or highest degree among the three."""
+#     prev_panel = []
+#     current_school_year = SchoolYear.get_active_school_year()
+#     # selected_school_year_id = request.session.get('selected_school_year_id')
+#     # # get the last school year added to the db
+#     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # # Get the selected school year from session or fallback to the active school year
+#     # selected_school_year = ''
+#     # if not selected_school_year_id:
+#     #     selected_school_year = last_school_year
+#     #     request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     # else:
+#     #     # Retrieve the selected school year based on the session
+#     #     selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     # # Fetch existing schedules to check for previous panel assignments
+#     schedules = Schedule.objects.filter(school_year=current_school_year, has_been_rescheduled=False)
+
+#     for schedule in schedules:
+#         members_schedule = schedule.get_members()
+#         if normalize_members(members_pod) == normalize_members(members_schedule):
+#             prev_panel.extend(schedule.get_faculties_by_members())
+#             # Remove excluded faculties from the previous panel
+#             prev_panel = [faculty for faculty in prev_panel if faculty not in excluded_faculty1 and faculty not in excluded_faculty2]
+#             if len(set(prev_panel)) >= 3:
+#                 # Ensure uniqueness and return only the first three
+#                 prev_panel = list(set(prev_panel))[:3]
+#                 return validate_lead_faculty(prev_panel)  # Apply the new validation
+
+#     # If not enough faculties, fill up with new ones while balancing load
+#     available_faculties = Faculty.objects.filter(is_active=True).exclude(
+#         id__in=[fac.id for fac in excluded_faculty1 | excluded_faculty2]
+#     )
+#     sorted_faculties = sorted(available_faculties, key=lambda f: faculty_loads[f.id])  # Sort by current load
+
+#     for faculty in sorted_faculties:
+#         # Skip if faculty already has an assignment in the same slot/day
+#         if (faculty.id not in faculty_bookings or slot not in faculty_bookings[faculty.id][day]):
+#             prev_panel.append(faculty)
+#             if len(prev_panel) >= 3:
+#                 break
+
+#     return validate_lead_faculty(list(set(prev_panel))[:3])  # Ensure validation of lead faculty
+
 def remove_faculties(excluded_faculty1, excluded_faculty2, members_pod, faculty_bookings, day, slot, faculty_loads):
-    """Select faculties for the given group, avoiding those in the exclusion lists and preferring those with fewer assignments.
-       Ensure the first faculty has a master's degree, highest years of teaching, or highest degree among the three."""
-    prev_panel = []
+    """
+    Retain the original panel arrangement from the Schedule model while replacing only conflicting faculties.
+    """
     current_school_year = SchoolYear.get_active_school_year()
-    # selected_school_year_id = request.session.get('selected_school_year_id')
-    # # get the last school year added to the db
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-
-    # # Get the selected school year from session or fallback to the active school year
-    # selected_school_year = ''
-    # if not selected_school_year_id:
-    #     selected_school_year = last_school_year
-    #     request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
-    # else:
-    #     # Retrieve the selected school year based on the session
-    #     selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
-
-    # # Fetch existing schedules to check for previous panel assignments
     schedules = Schedule.objects.filter(school_year=current_school_year, has_been_rescheduled=False)
+    prev_panel = []
 
     for schedule in schedules:
         members_schedule = schedule.get_members()
         if normalize_members(members_pod) == normalize_members(members_schedule):
             prev_panel.extend(schedule.get_faculties_by_members())
-            # Remove excluded faculties from the previous panel
-            prev_panel = [faculty for faculty in prev_panel if faculty not in excluded_faculty1 and faculty not in excluded_faculty2]
-            if len(set(prev_panel)) >= 3:
-                # Ensure uniqueness and return only the first three
-                prev_panel = list(set(prev_panel))[:3]
-                return validate_lead_faculty(prev_panel)  # Apply the new validation
 
-    # If not enough faculties, fill up with new ones while balancing load
+            # Create a new panel by replacing only conflicting faculties in their original positions
+            new_panel = []
+            for faculty in prev_panel:
+                if faculty in excluded_faculty1 or faculty in excluded_faculty2:
+                    # Replace conflicting faculty
+                    available_faculties = Faculty.objects.filter(is_active=True).exclude(
+                        id__in=[fac.id for fac in excluded_faculty1 | excluded_faculty2 | {f.id for f in new_panel}]
+                    )
+                    sorted_faculties = sorted(available_faculties, key=lambda f: faculty_loads[f.id])
+                    replacement = next(iter(sorted_faculties), None)  # Pick the first available replacement
+                    if replacement:
+                        new_panel.append(replacement)
+                    else:
+                        new_panel.append(None)  # Add None if no replacement is found
+                else:
+                    # Retain non-conflicting faculty
+                    new_panel.append(faculty)
+
+            # Fill any remaining gaps in the new panel
+            if len(new_panel) < 3:
+                available_faculties = Faculty.objects.filter(is_active=True).exclude(
+                    id__in=[fac.id for fac in excluded_faculty1 | excluded_faculty2 | {f.id for f in new_panel if f}]
+                )
+                sorted_faculties = sorted(available_faculties, key=lambda f: faculty_loads[f.id])
+
+                for faculty in sorted_faculties:
+                    if len(new_panel) < 3:
+                        new_panel.append(faculty)
+                    else:
+                        break
+
+            # Ensure panel size is exactly 3
+            new_panel = [fac for fac in new_panel if fac][:3]
+
+            return new_panel  # Return the updated panel with original order preserved
+
+    # If no previous panel exists, create a new one
     available_faculties = Faculty.objects.filter(is_active=True).exclude(
         id__in=[fac.id for fac in excluded_faculty1 | excluded_faculty2]
     )
-    sorted_faculties = sorted(available_faculties, key=lambda f: faculty_loads[f.id])  # Sort by current load
+    sorted_faculties = sorted(available_faculties, key=lambda f: faculty_loads[f.id])
 
+    new_panel = []
     for faculty in sorted_faculties:
-        # Skip if faculty already has an assignment in the same slot/day
         if (faculty.id not in faculty_bookings or slot not in faculty_bookings[faculty.id][day]):
-            prev_panel.append(faculty)
-            if len(prev_panel) >= 3:
+            new_panel.append(faculty)
+            if len(new_panel) >= 3:
                 break
 
-    return validate_lead_faculty(list(set(prev_panel))[:3])  # Ensure validation of lead faculty
+    return new_panel
 
 
 def validate_lead_faculty(panel):

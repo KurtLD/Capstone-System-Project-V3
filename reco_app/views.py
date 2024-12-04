@@ -110,7 +110,6 @@ logger = logging.getLogger(__name__)
 
 #     return keywords
 
-# Extract keywords including multi-word terms
 def extract_keywords(title):
     doc = nlp(title)
     keywords = set()
@@ -122,8 +121,9 @@ def extract_keywords(title):
             skip_next = False
             continue
 
-        # Ensure there's a token to look at when using nbor()
-        if token.i + 1 < len(doc):
+        # Handle multi-word terms explicitly
+        if token.i + 1 < len(doc):  # Check if the next token exists
+            # Multi-word term matching
             if token.text.lower() == 'machine' and token.nbor(1).text.lower() == 'learning':
                 keywords.add('machine learning')
                 skip_next = True
@@ -134,9 +134,6 @@ def extract_keywords(title):
                 keywords.add('deep learning')
                 skip_next = True
             elif token.text.lower() == 'neural' and token.nbor(1).text.lower() == 'networks':
-                keywords.add('neural networks')
-                skip_next = True
-            elif token.text.lower() == 'neural' and token.nbor(1).text.lower() == 'network':
                 keywords.add('neural networks')
                 skip_next = True
             elif token.text.lower() == 'natural' and token.nbor(1).text.lower() == 'language' and token.nbor(2).text.lower() == 'processing':
@@ -163,26 +160,15 @@ def extract_keywords(title):
             elif token.text.lower() == 'convolutional' and token.nbor(1).text.lower() == 'neural' and token.nbor(2).text.lower() == 'network':
                 keywords.add('convolutional neural network')
                 skip_next = True
-            elif token.text.lower() == 'convolutional' and token.nbor(1).text.lower() == 'neural' and token.nbor(2).text.lower() == 'network':
-                keywords.add('convolutional neural networks')
-                skip_next = True
-            elif token.text.lower() == 'convolutional' and token.nbor(1).text.lower() == 'network':
-                keywords.add('convolutional network')
-                skip_next = True
-            elif token.text.lower() == 'convolutional' and token.nbor(1).text.lower() == 'networks':
-                keywords.add('convolutional networks')
-                skip_next = True
-        else:
-            print(f"Skipping token {token.text} as it does not have enough neighbors.")
 
-            # Include single word tokens that are not stop words
-            if token.pos_ in ['NOUN', 'PROPN', 'ADJ', 'VERB']:
-                if token.text.lower() not in STOP_WORDS and len(token.text) > 1:
-                    keywords.add(token.lemma_.lower())
+        # Always include single-word tokens that are not stop words or single letters
+        if token.pos_ in ['NOUN', 'PROPN', 'ADJ', 'VERB']:
+            if token.text.lower() not in STOP_WORDS and len(token.text) > 1:
+                keywords.add(token.lemma_.lower())
 
-            # Add any important terms
-            if token.text.upper() in IMPORTANT_TERMS:
-                keywords.add(token.text.upper())
+        # Add any important terms (case-sensitive from the list)
+        if token.text.upper() in IMPORTANT_TERMS:
+            keywords.add(token.text.upper())
 
     # Handle synonyms by checking against the EXPERTISE_SYNONYMS
     for keyword in list(keywords):
@@ -507,6 +493,9 @@ def recommend_faculty(request):
                     if member:  # Ensure non-empty strings
                         existing_members_set.add(member)
 
+            valid_member1 = None
+            valid_member2 = None
+            valid_member3 = None
             # Iterate through group_info_options to validate and add members
             for group_info in group_info_options:
                 # Construct the group name
@@ -515,23 +504,28 @@ def recommend_faculty(request):
                 # Check if the group_name already exists in the Adviser model
                 group_exists = Adviser.objects.filter(group_name=group_name, school_year=selected_school_year).exists()
 
-                if not group_exists:
-                    # Append the group name to the list if it doesn't exist
-                    group_names_list.append(group_info)
-                    
-                    # Validate and add non-None, non-existing members to the list
-                    if group_info.member1 and group_info.member1.strip() not in existing_members_set:
+                # Validate and add non-None, non-existing members to the list
+                if group_info.member1 and group_info.member1.strip() not in existing_members_set:
                         members_list.append(group_info.member1.strip())
-                    if group_info.member2 and group_info.member2.strip() not in existing_members_set:
+                        valid_member1 = group_info.member1.strip()
+
+                if group_info.member2 and group_info.member2.strip() not in existing_members_set:
                         members_list.append(group_info.member2.strip())
-                    if group_info.member3 and group_info.member3.strip() not in existing_members_set:
+                        valid_member2 = group_info.member2.strip()
+
+                if group_info.member3 and group_info.member3.strip() not in existing_members_set:
                         members_list.append(group_info.member3.strip())
+                        valid_member3 = group_info.member3.strip()
 
 
             # Log the group names for debugging
-            members_list = list(set(members_list))
-            for name in members_list:
-                print("members_list: ", members_list)
+            # members_list = list(set(members_list))
+            # for name in members_list:
+            #     print("members_list: ", members_list)
+
+
+            # for name in existing_members_set:
+            #     print("existing_members_set: ", existing_members_set)
 
             # Render the recommendation results page
             return render(request, 'admin/reco_app/recommendation_results.html', {
@@ -546,7 +540,14 @@ def recommend_faculty(request):
                 'selected_school_year': selected_school_year,
                 'last_school_year': last_school_year,
                 'school_years': school_years,
-                'adviser_limit_per_faculty': adviser_limit_per_faculty 
+                'adviser_limit_per_faculty': adviser_limit_per_faculty ,
+                'existing_members_set': json.dumps(list(existing_members_set)),  # Pass existing members as a list
+                # 'member1': group_info.member1 if group_info else None,
+                # 'member2': group_info.member2 if group_info else None,
+                # 'member3': group_info.member3 if group_info else None,
+                'member1': valid_member1,
+                'member2': valid_member2,
+                'member3': valid_member3,
             })
 
     else:
@@ -698,7 +699,7 @@ def recommend_faculty_again(request, adviser_id):
             keywords = extract_keywords(title)
 
             # Fetch recommended faculty and their scores
-            ranked_faculty, selected_expertise, adviser_limit_per_faculty = filter_and_rank_faculty(keywords)
+            ranked_faculty, selected_expertise, adviser_limit_per_faculty = filter_and_rank_faculty(request, keywords)
 
             # Create a set of needed expertise names for quick lookup
             needed_expertise_names = set(exp.name for exp in selected_expertise)

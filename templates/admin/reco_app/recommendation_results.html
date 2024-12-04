@@ -190,40 +190,25 @@
                         <!-- Group Info Selection -->
                         <div class="group-info">
                             <label for="group_info">Select Group Member:</label>
-                            <!-- <select id="group_info" name="group_info" required>
-                                {% for group in group_names_list %}
-                                <option value="{{ group.id }}">{{ group.member1 }}<br>
-                                    {{ group.member2 }}<br>
-                                    {{ group.member3 }}
-                                </option>
-                                {% endfor %}
-                            </select> -->
                             <!-- Input Field 1 -->
-                            {% if not member1 %}
-                                <label for="member1">Member 1:</label>
-                                <select id="group_info1" name="group_info1" class="member-select" style="width: 100%;" required></select>
-
-                                <!-- Input Field 2 -->
-                                <label for="member2">Member 2:</label>
-                                <select id="group_info2" name="group_info2" class="member-select" style="width: 100%;" required></select>
-
-                                <!-- Input Field 3 -->
-                                <label for="member3">Member 3:</label>
-                                <select id="group_info3" name="group_info3" class="member-select" style="width: 100%;"></select>
-                            {% else %}
-                                <select id="group_info1" name="group_info1" required>
-                                    <option value="{{ member1 }}">{{ member1 }}</option>
-                                </select>
-
-                                <select id="group_info2" name="group_info2" required>
-                                    <option value="{{ member2 }}">{{ member2 }}</option>
-                                </select>
-
-                                <select id="group_info3" name="group_info3" required>
-                                    <option value="{{ member3 }}">{{ member3 }}</option>
-                                </select>
-                            {% endif %}
+                            <label for="member1">Member 1:</label>
+                            <select id="group_info1" name="group_info1" class="member-select" style="width: 100%;" required>
+                                <option value="{{ member1 }}" selected>{{ member1 }}</option>
+                            </select>
+                        
+                            <!-- Input Field 2 -->
+                            <label for="member2">Member 2:</label>
+                            <select id="group_info2" name="group_info2" class="member-select" style="width: 100%;" required>
+                                <option value="{{ member2 }}" selected>{{ member2 }}</option>
+                            </select>
+                        
+                            <!-- Input Field 3 -->
+                            <label for="member3">Member 3:</label>
+                            <select id="group_info3" name="group_info3" class="member-select" style="width: 100%;">
+                                <option value="{{ member3 }}" selected>{{ member3 }}</option>
+                            </select>
                         </div>
+                        
                         
 
 
@@ -243,6 +228,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -316,32 +302,110 @@
                 $(target).collapse('toggle');
             });
 
-            // Initialize Select2 for all fields
+            // Get members and existing members as arrays
             const membersList = JSON.parse('{{ members_list|escapejs }}');
-            const select2Data = membersList.map(name => ({ id: name, text: name }));
+            const existingMembers = new Set(JSON.parse('{{ existing_members_set|escapejs }}'));
 
-            $('.member-select').select2({
+            // Filter members to exclude those in existingMembers
+            const filteredMembersList = membersList.filter(name => !existingMembers.has(name));
+
+            // Map filtered members to Select2-compatible data
+            const select2Data = filteredMembersList.map(name => ({ id: name, text: name }));
+
+            // Initialize Select2 dropdowns
+            $('#group_info1').select2({
                 data: select2Data,
-                placeholder: 'Select or Search for a Member',
+                placeholder: 'Select or Search for Member 1',
                 allowClear: true,
                 width: '100%'
-            });
+            }).val('{{ member1 }}').trigger('change');
+
+            $('#group_info2').select2({
+                data: select2Data,
+                placeholder: 'Select or Search for Member 2',
+                allowClear: true,
+                width: '100%'
+            }).val('{{ member2 }}').trigger('change');
+
+            $('#group_info3').select2({
+                data: select2Data,
+                placeholder: 'Select or Search for Member 3',
+                allowClear: true,
+                width: '100%'
+            }).val('{{ member3 }}').trigger('change');
+
+
 
             // Print button click event
-            $('#printButton').click(function() {
+            // $('#printButton').click(function() {
+            //     // Open the print dialog
+            //     window.print();
+
+            //     // After the print dialog is closed, proceed to save the data
+            //     setTimeout(function() {
+            //         if (confirm('Did you successfully print the document?')) {
+            //             var groupInfo1 = $('#group_info1').val();
+            //             var groupInfo2 = $('#group_info2').val();
+            //             var groupInfo3 = $('#group_info3').val();
+            //             var facultyId = $('.faculty-item').data('faculty-id');
+            //             var approvedTitle = "{{ title }}";  // Get the approved title from the context
+
+            //             // Sending the data via AJAX
+            //             $.ajax({
+            //                 url: "{% url 'save_adviser' %}",
+            //                 method: "POST",
+            //                 data: {
+            //                     faculty_id: facultyId,
+            //                     group_info1: groupInfo1,
+            //                     group_info2: groupInfo2,
+            //                     group_info3: group_info3,
+            //                     approved_title: approvedTitle,
+            //                     csrfmiddlewaretoken: '{{ csrf_token }}'  // Ensure the CSRF token is passed
+            //                 },
+            //                 success: function(response) {
+            //                     alert('Adviser information successfully updated!');
+            //                      // Redirect to the adviser list page after success
+            //                     window.location.href = "{% url 'adviser_list' %}";
+            //                 },
+            //                 error: function(xhr, status, error) {
+            //                     alert('An error occurred: ' + error);
+            //                 }
+            //             });
+            //         }
+            //         else{
+            //             alert("not success");
+            //         }
+
+            //     }, 0);  // Use a minimal delay (could be increased if needed)
+            // });
+            $('#printButton').click(function () {
                 // Open the print dialog
                 window.print();
 
                 // After the print dialog is closed, proceed to save the data
-                setTimeout(function() {
+                setTimeout(function () {
                     if (confirm('Did you successfully print the document?')) {
+                        // Debugging: Log values
+                        console.log("Confirmation successful");
+
                         var groupInfo1 = $('#group_info1').val();
                         var groupInfo2 = $('#group_info2').val();
                         var groupInfo3 = $('#group_info3').val();
                         var facultyId = $('.faculty-item').data('faculty-id');
-                        var approvedTitle = "{{ title }}";  // Get the approved title from the context
+                        var approvedTitle = "{{ title }}";
 
-                        // Sending the data via AJAX
+                        console.log("facultyId:", facultyId);
+                        console.log("groupInfo1:", groupInfo1);
+                        console.log("groupInfo2:", groupInfo2);
+                        console.log("groupInfo3:", groupInfo3);
+                        console.log("approvedTitle:", approvedTitle);
+
+                        if (!facultyId || !groupInfo1 || !approvedTitle) {
+                            alert("Missing required data. Please check and try again.");
+                            return;
+                        }
+
+                        // AJAX request
                         $.ajax({
                             url: "{% url 'save_adviser' %}",
                             method: "POST",
@@ -349,22 +413,26 @@
                                 faculty_id: facultyId,
                                 group_info1: groupInfo1,
                                 group_info2: groupInfo2,
-                                group_info3: group_info3,
+                                group_info3: groupInfo3,
                                 approved_title: approvedTitle,
-                                csrfmiddlewaretoken: '{{ csrf_token }}'  // Ensure the CSRF token is passed
+                                csrfmiddlewaretoken: '{{ csrf_token }}'
                             },
-                            success: function(response) {
-                                alert('Adviser information successfully updated!');
-                                 // Redirect to the adviser list page after success
+                            success: function (response) {
+                                console.log("Success:", response);
+                                alert('Adviser information successfully saved!');
                                 window.location.href = "{% url 'adviser_list' %}";
                             },
-                            error: function(xhr, status, error) {
+                            error: function (xhr, status, error) {
+                                console.error("Error occurred:", error);
                                 alert('An error occurred: ' + error);
                             }
                         });
+                    } else {
+                        alert("Action canceled by user.");
                     }
-                }, 0);  // Use a minimal delay (could be increased if needed)
+                }, 100); // Minimal delay
             });
+
         });
     </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

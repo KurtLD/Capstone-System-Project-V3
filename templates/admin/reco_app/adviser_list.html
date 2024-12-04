@@ -131,21 +131,22 @@
                                       </span>
                                   </div> -->
                                   <!-- Pagination controls -->
-                                    <div class="pagination">
-                                        <span class="step-links">
-                                            {% if page_obj.has_previous %}
-                                            <a href="?page=1&q={{ query }}&filter_status={{ filter_status }}">&laquo;</a>
-                                            <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&filter_status={{ filter_status }}">&lsaquo;</a>
-                                            {% endif %}
-                                            <span class="current">
-                                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                                            </span>
-                                            {% if page_obj.has_next %}
-                                            <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&filter_status={{ filter_status }}">&rsaquo;</a>
-                                            <a href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&filter_status={{ filter_status }}">&raquo;</a>
-                                            {% endif %}
+                                  <div class="pagination">
+                                    <span class="step-links">
+                                        {% if page_obj.has_previous %}
+                                            <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if filter_status %}&filter_status={{ filter_status }}{% endif %}">&laquo;</a>
+                                            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if filter_status %}&filter_status={{ filter_status }}{% endif %}">&lsaquo;</a>
+                                        {% endif %}
+                                        <span class="current">
+                                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                                         </span>
-                                    </div>
+                                        {% if page_obj.has_next %}
+                                            <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if filter_status %}&filter_status={{ filter_status }}{% endif %}">&rsaquo;</a>
+                                            <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if filter_status %}&filter_status={{ filter_status }}{% endif %}">&raquo;</a>
+                                        {% endif %}
+                                    </span>
+                                  </div>
+                                
 
                               </div>
                           </div>
