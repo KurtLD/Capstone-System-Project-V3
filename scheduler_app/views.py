@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import GroupInfoTHForm, UploadFileForm, GenerateScheduleForm, GroupInfoPODForm, GroupInfoMDForm, GroupInfoFDForm, RoomForm
+from .forms import GroupInfoTHForm, UploadFileForm, GenerateScheduleForm, GroupInfoPODForm, GroupInfoPODEditForm, GroupInfoMDForm, GroupInfoMDEditForm, GroupInfoFDForm, GroupInfoFDEditForm, RoomForm
 from .models import GroupInfoTH, Faculty, Schedule, GroupInfoPOD, SchedulePOD, GroupInfoMD, ScheduleMD, GroupInfoFD, ScheduleFD, Room
 from .utils import generate_schedule, get_faculty_assignments
 from .utils2 import generate_schedulePOD, get_faculty_assignmentsPOD
@@ -2986,7 +2986,7 @@ def update_groupPOD(request, group_id):
     
     
     if request.method == 'POST':
-        form = GroupInfoPODForm(request.POST, instance=group)
+        form = GroupInfoPODEditForm(request.POST, instance=group)
         if form.is_valid():
             members = f"{group.member1}<br>{group.member2}<br>{group.member3}"
             print("members: ", members)
@@ -3028,7 +3028,7 @@ def update_groupPOD(request, group_id):
                 
                 return redirect(reverse('carousel_page') + '#preoral-details')
     else:
-        form = GroupInfoPODForm(instance=group)
+        form = GroupInfoPODEditForm(instance=group)
     
     return render(request, 'admin/pre_oral/update_groupPOD.html', {'form': form, 'group': group, 'capstone_teachers': capstone_teachers, 'advisers': advisers})
 
@@ -3081,6 +3081,10 @@ def update_mock_record(group, group_id):
     """
     Updates the Adviser record with the group's approved title and adviser information.
     """
+    member1=groups.member1
+    member2=groups.member2
+    member3=groups.member3
+    print("member1: ", member1)
     try:
         mock_record = GroupInfoMD.objects.filter(member1=groups.member1, member2=groups.member2, member3=groups.member3, school_year=active_school_year)
         final_record = GroupInfoFD.objects.filter(member1=groups.member1, member2=groups.member2, member3=groups.member3, school_year=active_school_year)
@@ -3308,7 +3312,7 @@ def update_groupMD(request, mgroup_id):
     print("previous_capstone_teacher: ", previous_capstone_teacher)
     
     if request.method == 'POST':
-        form = GroupInfoMDForm(request.POST, instance=mgroup)
+        form = GroupInfoMDEditForm(request.POST, instance=mgroup)
         if form.is_valid():
             members = f"{mgroup.member1}<br>{mgroup.member2}<br>{mgroup.member3}"
             print("members: ", members)
@@ -3346,7 +3350,7 @@ def update_groupMD(request, mgroup_id):
                 
                 return redirect(reverse('carousel_page') + '#preoral-details')
     else:
-        form = GroupInfoMDForm(instance=mgroup)
+        form = GroupInfoMDEditForm(instance=mgroup)
     
     return render(request, 'admin/pre_oral/update_groupPOD.html', {'form': form, 'mgroup': mgroup, 'capstone_teachers': capstone_teachers, 'advisers': advisers})
 
@@ -4670,7 +4674,7 @@ def update_groupFD(request, fgroup_id):
     print("previous_capstone_teacher: ", previous_capstone_teacher)
     
     if request.method == 'POST':
-        form = GroupInfoFDForm(request.POST, instance=fgroup)
+        form = GroupInfoFDEditForm(request.POST, instance=fgroup)
         if form.is_valid():
             members = f"{fgroup.member1}<br>{fgroup.member2}<br>{fgroup.member3}"
             print("members: ", members)
@@ -4705,7 +4709,7 @@ def update_groupFD(request, fgroup_id):
                 
                 return redirect(reverse('carousel_page') + '#preoral-details')
     else:
-        form = GroupInfoFDForm(instance=fgroup)
+        form = GroupInfoFDEditForm(instance=fgroup)
     
     return render(request, 'admin/pre_oral/update_groupPOD.html', {'form': form, 'fgroup': fgroup, 'capstone_teachers': capstone_teachers, 'advisers': advisers})
 
@@ -5915,9 +5919,9 @@ def carousel_view(request):
     page_group_infoMD = paginator_group_infoMD.get_page(page_number_group_infoMD)
     page_group_infoFD = paginator_group_infoFD.get_page(page_number_group_infoFD)
 
-    forms = {group.id: GroupInfoPODForm(instance=group) for group in group_infoPOD}
-    md_forms = {mgroup.id: GroupInfoMDForm(instance=mgroup) for mgroup in group_infoMD}
-    fd_forms = {fgroup.id: GroupInfoFDForm(instance=fgroup) for fgroup in group_infoFD}
+    forms = {group.id: GroupInfoPODEditForm(instance=group) for group in group_infoPOD}
+    md_forms = {mgroup.id: GroupInfoMDEditForm(instance=mgroup) for mgroup in group_infoMD}
+    fd_forms = {fgroup.id: GroupInfoFDEditForm(instance=fgroup) for fgroup in group_infoFD}
 
     # Create a dictionary to map thgroups to their schedules
     group_schedules = {schedule.group.id: schedule for schedule in schedules}

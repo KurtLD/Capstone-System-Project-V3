@@ -45,17 +45,72 @@ class RoomForm(forms.ModelForm):
         return name
 
 
+# class GroupInfoTHForm(forms.ModelForm):
+#     class Meta:
+#         model = GroupInfoTH
+#         fields = ['member1', 'member2', 'member3', 'section', 'subject_teacher']
+#         widgets = {
+#             'member1': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(e.g., Delacruz, Juan T.)', 'required': 'required'}),
+#             'member2': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(e.g., Delacruz, Juan T.)', 'required': 'required'}),
+#             'member3': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(e.g., Delacruz, Juan T.)', 'required': 'required'}),
+#             'section': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Section', 'required': 'required'}),
+#             'subject_teacher': forms.Select(attrs={'class': 'form-control', 'required': 'required'}),
+#         }
+
 class GroupInfoTHForm(forms.ModelForm):
+    # Adding separate fields for members
+    member1_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+    )
+    member1_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+    )
+    member1_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+    # Repeat for member2
+    member2_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+    )
+    member2_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+    )
+    member2_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+    # Repeat for member3
+    member3_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+    )
+    member3_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+    )
+    member3_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+
     class Meta:
         model = GroupInfoTH
-        fields = ['member1', 'member2', 'member3', 'section', 'subject_teacher']
-        widgets = {
-            'member1': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(e.g., Delacruz, Juan T.)', 'required': 'required'}),
-            'member2': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(e.g., Delacruz, Juan T.)', 'required': 'required'}),
-            'member3': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(e.g., Delacruz, Juan T.)', 'required': 'required'}),
-            'section': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Section', 'required': 'required'}),
-            'subject_teacher': forms.Select(attrs={'class': 'form-control', 'required': 'required'}),
-        }
+        fields = ['section', 'subject_teacher']
+
+    def save(self, commit=True):
+        # Save the concatenated member fields
+        instance = super().save(commit=False)
+        instance.member1 = f"{self.cleaned_data['member1_last_name']}, {self.cleaned_data['member1_first_name']} {self.cleaned_data['member1_middle_initial']}".strip()
+        instance.member2 = f"{self.cleaned_data['member2_last_name']}, {self.cleaned_data['member2_first_name']} {self.cleaned_data['member2_middle_initial']}".strip()
+        instance.member3 = f"{self.cleaned_data['member3_last_name']}, {self.cleaned_data['member3_first_name']} {self.cleaned_data['member3_middle_initial']}".strip()
+        if commit:
+            instance.save()
+        return instance
 
 class UploadFileForm(forms.Form):
     upload_file = forms.FileField()
@@ -64,7 +119,192 @@ class GenerateScheduleForm(forms.Form):
     # No fields needed, just a submit button
     pass
 
+# Forms For Adding
 class GroupInfoPODForm(forms.ModelForm):
+    # Adding separate fields for members
+    member1_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+    )
+    member1_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+    )
+    member1_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+    
+    member2_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+    )
+    member2_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+    )
+    member2_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+    
+    member3_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
+    )
+    member3_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
+    )
+    member3_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+
+    class Meta:
+        model = GroupInfoPOD
+        fields = ['member1', 'member2', 'member3', 'title', 'capstone_teacher', 'section', 'adviser']
+
+    def __init__(self, *args, **kwargs):
+        super(GroupInfoPODForm, self).__init__(*args, **kwargs)
+        active_faculty = Faculty.objects.filter(is_active=True)
+        self.fields['adviser'].queryset = active_faculty
+        self.fields['capstone_teacher'].queryset = active_faculty
+
+    def save(self, commit=True):
+        # Save the concatenated member fields
+        instance = super().save(commit=False)
+        instance.member1 = f"{self.cleaned_data['member1_last_name']}, {self.cleaned_data['member1_first_name']} {self.cleaned_data['member1_middle_initial']}".strip()
+        instance.member2 = f"{self.cleaned_data['member2_last_name']}, {self.cleaned_data['member2_first_name']} {self.cleaned_data['member2_middle_initial']}".strip()
+        instance.member3 = f"{self.cleaned_data['member3_last_name']}, {self.cleaned_data['member3_first_name']} {self.cleaned_data['member3_middle_initial']}".strip()
+        if commit:
+            instance.save()
+        return instance
+
+class GroupInfoMDForm(forms.ModelForm):
+    # Adding separate fields for members
+    member1_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+    )
+    member1_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+    )
+    member1_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+    
+    member2_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+    )
+    member2_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+    )
+    member2_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+    
+    member3_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
+    )
+    member3_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
+    )
+    member3_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+
+    class Meta:
+        model = GroupInfoMD
+        fields = ['member1', 'member2', 'member3', 'title', 'capstone_teacher', 'section', 'adviser']
+
+    def __init__(self, *args, **kwargs):
+        super(GroupInfoMDForm, self).__init__(*args, **kwargs)
+        active_faculty = Faculty.objects.filter(is_active=True)
+        self.fields['adviser'].queryset = active_faculty
+        self.fields['capstone_teacher'].queryset = active_faculty
+
+    def save(self, commit=True):
+        # Save the concatenated member fields
+        instance = super().save(commit=False)
+        instance.member1 = f"{self.cleaned_data['member1_last_name']}, {self.cleaned_data['member1_first_name']} {self.cleaned_data['member1_middle_initial']}".strip()
+        instance.member2 = f"{self.cleaned_data['member2_last_name']}, {self.cleaned_data['member2_first_name']} {self.cleaned_data['member2_middle_initial']}".strip()
+        instance.member3 = f"{self.cleaned_data['member3_last_name']}, {self.cleaned_data['member3_first_name']} {self.cleaned_data['member3_middle_initial']}".strip()
+        if commit:
+            instance.save()
+        return instance
+
+class GroupInfoFDForm(forms.ModelForm):
+    # Adding separate fields for members
+    member1_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+    )
+    member1_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+    )
+    member1_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+    
+    member2_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+    )
+    member2_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+    )
+    member2_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+    
+    member3_last_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
+    )
+    member3_first_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
+    )
+    member3_middle_initial = forms.CharField(
+        max_length=1,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
+    )
+
+    class Meta:
+        model = GroupInfoFD
+        fields = ['member1', 'member2', 'member3', 'title', 'capstone_teacher', 'section', 'adviser']
+
+    def __init__(self, *args, **kwargs):
+        super(GroupInfoFDForm, self).__init__(*args, **kwargs)
+        active_faculty = Faculty.objects.filter(is_active=True)
+        self.fields['adviser'].queryset = active_faculty
+        self.fields['capstone_teacher'].queryset = active_faculty
+
+    def save(self, commit=True):
+        # Save the concatenated member fields
+        instance = super().save(commit=False)
+        instance.member1 = f"{self.cleaned_data['member1_last_name']}, {self.cleaned_data['member1_first_name']} {self.cleaned_data['member1_middle_initial']}".strip()
+        instance.member2 = f"{self.cleaned_data['member2_last_name']}, {self.cleaned_data['member2_first_name']} {self.cleaned_data['member2_middle_initial']}".strip()
+        instance.member3 = f"{self.cleaned_data['member3_last_name']}, {self.cleaned_data['member3_first_name']} {self.cleaned_data['member3_middle_initial']}".strip()
+        if commit:
+            instance.save()
+        return instance
+
+# Forms for Editing
+class GroupInfoPODEditForm(forms.ModelForm):
     class Meta:
         model = GroupInfoPOD
         fields = ['member1', 'member2', 'member3', 'title', 'capstone_teacher', 'section', 'adviser']
@@ -77,12 +317,12 @@ class GroupInfoPODForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(GroupInfoPODForm, self).__init__(*args, **kwargs)
+        super(GroupInfoPODEditForm, self).__init__(*args, **kwargs)
         active_faculty = Faculty.objects.filter(is_active=True)
         self.fields['adviser'].queryset = active_faculty
         self.fields['capstone_teacher'].queryset = active_faculty
 
-class GroupInfoMDForm(forms.ModelForm):
+class GroupInfoMDEditForm(forms.ModelForm):
     class Meta:
         model = GroupInfoMD
         fields = ['member1', 'member2', 'member3', 'title', 'capstone_teacher', 'section', 'adviser']
@@ -95,12 +335,12 @@ class GroupInfoMDForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(GroupInfoMDForm, self).__init__(*args, **kwargs)
+        super(GroupInfoMDEditForm, self).__init__(*args, **kwargs)
         active_faculty = Faculty.objects.filter(is_active=True)
         self.fields['adviser'].queryset = active_faculty
         self.fields['capstone_teacher'].queryset = active_faculty
 
-class GroupInfoFDForm(forms.ModelForm):
+class GroupInfoFDEditForm(forms.ModelForm):
     class Meta:
         model = GroupInfoFD
         fields = ['member1', 'member2', 'member3', 'title', 'capstone_teacher', 'section', 'adviser']
@@ -113,7 +353,10 @@ class GroupInfoFDForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(GroupInfoFDForm, self).__init__(*args, **kwargs)
+        super(GroupInfoFDEditForm, self).__init__(*args, **kwargs)
         active_faculty = Faculty.objects.filter(is_active=True)
         self.fields['adviser'].queryset = active_faculty
         self.fields['capstone_teacher'].queryset = active_faculty
+
+
+

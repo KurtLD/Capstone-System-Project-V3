@@ -19,6 +19,7 @@ from scheduler_app.models import GroupInfoPOD
 import json
 from django.urls import reverse
 from .my_dictionary import IMPORTANT_TERMS, EXPERTISE_SYNONYMS, EXPERTISE_DICTIONARY
+from django.db.models.functions import Lower
 
 
 # Load the spaCy model
@@ -457,7 +458,7 @@ def recommend_faculty(request):
             # Check if the title has an assigned adviser
             try:
                 # Check if there's an adviser with the title where declined is False
-                adviser = Adviser.objects.get(approved_title=title, declined=False)
+                adviser = Adviser.objects.get(approved_title__iexact=title, declined=False)
 
                 # If found, proceed with the existing behavior
                 return render(request, 'admin/reco_app/adviser_info.html', {
@@ -467,7 +468,7 @@ def recommend_faculty(request):
                 })
             except Adviser.DoesNotExist:
                 # Handle case where no adviser with declined=False exists
-                adviser = Adviser.objects.filter(approved_title=title, declined=True).first()
+                adviser = Adviser.objects.filter(approved_title__iexact=title, declined=True).first()
 
                 if adviser:
                     # If a declined adviser exists, redirect to the recommendation page
