@@ -107,15 +107,7 @@
                         <span class="ml-2 custom-span">Recommend Adviser</span>
                     </a>
                 </li>
-                <li>
-                    <a href="{% url 'room_list' %}"  class="flex items-center px-2 py-2 nav-link text-md">
-                        <span class="fa-stack fa-md">
-                            <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
-                            <i class="fas fa-door-open fa-stack-1x" style="color: #900303;"></i>
-                        </span>
-                        <span class="ml-2 custom-span">Add Room</span>
-                    </a>
-                </li>
+                
                 <li>
                     <a href="{% url 'add_group' %}" class="flex items-center px-2 py-2 nav-link text-md">
                         <span class="fa-stack fa-md">
@@ -125,6 +117,7 @@
                         <span class="ml-2 custom-span">Add Group Title Hearing</span>
                     </a>
                 </li>
+
                 <li>
                     <a href="{% url 'add_groupPOD' %}" class="flex items-center px-2 py-2 nav-link text-md">
                         <span class="fa-stack fa-md">
@@ -201,6 +194,17 @@
                     </li>
                 </ul>
             </li>
+
+            <li>
+                <a href="{% url 'room_list' %}"  class="flex items-center px-2 py-2 nav-link text-md">
+                    <span class="fa-stack fa-md">
+                        <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                        <i class="fas fa-door-open fa-stack-1x" style="color: #900303;"></i>
+                    </span>
+                    <span class="ml-2 custom-span">Manage Room</span>
+                </a>
+            </li>
+
             <li>
                 <a href="{% url 'audit_logs' %}" class="flex items-center px-2 py-2 nav-link text-md">
                     <span class="fa-stack fa-md">

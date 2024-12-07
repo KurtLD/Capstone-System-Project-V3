@@ -216,9 +216,14 @@
                         <div class="button-container">
                             <!-- Back Button -->
                             <a href="javascript:history.back()" class="back-button no-print">Back</a>
-                            <!-- Print Button -->
-                            <button id="printButton" class=" btn btn-printButton no-print">Print Results and Save Adviser</button> 
+                            <!-- Print and Save Button -->
+                            <button id="printButton" class="btn btn-printButton no-print">Print Results and Save Adviser</button>
+                            <!-- Save Without Printing Button -->
+                            <button id="saveWithoutPrintButton" class="btn btn-printButton no-print">Save Without Printing</button>
+                            <!-- Print Without Saving Button -->
+                            <button id="printWithoutSaveButton" class="btn btn-printButton no-print">Print Without Saving</button>
                         </div>
+                        
                     </div>
                 </main>
                   <!-- Footer -->
@@ -334,23 +339,34 @@
                 width: '25%'
             }).val('{{ member3 }}').trigger('change');
 
-
-
-            // Print button click event
-            // $('#printButton').click(function() {
+            // $('#printButton').click(function () {
             //     // Open the print dialog
             //     window.print();
 
             //     // After the print dialog is closed, proceed to save the data
-            //     setTimeout(function() {
+            //     setTimeout(function () {
             //         if (confirm('Did you successfully print the document?')) {
+            //             // Debugging: Log values
+            //             console.log("Confirmation successful");
+
             //             var groupInfo1 = $('#group_info1').val();
             //             var groupInfo2 = $('#group_info2').val();
             //             var groupInfo3 = $('#group_info3').val();
             //             var facultyId = $('.faculty-item').data('faculty-id');
-            //             var approvedTitle = "{{ title }}";  // Get the approved title from the context
+            //             var approvedTitle = "{{ title }}";
 
-            //             // Sending the data via AJAX
+            //             console.log("facultyId:", facultyId);
+            //             console.log("groupInfo1:", groupInfo1);
+            //             console.log("groupInfo2:", groupInfo2);
+            //             console.log("groupInfo3:", groupInfo3);
+            //             console.log("approvedTitle:", approvedTitle);
+
+            //             if (!facultyId || !groupInfo1 || !approvedTitle) {
+            //                 alert("Missing required data. Please check and try again.");
+            //                 return;
+            //             }
+
+            //             // AJAX request
             //             $.ajax({
             //                 url: "{% url 'save_adviser' %}",
             //                 method: "POST",
@@ -358,82 +374,89 @@
             //                     faculty_id: facultyId,
             //                     group_info1: groupInfo1,
             //                     group_info2: groupInfo2,
-            //                     group_info3: group_info3,
+            //                     group_info3: groupInfo3,
             //                     approved_title: approvedTitle,
-            //                     csrfmiddlewaretoken: '{{ csrf_token }}'  // Ensure the CSRF token is passed
+            //                     csrfmiddlewaretoken: '{{ csrf_token }}'
             //                 },
-            //                 success: function(response) {
-            //                     alert('Adviser information successfully updated!');
-            //                      // Redirect to the adviser list page after success
+            //                 success: function (response) {
+            //                     console.log("Success:", response);
+            //                     alert('Adviser information successfully saved!');
             //                     window.location.href = "{% url 'adviser_list' %}";
             //                 },
-            //                 error: function(xhr, status, error) {
+            //                 error: function (xhr, status, error) {
+            //                     console.error("Error occurred:", error);
             //                     alert('An error occurred: ' + error);
             //                 }
             //             });
+            //         } else {
+            //             alert("Action canceled by user.");
             //         }
-            //         else{
-            //             alert("not success");
-            //         }
-
-            //     }, 0);  // Use a minimal delay (could be increased if needed)
+            //     }, 100); // Minimal delay
             // });
+            // Print and Save Button
             $('#printButton').click(function () {
-                // Open the print dialog
                 window.print();
 
-                // After the print dialog is closed, proceed to save the data
                 setTimeout(function () {
                     if (confirm('Did you successfully print the document?')) {
-                        // Debugging: Log values
-                        console.log("Confirmation successful");
-
-                        var groupInfo1 = $('#group_info1').val();
-                        var groupInfo2 = $('#group_info2').val();
-                        var groupInfo3 = $('#group_info3').val();
-                        var facultyId = $('.faculty-item').data('faculty-id');
-                        var approvedTitle = "{{ title }}";
-
-                        console.log("facultyId:", facultyId);
-                        console.log("groupInfo1:", groupInfo1);
-                        console.log("groupInfo2:", groupInfo2);
-                        console.log("groupInfo3:", groupInfo3);
-                        console.log("approvedTitle:", approvedTitle);
-
-                        if (!facultyId || !groupInfo1 || !approvedTitle) {
-                            alert("Missing required data. Please check and try again.");
-                            return;
-                        }
-
-                        // AJAX request
-                        $.ajax({
-                            url: "{% url 'save_adviser' %}",
-                            method: "POST",
-                            data: {
-                                faculty_id: facultyId,
-                                group_info1: groupInfo1,
-                                group_info2: groupInfo2,
-                                group_info3: groupInfo3,
-                                approved_title: approvedTitle,
-                                csrfmiddlewaretoken: '{{ csrf_token }}'
-                            },
-                            success: function (response) {
-                                console.log("Success:", response);
-                                alert('Adviser information successfully saved!');
-                                window.location.href = "{% url 'adviser_list' %}";
-                            },
-                            error: function (xhr, status, error) {
-                                console.error("Error occurred:", error);
-                                alert('An error occurred: ' + error);
-                            }
-                        });
+                        saveAdviserData();
                     } else {
                         alert("Action canceled by user.");
                     }
-                }, 100); // Minimal delay
+                }, 100);
             });
 
+            // Save Without Printing Button
+            $('#saveWithoutPrintButton').click(function () {
+                if (confirm('Do you want to save without printing?')) {
+                    saveAdviserData();
+                }
+            });
+
+            // Print Without Saving Button
+            $('#printWithoutSaveButton').click(function () {
+                window.print();
+            });
+
+            // Save Adviser Data Function
+            function saveAdviserData() {
+                var groupInfo1 = $('#group_info1').val();
+                var groupInfo2 = $('#group_info2').val();
+                var groupInfo3 = $('#group_info3').val();
+                var facultyId = $('.faculty-item').data('faculty-id');
+                var approvedTitle = "{{ title }}";
+
+                if (!facultyId || !groupInfo1 || !approvedTitle) {
+                    alert("Missing required data. Please check and try again.");
+                    return;
+                }
+
+                $.ajax({
+                    url: "{% url 'save_adviser' %}",
+                    method: "POST",
+                    data: {
+                        faculty_id: facultyId,
+                        group_info1: groupInfo1,
+                        group_info2: groupInfo2,
+                        group_info3: groupInfo3,
+                        approved_title: approvedTitle,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function (response) {
+                        console.log("Success:", response);
+                        alert('Adviser information successfully saved!');
+                        window.location.href = "{% url 'adviser_list' %}";
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error occurred:", error);
+                        alert('An error occurred: ' + error);
+                    }
+                });
+            }
+
         });
+
+        
     </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Include Select2 -->
