@@ -31,7 +31,8 @@ class Schedule(models.Model):
     slot = models.CharField(max_length=20)  # e.g., "8AM-9AM", "1PM-2PM"
     date = models.CharField(max_length=10)
     day = models.CharField(max_length=10, default="Day 0")  # ex. Day 1, Day 2.....n
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, default=None) 
+    # room = models.ForeignKey(Room, on_delete=models.CASCADE, default=None) 
+    room = models.CharField(max_length=255, default=None)
     created_at = models.DateTimeField(default=timezone.now)
     new_sched = models.BooleanField(default=False)
 
@@ -88,7 +89,8 @@ class SchedulePOD(models.Model):
     slot = models.CharField(max_length=20)  # e.g., "8AM-9AM", "1PM-2PM"
     date = models.CharField(max_length=10)  # e.g., "Day 1"
     day = models.CharField(max_length=10, default="Day 0")  # ex. Day 1, Day 2.....n
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, default=None) 
+    # room = models.ForeignKey(Room, on_delete=models.CASCADE, default=None) 
+    room = models.CharField(max_length=255, default=None)
     adviser = models.ForeignKey(Faculty, related_name='adviserPOD_sched', on_delete=models.CASCADE)
     capstone_teacher = models.ForeignKey(Faculty, related_name='capstone_teacherPOD_sched', on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
@@ -144,7 +146,8 @@ class ScheduleMD(models.Model):
     slot = models.CharField(max_length=20)  # e.g., "8AM-9AM", "1PM-2PM"
     date = models.CharField(max_length=10)  # e.g., "Day 1"
     day = models.CharField(max_length=10, default="Day 0")  #ex. Day 1, Day 2.....n
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, default=None) 
+    # room = models.ForeignKey(Room, on_delete=models.CASCADE, default=None) 
+    room = models.CharField(max_length=255, default=None)
     adviser = models.ForeignKey(Faculty, related_name='adviserMD_sched', on_delete=models.CASCADE)
     capstone_teacher = models.ForeignKey(Faculty, related_name='capstone_teacherMD_sched', on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
@@ -200,7 +203,8 @@ class ScheduleFD(models.Model):
     slot = models.CharField(max_length=20)  # e.g., "8AM-9AM", "1PM-2PM"
     date = models.CharField(max_length=10)  # e.g., "Day 1"
     day = models.CharField(max_length=10, default="Day 0")  #ex. Day 1, Day 2.....n
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, default=None) 
+    # room = models.ForeignKey(Room, on_delete=models.CASCADE, default=None) 
+    room = models.CharField(max_length=255, default=None)
     adviser = models.ForeignKey(Faculty, related_name='adviserFD_sched', on_delete=models.CASCADE)
     capstone_teacher = models.ForeignKey(Faculty, related_name='capstone_teacherFD_sched', on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)

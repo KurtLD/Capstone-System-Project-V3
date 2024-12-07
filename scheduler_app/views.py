@@ -65,6 +65,7 @@ from django.db import models
 logger = logging.getLogger(__name__)
 
 from django.db.models import Count, Case, When, Value, IntegerField, Subquery, OuterRef, Exists, BooleanField
+
 def room_list(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
