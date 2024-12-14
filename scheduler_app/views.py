@@ -45,6 +45,8 @@ from users.models import (
     Final_Checkbox,
     Final_Grade, 
     Final_Recos, 
+
+    Notif
     )
 from django.core.paginator import Paginator
 from reco_app.models import Adviser
@@ -783,6 +785,13 @@ def reschedule(request, schedule_id):
                             ip_address=request.META.get('REMOTE_ADDR')
                         )
 
+                        # creating a notif
+                        Notif.objects.create(
+                            created_by=request.user,
+                            notif=f"This Title Hearing Group: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})"
+                        )
+
+
                         # return redirect('schedule_list')
                         url = reverse('schedule_list')
                         new_slot=next_slot,
@@ -874,7 +883,11 @@ def reschedule(request, schedule_id):
                             ip_address=request.META.get('REMOTE_ADDR')
                         )
 
-
+                        # creating a notif
+                        Notif.objects.create(
+                            created_by=request.user,
+                            notif=f"This Title Hearing Group: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})"
+                        )
 
                         # return redirect('schedule_list')
                         url = reverse('schedule_list')
@@ -1009,6 +1022,12 @@ def reassign(request, schedule_id):
                     user=request.user,
                     action=f"Rescheduled Title Hearing Group: {schedule.group} from {schedule.slot} on {schedule.date} ({schedule.day}) to {new_time_str} on {new_date.strftime('%B %d, %Y')} (Day {day_count})",
                     ip_address=request.META.get('REMOTE_ADDR')
+                )
+
+                # creating a notif
+                Notif.objects.create(
+                    created_by=request.user,
+                    notif=f"This Title Hearing Group: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {new_time_str} on {new_date.strftime('%B %d, %Y')} (Day {day_count})"
                 )
 
                 messages.success(request, 'Schedule rescheduled successfully.')

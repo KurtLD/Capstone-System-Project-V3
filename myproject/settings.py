@@ -75,6 +75,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'myproject.context_processors.version',  
+                'users.context_processors.notification_count',
             ],
         },
     },

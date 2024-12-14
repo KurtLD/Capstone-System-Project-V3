@@ -395,3 +395,23 @@ class Final_Recos(models.Model):
         return f"Recommendation for the title: {self.project_title}"
 
 
+class Notif(models.Model):
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    notif = models.CharField(max_length=255, default="NONE")
+    time = models.DateTimeField(default=timezone.now)
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, default=None, null=True, blank=True)
+    read_by = models.ManyToManyField(User, related_name='read_notifications', blank=True)
+
+    def __str__(self):
+        return f"A notif created: '{self.notif}' at {self.time}"
+
+class UserNotif(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    notif = models.ForeignKey(Notif, on_delete=models.CASCADE)
+    read = models.BooleanField(default=False)
+    
+    class Meta:
+        unique_together = ('user', 'notif')  # Ensures a user can only have one entry per notification
+
+    def __str__(self):
+        return f"User {self.user.username} has read {self.notif.notif}"

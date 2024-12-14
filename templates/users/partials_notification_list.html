@@ -1,0 +1,15 @@
+<ul class="notification-list" id="notification-list">
+    {% for notification in notifications %}
+    <li class="{% if request.user in notification.read_by.all %}read{% else %}unread{% endif %}">
+        <div>
+            <strong>{{ notification.notif|safe }}</strong><br>
+            <small>{{ notification.time|date:"M d, Y H:i" }}</small>
+        </div>
+        {% if request.user in notification.read_by.all %}
+        <span class="read-label">Already Read</span>
+        {% else %}
+        <a class="mark-read" href="{% url 'mark_notification_as_read' notification.id %}">Mark as Read</a>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>

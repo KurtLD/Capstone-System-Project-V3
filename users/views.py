@@ -57,6 +57,8 @@ from .models import (
     Final_Checkbox,
     Final_Grade, 
     Final_Recos, 
+
+    Notif
     )
 from .utils import generate_otp, send_otp_email, send_reset_password_email
 from django.core.mail import send_mail
@@ -7109,3 +7111,49 @@ def decline_adviser(request, adviser_id):
         ip_address=request.META.get('REMOTE_ADDR')
     )
     return redirect('faculty_dashboard')
+
+
+# function for the notifications
+def notification_list(request):
+    user = request.user
+    query = request.GET.get('search', '')
+
+    # Fetch notifications based on the user's permissions
+    if user.is_superuser:
+        notifications = Notif.objects.filter(
+            created_by__is_superuser=False,
+            notif__icontains=query
+        ).order_by('-time')
+    else:
+        notifications = Notif.objects.filter(
+            created_by__is_superuser=True,
+            notif__icontains=query
+        ).order_by('-time')
+
+    # Check if the request is an AJAX call
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Render only the notification list as a partial response
+        return render(request, 'users/partials_notification_list.html', {
+            'notifications': notifications,
+        })
+
+    # If not an AJAX request, render the full page
+    return render(request, 'users/notifications.html', {
+        'notifications': notifications,
+    })
+
+def mark_notification_as_read(request, notif_id):
+    notif = get_object_or_404(Notif, id=notif_id)
+    notif.read_by.add(request.user)  # Mark the notification as read for this user
+    return redirect('notifications')  # Redirect back to the notifications list
+
+@login_required
+def mark_all_notifications_as_read(request):
+    user = request.user
+    if user.is_superuser:
+        notifications = Notif.objects.filter(created_by__is_superuser=False)
+    else:
+        notifications = Notif.objects.filter(created_by__is_superuser=True)
+    for notification in notifications:
+        notification.read_by.add(user)
+    return JsonResponse({'status': 'success'})

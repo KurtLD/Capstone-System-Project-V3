@@ -126,7 +126,12 @@ from users.views import (
 
     # the following funnctions are for the accepting and declining the advisee
     accept_adviser,
-    decline_adviser
+    decline_adviser,
+
+    # the following functions are for the notifications
+    notification_list,
+    mark_notification_as_read,
+    mark_all_notifications_as_read
 )
 
 urlpatterns = [
@@ -360,4 +365,9 @@ urlpatterns = [
     # for accepting or declining the advisee
     path('adviser/<int:adviser_id>/accept/', accept_adviser, name='accept_adviser'),
     path('adviser/<int:adviser_id>/decline/', decline_adviser, name='decline_adviser'),
+
+    # for the notifications
+    path('notifications/', notification_list, name='notifications'),
+    path('notifications/mark-as-read/<int:notif_id>/', mark_notification_as_read, name='mark_notification_as_read'),
+    path('notifications/mark_all_notifications_as_read/', mark_all_notifications_as_read, name='mark_all_notifications_as_read'),
 ]
