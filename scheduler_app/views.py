@@ -1306,6 +1306,18 @@ def reset_schedule(request):
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
     Schedule.objects.filter(school_year=selected_school_year).delete()
+    # Log the action in AuditTrail
+    AuditTrail.objects.create(
+        user=request.user,
+        action=f"Schedule for the titlle hearing has been reset to none",
+        ip_address=request.META.get('REMOTE_ADDR')
+    )
+
+    # creating a notif
+    Notif.objects.create(
+        created_by=request.user,
+        notif=f"Schedule for the titlle hearing has been reset to none"
+    )
     return redirect('schedule_list')
 
 
@@ -2321,6 +2333,13 @@ def reschedulePOD(request, schedulePOD_id):
                             ip_address=request.META.get('REMOTE_ADDR')
                         )
 
+                        # creating a notif
+                        Notif.objects.create(
+                            created_by=request.user,
+                            notif=f"This Pre Oral Group: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})"
+                        )
+
+
                         url = reverse('schedule_listPOD')
                         new_slot=next_slot,
                         new_date=next_date.strftime('%B %d, %Y'),
@@ -2426,6 +2445,12 @@ def reschedulePOD(request, schedulePOD_id):
                             {schedule.group.member3}<br>
                             from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})""",
                             ip_address=request.META.get('REMOTE_ADDR')
+                        )
+
+                        # creating a notif
+                        Notif.objects.create(
+                            created_by=request.user,
+                            notif=f"This Pre Oral Group: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})"
                         )
 
                         # return redirect('schedule_listPOD')
@@ -2564,6 +2589,13 @@ def reassignPOD(request, schedule_id):
                     action=f"Rescheduled Pre-Oral Defense Group: {schedule.group} from {schedule.slot} on {schedule.date} ({schedule.day}) to {new_time_str} on {new_date.strftime('%B %d, %Y')} (Day {day_count})",
                     ip_address=request.META.get('REMOTE_ADDR')
                 )
+
+                # creating a notif
+                Notif.objects.create(
+                    created_by=request.user,
+                    notif=f"This Pre Oral Group: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {new_time_str} on {new_date.strftime('%B %d, %Y')} (Day {day_count})"
+                )
+
 
                 messages.success(request, 'Schedule rescheduled successfully.')
                 # Redirect to schedule_listPOD with last_used_date included
@@ -2706,6 +2738,18 @@ def reset_schedulePOD(request):
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
     SchedulePOD.objects.filter(school_year=selected_school_year).delete()
+    # Log the action in AuditTrail
+    AuditTrail.objects.create(
+        user=request.user,
+        action=f"Schedule for the Pre Oral Defense has been reset to none",
+        ip_address=request.META.get('REMOTE_ADDR')
+    )
+
+    # creating a notif
+    Notif.objects.create(
+        created_by=request.user,
+        notif=f"Schedule for the Pre Oral Defense has been reset to none"
+    )
     return redirect('schedule_listPOD')
 
 
@@ -3875,6 +3919,12 @@ def rescheduleMD(request, scheduleMD_id):
                             ip_address=request.META.get('REMOTE_ADDR')
                         )
 
+                        # creating a notif
+                        Notif.objects.create(
+                            created_by=request.user,
+                            notif=f"This Mock Group: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})"
+                        )
+
                         # return redirect('schedule_listMD')
                         url = reverse('schedule_listMD')
                         new_slot=next_slot,
@@ -3980,6 +4030,12 @@ def rescheduleMD(request, scheduleMD_id):
                             {schedule.group.member3}<br>
                             from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})""",
                             ip_address=request.META.get('REMOTE_ADDR')
+                        )
+
+                        # creating a notif
+                        Notif.objects.create(
+                            created_by=request.user,
+                            notif=f"This Mock Group: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})"
                         )
 
                         # return redirect('schedule_listMD')
@@ -4198,6 +4254,13 @@ def reassignMD(request, schedule_id):
                     ip_address=request.META.get('REMOTE_ADDR')
                 )
 
+                # creating a notif
+                Notif.objects.create(
+                    created_by=request.user,
+                    notif=f"This Mock Group: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {new_time_str} on {new_date.strftime('%B %d, %Y')} (Day {day_count})"
+                )
+
+
                 messages.success(request, 'Schedule rescheduled successfully.')
                 # Redirect to schedule_listPOD with last_used_date included
                 url = reverse('schedule_listMD')
@@ -4339,6 +4402,18 @@ def reset_scheduleMD(request):
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
     ScheduleMD.objects.filter(school_year=selected_school_year).delete()
+    # Log the action in AuditTrail
+    AuditTrail.objects.create(
+        user=request.user,
+        action=f"Schedule for the Mock Defense has been reset to none",
+        ip_address=request.META.get('REMOTE_ADDR')
+    )
+
+    # creating a notif
+    Notif.objects.create(
+        created_by=request.user,
+        notif=f"Schedule for the Mock defense has been reset to none"
+    )
     return redirect('schedule_listMD')
 
 # function to view the preoral grade  of a specific group in the admin side
@@ -5177,6 +5252,12 @@ def rescheduleFD(request, scheduleFD_id):
                             ip_address=request.META.get('REMOTE_ADDR')
                         )
 
+                        # creating a notif
+                        Notif.objects.create(
+                            created_by=request.user,
+                            notif=f"This Group for the final defense: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})"
+                        )
+
                         # return redirect('schedule_listFD')
                         url = reverse('schedule_listFD')
                         new_slot=next_slot,
@@ -5283,6 +5364,12 @@ def rescheduleFD(request, scheduleFD_id):
                             {schedule.group.member3}<br>
                             from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})""",
                             ip_address=request.META.get('REMOTE_ADDR')
+                        )
+
+                        # creating a notif
+                        Notif.objects.create(
+                            created_by=request.user,
+                            notif=f"This Group for the final defense: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {next_slot} on {next_date.strftime('%B %d, %Y')} (Day {next_day_number})"
                         )
 
                         # return redirect('schedule_listFD')
@@ -5501,6 +5588,13 @@ def reassignFD(request, schedule_id):
                     ip_address=request.META.get('REMOTE_ADDR')
                 )
 
+                # creating a notif
+                Notif.objects.create(
+                    created_by=request.user,
+                    notif=f"This Group for the final defense: {schedule.group} has been rescheduled from {schedule.slot} on {schedule.date} ({schedule.day}) to {new_time_str} on {new_date.strftime('%B %d, %Y')} (Day {day_count})"
+                )
+
+
                 messages.success(request, 'Schedule rescheduled successfully.')
                 # Redirect to schedule_listPOD with last_used_date included
                 url = reverse('schedule_listFD')
@@ -5639,6 +5733,18 @@ def reset_scheduleFD(request):
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
     ScheduleFD.objects.filter(school_year=selected_school_year).delete()
+    # Log the action in AuditTrail
+    AuditTrail.objects.create(
+        user=request.user,
+        action=f"Schedule for the Final Defense has been reset to none",
+        ip_address=request.META.get('REMOTE_ADDR')
+    )
+
+    # creating a notif
+    Notif.objects.create(
+        created_by=request.user,
+        notif=f"Schedule for the Final Defense has been reset to none"
+    )
     return redirect('schedule_listFD')
 
 
