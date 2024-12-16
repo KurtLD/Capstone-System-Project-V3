@@ -568,6 +568,12 @@ def schedule_list(request):
                 action=f"Generate Schedule for Title Hearing starting date is {start_date.strftime('%B %d, %Y')}",
                 ip_address=request.META.get('REMOTE_ADDR')
             )
+
+            # creating a notif
+            Notif.objects.create(
+                created_by=request.user,
+                notif=f"Generate New Schedule for Title Hearing starting date is {start_date.strftime('%B %d, %Y')}",
+            )
             return redirect('schedule_list')
 
     # current_school_year = SchoolYear.get_active_school_year()
@@ -2091,6 +2097,12 @@ def schedule_listPOD(request):
                     action=f"Generate Schedule for Pre-Oral Defense starting date is {start_date.strftime('%B %d, %Y')}",
                     ip_address=request.META.get('REMOTE_ADDR')
                 )
+
+                # creating a notif
+                Notif.objects.create(
+                    created_by=request.user,
+                    notif=f"Generate New Schedule for Pre-Oral Defense starting date is {start_date.strftime('%B %d, %Y')}",
+                )
             except Exception as e:
                 messages.error(request, f'Error generating schedule: {e}')
             
@@ -3555,6 +3567,12 @@ def schedule_listMD(request):
                     action=f"Generated Schedule for Mock Defense starting from {start_date.strftime('%B %d, %Y')}",
                     ip_address=request.META.get('REMOTE_ADDR')
                 )
+
+                # creating a notif
+                Notif.objects.create(
+                    created_by=request.user,
+                    notif=f"Generate New Schedule for Mock Defense starting date is {start_date.strftime('%B %d, %Y')}",
+                )
             except Exception as e:
                 messages.error(request, f'Error generating schedule: {e}')
             
@@ -4887,6 +4905,12 @@ def schedule_listFD(request):
                     user=request.user,
                     action=f"Generated Schedule for Final Defense starting from {start_date.strftime('%B %d, %Y')}",
                     ip_address=request.META.get('REMOTE_ADDR')
+                )
+
+                # creating a notif
+                Notif.objects.create(
+                    created_by=request.user,
+                    notif=f"Generate New Schedule for Final Defense starting date is {start_date.strftime('%B %d, %Y')}",
                 )
             except Exception as e:
                 messages.error(request, f'Error generating schedule: {e}')
