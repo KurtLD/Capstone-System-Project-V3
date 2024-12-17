@@ -58,7 +58,8 @@ from .models import (
     Final_Grade, 
     Final_Recos, 
 
-    Notif
+    Notif,
+    UserNotif
     )
 from .utils import generate_otp, send_otp_email, send_reset_password_email
 from django.core.mail import send_mail
@@ -7114,21 +7115,57 @@ def decline_adviser(request, adviser_id):
 
 
 # function for the notifications
+# def notification_list(request):
+#     user = request.user
+#     query = request.GET.get('search', '')
+
+#     # Fetch notifications based on the user's permissions
+#     if user.is_superuser:
+#         notifications = Notif.objects.filter(
+#             created_by__is_superuser=False,
+#             notif__icontains=query
+#         ).order_by('-time')
+#     else:
+#         notifications = Notif.objects.filter(
+#             created_by__is_superuser=True,
+#             notif__icontains=query
+#         ).order_by('-time')
+
+#     # Check if the request is an AJAX call
+#     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+#         # Render only the notification list as a partial response
+#         return render(request, 'users/partials_notification_list.html', {
+#             'notifications': notifications,
+#         })
+
+#     # If not an AJAX request, render the full page
+#     return render(request, 'users/notifications.html', {
+#         'notifications': notifications,
+#     })
+
 def notification_list(request):
     user = request.user
     query = request.GET.get('search', '')
 
-    # Fetch notifications based on the user's permissions
-    if user.is_superuser:
-        notifications = Notif.objects.filter(
-            created_by__is_superuser=False,
-            notif__icontains=query
-        ).order_by('-time')
-    else:
-        notifications = Notif.objects.filter(
-            created_by__is_superuser=True,
-            notif__icontains=query
-        ).order_by('-time')
+    # Fetch all general notifications created by superusers
+    general_notifications = Notif.objects.filter(
+        created_by__is_superuser=True,
+        notif__icontains=query
+    ).exclude(
+        usernotif__notif__in=UserNotif.objects.filter(
+            notif__notif__icontains=query
+        ).values_list('notif', flat=True)  # Exclude specific notifications
+    ).order_by('-time')
+
+    # Fetch specific notifications intended for the logged-in user
+    targeted_notifications = Notif.objects.filter(
+        usernotif__user=user,
+        notif__icontains=query
+    ).distinct().order_by('-time')
+
+    # Combine general and targeted notifications
+    notifications = list(general_notifications) + list(targeted_notifications)
+    notifications.sort(key=lambda notif: notif.time, reverse=True)  # Sort by time descending
 
     # Check if the request is an AJAX call
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -7141,6 +7178,7 @@ def notification_list(request):
     return render(request, 'users/notifications.html', {
         'notifications': notifications,
     })
+
 
 def mark_notification_as_read(request, notif_id):
     notif = get_object_or_404(Notif, id=notif_id)

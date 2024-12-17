@@ -28,7 +28,9 @@ from .models import (
     Final_Verdict, 
     Final_Grade, 
     Final_Recos, 
-    Final_Checkbox
+    Final_Checkbox,
+
+    Notif
     )
 from .forms import CustomUserCreationForm
 
@@ -42,6 +44,7 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Grade)
 admin.site.register(AuditTrail)
 admin.site.register(SchoolYear)
+admin.site.register(Notif)
 
 
 # Pre oral

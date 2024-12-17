@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Faculty, Expertise, Adviser
-from users.models import AuditTrail, SchoolYear
+from users.models import AuditTrail, SchoolYear, Notif, UserNotif
 from scheduler_app.models import GroupInfoTH
 from .forms import FacultyForm, DeleteFacultyForm, TitleInputForm, AdviserForm
 from django.views.decorators.http import require_POST
@@ -1186,6 +1186,19 @@ def save_adviser(request):
             user=request.user,
             action=f"Recommend Adviser: {faculty.name}<br> Title: {approved_title}<br> For group:<br> {group_info_name}",
             ip_address=request.META.get('REMOTE_ADDR')
+        )
+
+        # creating a notif
+        notif = Notif.objects.create(
+            created_by=request.user,
+            notif=f"You have been recommended as an adviser for the capstone project titled: <br>'{approved_title}'<br> for group:<br> {group_info_name}",
+            personal_notif=True
+        )
+
+        # Associate this notification with the specific user (faculty)
+        UserNotif.objects.create(
+            user=faculty.custom_user,  # Assuming `faculty.user` links to the User model
+            notif=notif
         )
 
         # Redirect to the adviser list page after saving
