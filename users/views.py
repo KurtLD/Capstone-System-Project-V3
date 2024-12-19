@@ -7097,6 +7097,12 @@ def accept_adviser(request, adviser_id):
         action=f"{adviser.faculty} has accepted the request for an adviser with title: {adviser.approved_title}",
         ip_address=request.META.get('REMOTE_ADDR')
     )
+
+    # creating a notif
+    Notif.objects.create(
+        created_by=request.user,
+        notif=f"{adviser.faculty} has accepted the request for an adviser with title: {adviser.approved_title}",
+    )
     return redirect(reverse('adviser_record_detail', args=[adviser_id]))
 
 @login_required
@@ -7110,6 +7116,12 @@ def decline_adviser(request, adviser_id):
         user=request.user,
         action=f"{adviser.faculty} has declined the request for an adviser with title: {adviser.approved_title}",
         ip_address=request.META.get('REMOTE_ADDR')
+    )
+
+    # creating a notif
+    Notif.objects.create(
+        created_by=request.user,
+        notif=f"{adviser.faculty} has declined the request for an adviser with title: {adviser.approved_title}",
     )
     return redirect('faculty_dashboard')
 
@@ -7143,19 +7155,67 @@ def decline_adviser(request, adviser_id):
 #         'notifications': notifications,
 #     })
 
+# def notification_list(request):
+#     user = request.user
+#     query = request.GET.get('search', '')
+
+#     # Fetch all general notifications created by superusers
+#     general_notifications = Notif.objects.filter(
+#         created_by__is_superuser=True,
+#         notif__icontains=query
+#     ).exclude(
+#         usernotif__notif__in=UserNotif.objects.filter(
+#             notif__notif__icontains=query
+#         ).values_list('notif', flat=True)  # Exclude specific notifications
+#     ).order_by('-time')
+
+#     # Fetch specific notifications intended for the logged-in user
+#     targeted_notifications = Notif.objects.filter(
+#         usernotif__user=user,
+#         notif__icontains=query
+#     ).distinct().order_by('-time')
+
+#     # Combine general and targeted notifications
+#     notifications = list(general_notifications) + list(targeted_notifications)
+#     notifications.sort(key=lambda notif: notif.time, reverse=True)  # Sort by time descending
+
+#     # Check if the request is an AJAX call
+#     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+#         # Render only the notification list as a partial response
+#         return render(request, 'users/partials_notification_list.html', {
+#             'notifications': notifications,
+#         })
+
+#     # If not an AJAX request, render the full page
+#     return render(request, 'users/notifications.html', {
+#         'notifications': notifications,
+#     })
+
 def notification_list(request):
     user = request.user
     query = request.GET.get('search', '')
 
-    # Fetch all general notifications created by superusers
-    general_notifications = Notif.objects.filter(
-        created_by__is_superuser=True,
-        notif__icontains=query
-    ).exclude(
-        usernotif__notif__in=UserNotif.objects.filter(
-            notif__notif__icontains=query
-        ).values_list('notif', flat=True)  # Exclude specific notifications
-    ).order_by('-time')
+    # Determine if the user is a superuser
+    if user.is_superuser:
+        # Superusers see notifications created by non-superusers
+        general_notifications = Notif.objects.filter(
+            created_by__is_superuser=False,
+            notif__icontains=query
+        ).exclude(
+            usernotif__notif__in=UserNotif.objects.filter(
+                notif__notif__icontains=query
+            ).values_list('notif', flat=True)  # Exclude specific notifications
+        ).order_by('-time')
+    else:
+        # Non-superusers see general notifications created by superusers
+        general_notifications = Notif.objects.filter(
+            created_by__is_superuser=True,
+            notif__icontains=query
+        ).exclude(
+            usernotif__notif__in=UserNotif.objects.filter(
+                notif__notif__icontains=query
+            ).values_list('notif', flat=True)  # Exclude specific notifications
+        ).order_by('-time')
 
     # Fetch specific notifications intended for the logged-in user
     targeted_notifications = Notif.objects.filter(
