@@ -7192,9 +7192,29 @@ def decline_adviser(request, adviser_id):
 #     })
 
 def notification_list(request):
+    school_years = SchoolYear.objects.all().order_by('start_year')
+
+    # Get the last school year added to the db
+    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+    # Get the current school year
+    # current_school_year = SchoolYear.get_active_school_year()
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    # get the last school year added to the db
+    last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+    # Get the selected school year from session or fallback to the active school year
+    selected_school_year = ''
+    if not selected_school_year_id:
+        selected_school_year = last_school_year
+        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+    else:
+        # Retrieve the selected school year based on the session
+        selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
     user = request.user
     query = request.GET.get('search', '')
-
+    adviser_records = None
+    
     # Determine if the user is a superuser
     if user.is_superuser:
         # Superusers see notifications created by non-superusers
@@ -7207,6 +7227,10 @@ def notification_list(request):
             ).values_list('notif', flat=True)  # Exclude specific notifications
         ).order_by('-time')
     else:
+        user_profile = get_object_or_404(CustomUser, id=request.user.id)
+        faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
+        adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False)
+
         # Non-superusers see general notifications created by superusers
         general_notifications = Notif.objects.filter(
             created_by__is_superuser=True,
@@ -7232,11 +7256,13 @@ def notification_list(request):
         # Render only the notification list as a partial response
         return render(request, 'users/partials_notification_list.html', {
             'notifications': notifications,
+            'adviser_records': adviser_records
         })
 
     # If not an AJAX request, render the full page
     return render(request, 'users/notifications.html', {
         'notifications': notifications,
+        'adviser_records': adviser_records
     })
 
 
@@ -7255,3 +7281,85 @@ def mark_all_notifications_as_read(request):
     for notification in notifications:
         notification.read_by.add(user)
     return JsonResponse({'status': 'success'})
+
+@login_required
+def accept_adviser_and_mark_read(request, adviser_id, notif_id):
+    # Fetch the adviser and mark as accepted
+    adviser = get_object_or_404(Adviser, id=adviser_id)
+    adviser.accepted = True
+    adviser.declined = False  # Reset declined if accepting
+    adviser.save()
+
+    # Create an audit trail entry
+    AuditTrail.objects.create(
+        user=request.user,
+        action=f"{adviser.faculty} has accepted the request for an adviser with title: {adviser.approved_title}",
+        ip_address=request.META.get('REMOTE_ADDR')
+    )
+
+    # Create a notification (optional, based on your logic)
+    Notif.objects.create(
+        created_by=request.user,
+        notif=f"{adviser.faculty} has accepted the request for an adviser with title: {adviser.approved_title}",
+    )
+
+    # Fetch the notification
+    notif = get_object_or_404(Notif, id=notif_id)
+
+    # Mark the notification as read for this user in Notif model
+    notif.read_by.add(request.user)
+
+    # Update or create an entry in UserNotif for this user and notification
+    user_notif, created = UserNotif.objects.get_or_create(
+        user=request.user,
+        notif=notif,
+        defaults={'read': True}  # Set read to True if created
+    )
+    if not created:
+        user_notif.read = True  # Update the read status if it already exists
+        user_notif.save()
+
+    # Redirect to the adviser's detail page or any desired page
+    return redirect(reverse('adviser_record_detail', args=[adviser_id]))
+
+
+
+@login_required
+def decline_adviser_and_mark_read(request, adviser_id, notif_id):
+    # Fetch the adviser and mark as declined
+    adviser = get_object_or_404(Adviser, id=adviser_id)
+    adviser.accepted = False  # Reset accepted if declining
+    adviser.declined = True
+    adviser.save()
+
+    # Create an audit trail entry
+    AuditTrail.objects.create(
+        user=request.user,
+        action=f"{adviser.faculty} has declined the request for an adviser with title: {adviser.approved_title}",
+        ip_address=request.META.get('REMOTE_ADDR')
+    )
+
+    # Create a notification
+    Notif.objects.create(
+        created_by=request.user,
+        notif=f"{adviser.faculty} has declined the request for an adviser with title: {adviser.approved_title}",
+    )
+
+    # Fetch the notification
+    notif = get_object_or_404(Notif, id=notif_id)
+
+    # Mark the notification as read for this user in Notif model
+    notif.read_by.add(request.user)
+
+    # Update or create an entry in UserNotif for this user and notification
+    user_notif, created = UserNotif.objects.get_or_create(
+        user=request.user,
+        notif=notif,
+        defaults={'read': True}  # Set read to True if created
+    )
+    if not created:
+        user_notif.read = True  # Update the read status if it already exists
+        user_notif.save()
+
+    # Redirect to the faculty dashboard or any desired page
+    return redirect('faculty_dashboard')

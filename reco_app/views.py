@@ -1170,7 +1170,8 @@ def save_adviser(request):
             faculty=faculty,
             approved_title=approved_title,
             group_name=group_info_name,
-            school_year=selected_school_year
+            school_year=selected_school_year,
+            notif=f"You have been recommended as an adviser for the capstone project titled: <br>'{approved_title}'<br> for group:<br> {group_info_name}"
         )
 
         # Handle previously declined adviser, if applicable.
@@ -1192,7 +1193,8 @@ def save_adviser(request):
         notif = Notif.objects.create(
             created_by=request.user,
             notif=f"You have been recommended as an adviser for the capstone project titled: <br>'{approved_title}'<br> for group:<br> {group_info_name}",
-            personal_notif=True
+            personal_notif=True,
+            category="Recommender"
         )
 
         # Associate this notification with the specific user (faculty)

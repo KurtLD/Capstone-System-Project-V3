@@ -402,6 +402,7 @@ class Notif(models.Model):
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, default=None, null=True, blank=True)
     read_by = models.ManyToManyField(User, related_name='read_notifications', blank=True)
     personal_notif = models.BooleanField(default=False)
+    category = models.CharField(max_length=255, default="NONE")
 
     def __str__(self):
         return f"A notif created: '{self.notif}' at {self.time}"

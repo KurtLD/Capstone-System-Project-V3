@@ -131,7 +131,10 @@ from users.views import (
     # the following functions are for the notifications
     notification_list,
     mark_notification_as_read,
-    mark_all_notifications_as_read
+    mark_all_notifications_as_read,
+
+    accept_adviser_and_mark_read,
+    decline_adviser_and_mark_read
 )
 
 urlpatterns = [
@@ -370,4 +373,7 @@ urlpatterns = [
     path('notifications/', notification_list, name='notifications'),
     path('notifications/mark-as-read/<int:notif_id>/', mark_notification_as_read, name='mark_notification_as_read'),
     path('notifications/mark_all_notifications_as_read/', mark_all_notifications_as_read, name='mark_all_notifications_as_read'),
+
+    path('accept-adviser/<int:adviser_id>/mark-read/<int:notif_id>/', accept_adviser_and_mark_read, name='accept_adviser_and_mark_read'),
+    path('decline-adviser/<int:adviser_id>/mark-read/<int:notif_id>/', decline_adviser_and_mark_read, name='decline_adviser_and_mark_read'),
 ]

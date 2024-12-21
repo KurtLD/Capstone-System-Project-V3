@@ -30,7 +30,8 @@ from .models import (
     Final_Recos, 
     Final_Checkbox,
 
-    Notif
+    Notif,
+    UserNotif
     )
 from .forms import CustomUserCreationForm
 
@@ -45,6 +46,7 @@ admin.site.register(Grade)
 admin.site.register(AuditTrail)
 admin.site.register(SchoolYear)
 admin.site.register(Notif)
+admin.site.register(UserNotif)
 
 
 # Pre oral

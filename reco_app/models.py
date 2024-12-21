@@ -51,5 +51,6 @@ class Adviser(models.Model):
     declined = models.BooleanField(default=False)
     has_been_replaced = models.BooleanField(default=False)
 
+    notif = models.CharField(max_length=255, default=None, null=True)
     def __str__(self):
         return f"{self.approved_title} - {self.faculty}"
