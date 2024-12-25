@@ -2700,7 +2700,7 @@ def faculty_tally_viewPOD(request):
         }
 
         # Calculate total assignments including adviser count
-        total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count']) #+ adviser_count
+        total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count']) + adviser_count
         row['total'] = total
         
         # Add actual dates for each weekday

@@ -7,13 +7,26 @@ from django.db import transaction
 from .models import GroupInfoPOD, Faculty, SchedulePOD, Schedule, Room
 from datetime import datetime, timedelta
 from users.models import SchoolYear
+import re
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
+# def normalize_members(members):
+#     """Normalize member names for comparison."""
+#     return sorted([member.strip().lower() for member in members if member])
+
 def normalize_members(members):
-    """Normalize member names for comparison."""
-    return sorted([member.strip().lower() for member in members if member])
+    """
+    Normalize member names for comparison.
+    Ensures consistent formatting and removes trailing initials like 'A.'.
+    """
+    def clean_name(name):
+        # Remove trailing initials (e.g., 'A.' or 'B.') using regex
+        name = re.sub(r'\s+[A-Z]\.$', '', name.strip())
+        return name.lower()
+
+    return sorted([clean_name(member) for member in members if member])
 
 # def remove_faculties(excluded_faculty1, excluded_faculty2, members_pod, faculty_bookings, day, slot, faculty_loads):
 #     """Select faculties for the given group, avoiding those in the exclusion lists and preferring those with fewer assignments.
@@ -119,6 +132,82 @@ def normalize_members(members):
 
 #     return final_panel
 
+# def remove_faculties(excluded_faculty1, excluded_faculty2, members_pod, faculty_bookings, day, slot, faculty_loads):
+#     """
+#     Selectively replaces conflicting faculties while retaining the original order as much as possible.
+#     Ensures the final panel includes a validated lead faculty, fills up with available faculties
+#     to reach three members, and integrates load balancing during selection.
+#     """
+#     current_school_year = SchoolYear.get_active_school_year()
+#     schedules = Schedule.objects.filter(school_year=current_school_year, has_been_rescheduled=False)
+#     prev_panel = []
+
+#     # Convert excluded_faculty1 and excluded_faculty2 to sets of IDs
+#     excluded_faculty1_ids = {fac.id if hasattr(fac, 'id') else fac for fac in excluded_faculty1}
+#     excluded_faculty2_ids = {fac.id if hasattr(fac, 'id') else fac for fac in excluded_faculty2}
+#     all_excluded_ids = excluded_faculty1_ids | excluded_faculty2_ids
+
+#     # Step 1: Identify the previous panel for the given members pod
+#     for schedule in schedules:
+#         members_schedule = schedule.get_members()
+#         if normalize_members(members_pod) is in normalize_members(members_schedule):
+#             prev_panel.extend(schedule.get_faculties_by_members())
+#             print("prev_panel: ", prev_panel)
+#             print("members_schedule: ", members_schedule)
+#             print("members_pod: ", members_pod)
+#             break
+#         else:
+#             print("did not match")
+#             print("prev_panel: ", prev_panel)
+#             print("members_schedule: ", members_schedule)
+#             print("members_pod: ", members_pod)
+
+
+#     # Step 2: Replace conflicting faculties while retaining original order
+#     new_panel = []
+#     for faculty in prev_panel:
+#         faculty_id = faculty.id if hasattr(faculty, 'id') else faculty
+#         if faculty_id in all_excluded_ids:
+#             # Replace conflicting faculty
+#             available_faculties = Faculty.objects.filter(is_active=True).exclude(
+#                 id__in=all_excluded_ids | {f.id if hasattr(f, 'id') else f for f in new_panel}
+#             )
+#             sorted_faculties = sorted(available_faculties, key=lambda f: faculty_loads[f.id])
+#             replacement = next(iter(sorted_faculties), None)
+#             new_panel.append(replacement if replacement else None)
+#         else:
+#             # Retain non-conflicting faculty
+#             new_panel.append(faculty)
+
+#     # Step 3: Fill up gaps to ensure three members in the panel
+#     if len(new_panel) < 3:
+#         available_faculties = Faculty.objects.filter(is_active=True).exclude(
+#             id__in=all_excluded_ids | {f.id if hasattr(f, 'id') else f for f in new_panel}
+#         )
+#         sorted_faculties = sorted(available_faculties, key=lambda f: faculty_loads[f.id])
+
+#         for faculty in sorted_faculties:
+#             if len(new_panel) < 3:
+#                 new_panel.append(faculty)
+#             else:
+#                 break
+
+#     # Ensure no gaps remain in the panel by replacing `None` with additional faculties if needed
+#     new_panel = [f for f in new_panel if f]  # Remove any `None` entries
+#     while len(new_panel) < 3:
+#         available_faculty = Faculty.objects.filter(is_active=True).exclude(
+#             id__in={f.id if hasattr(f, 'id') else f for f in new_panel}
+#         ).first()
+#         if available_faculty:
+#             new_panel.append(available_faculty)
+#         else:
+#             break
+
+#     # Step 4: Validate and finalize the panel with lead faculty criteria while retaining order
+#     final_panel = validate_lead_faculty(new_panel[:3])  # Ensure exactly three members and validate the lead faculty
+
+#     return final_panel
+
 def remove_faculties(excluded_faculty1, excluded_faculty2, members_pod, faculty_bookings, day, slot, faculty_loads):
     """
     Selectively replaces conflicting faculties while retaining the original order as much as possible.
@@ -137,11 +226,21 @@ def remove_faculties(excluded_faculty1, excluded_faculty2, members_pod, faculty_
     # Step 1: Identify the previous panel for the given members pod
     for schedule in schedules:
         members_schedule = schedule.get_members()
-        if normalize_members(members_pod) == normalize_members(members_schedule):
+        pod_normalized = set(normalize_members(members_pod))
+        schedule_normalized = set(normalize_members(members_schedule))
+
+        if pod_normalized & schedule_normalized:  # Check if any record exists in both sets
             prev_panel.extend(schedule.get_faculties_by_members())
-            print("prev_panel: ", prev_panel)
-            print("members_schedule", members_schedule)
+            # print("Match found:")
+            # print("prev_panel:", prev_panel)
+            # print("members_schedule:", members_schedule)
+            # print("members_pod:", members_pod)
             break
+        # else:
+        #     print("No match found:")
+        #     print("prev_panel:", prev_panel)
+        #     print("members_schedule:", members_schedule)
+        #     print("members_pod:", members_pod)
 
     # Step 2: Replace conflicting faculties while retaining original order
     new_panel = []
