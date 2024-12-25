@@ -458,6 +458,12 @@ def school_year_selection(request):
                 ip_address=request.META.get('REMOTE_ADDR')
             )
 
+            # creating a notif
+            Notif.objects.create(
+                created_by=request.user,
+                notif=f"Added new school year {new_school_year}",
+            )
+
         # Redirect to the specified page instead of always going back to the admin dashboard
         return redirect(next_page)
 
