@@ -2354,6 +2354,12 @@ def evaluate_capstone(request, schedule_id):
             ip_address=request.META.get('REMOTE_ADDR')
         )
 
+        # creating a notif
+        Notif.objects.create(
+            created_by=request.user,
+            notif=f"Faculty: '{request.user}', Submitted evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
+        )
+
         # Retrieve all PreOral_Grade objects with the given project title
         grades = PreOral_Grade.objects.filter(project_title=schedule.title, school_year=selected_school_year)
         print("count: ", grades.count())
@@ -2777,6 +2783,13 @@ def update_evaluate_capstone(request, schedule_id):
             action=f"Updated evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
             ip_address=request.META.get('REMOTE_ADDR')
         )
+
+        # creating a notif
+        Notif.objects.create(
+            created_by=request.user,
+            notif=f"Faculty: '{request.user}', Updated evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
+        )
+
 
 
 
@@ -4057,6 +4070,12 @@ def mock_evaluate_capstone(request, schedule_id):
             ip_address=request.META.get('REMOTE_ADDR')
         )
 
+        # creating a notif
+        Notif.objects.create(
+            created_by=request.user,
+            notif=f"Faculty: '{request.user}', Submitted evaluation in Mock Defense Schedule for project title '{schedule.title}'",
+        )
+
         # Retrieve all PreOral_Grade objects with the given project title
         grades = Mock_Grade.objects.filter(project_title=schedule.title, school_year=selected_school_year)
         print("count: ", grades.count())
@@ -4478,6 +4497,13 @@ def mock_update_evaluate_capstone(request, schedule_id):
             action=f"Updated evaluation in Mock Defense Schedule for project title '{schedule.title}'",
             ip_address=request.META.get('REMOTE_ADDR')
         )
+
+        # creating a notif
+        Notif.objects.create(
+            created_by=request.user,
+            notif=f"Updated evaluation in Mock Defense Schedule for project title '{schedule.title}'",
+        )
+
 
         # Process the checkboxes
         all_checkboxes = Mock_Checkbox.objects.filter(school_year=selected_school_year)
@@ -5663,6 +5689,13 @@ def final_evaluate_capstone(request, schedule_id):
             ip_address=request.META.get('REMOTE_ADDR')
         )
 
+        # creating a notif
+        Notif.objects.create(
+            created_by=request.user,
+            notif=f"Faculty: '{request.user}', Submitted evaluation in Final Defense Schedule for project title '{schedule.title}'",
+        )
+
+
         # Retrieve all PreOral_Grade objects with the given project title
         grades = Final_Grade.objects.filter(project_title=schedule.title, school_year=selected_school_year)
         print("count: ", grades.count())
@@ -6080,6 +6113,13 @@ def final_update_evaluate_capstone(request, schedule_id):
             action=f"Updated evaluation in Final Defense Schedule for project title '{schedule.title}'",
             ip_address=request.META.get('REMOTE_ADDR')
         )
+
+        # creating a notif
+        Notif.objects.create(
+            created_by=request.user,
+            notif=f"Faculty: '{request.user}', Updated evaluation in Final Defense Schedule for project title '{schedule.title}'",
+        )
+
         # Process the checkboxes
         all_checkboxes = Final_Checkbox.objects.filter(school_year=selected_school_year)
         checkboxes = Final_Checkbox.objects.filter(verdict=verdict_variable, school_year=selected_school_year) if selected_verdict != "Verdict is not available since not all of the panels submit the evaluation!" else []
