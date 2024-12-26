@@ -74,7 +74,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <h3><i class="fas fa-graduation-cap"></i> Educational Attainment:</h3>
-                                        <div class="form-group">
+                                        <!-- <div class="form-group">
                                             <div class="form-check" style="margin-left: 20px;">
                                                 {{ form.has_master_degree }}
                                                 <label class="form-check-label" for="{{ form.has_master_degree.id_for_label }}">Master's Degree</label>
@@ -87,7 +87,42 @@
                                                 </div>
                                                 {% endfor %}
                                             </div>
+                                        </div> -->
+                                        
+                                        <!-- a feature where if highest degree is chosen automatically the master degree will be chosen also -->
+                                        <div class="form-group">
+                                            <!-- Hidden Django checkbox for form submission -->
+                                            <div class="form-check" style="display: none;">
+                                                {{ form.has_master_degree }}
+                                            </div>
+                                            <!-- Custom checkbox for "Master's Degree" with auto-selection feature -->
+                                            <div class="form-check" style="margin-left: 20px;">
+                                                <input type="checkbox" id="mastersDegree" name="mastersDegree" onclick="toggleHighestDegreeSelection(this)">
+                                                <label class="form-check-label" for="mastersDegree">
+                                                    Master's Degree
+                                                </label>
+                                            </div>
+                                        
+                                            <div class="degree-choices row" style="gap: 1px;">
+                                                <!-- Hidden Django checkboxes for each degree -->
+                                                {% for choice in form.highest_degrees %}
+                                                <div class="col-md-6 form-check" style="display: none;">
+                                                    {{ choice.tag }}
+                                                </div>
+                                                {% endfor %}
+                                        
+                                                <!-- Custom checkboxes for user interface -->
+                                                {% for choice in form.highest_degrees %}
+                                                <div class="col-md-6 form-check" style="margin-left: 20px;">
+                                                    <input type="checkbox" class="highest-degree" id="highestDegree{{ forloop.counter }}" name="highestDegrees">
+                                                    <label class="form-check-label" for="highestDegree{{ forloop.counter }}">
+                                                        {{ choice.choice_label }}
+                                                    </label>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
                                         </div>
+                                        
                                         <h3><i class="fas fa-lightbulb"></i> List of Expertise:</h3>
                                         <div class="form-group expertise-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;">
                                             {% for expertise in form.expertise %}
@@ -344,6 +379,36 @@
                 });
             });
         });
+
+        // used for the automatic selection of master degree when highest degree is selected
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get references to the Master's Degree checkbox and all Highest Degree checkboxes
+            const mastersDegreeCheckbox = document.getElementById('mastersDegree');
+            const highestDegreeCheckboxes = document.querySelectorAll('.highest-degree');
+
+            // Function to handle the automatic selection of Master's Degree
+            function handleHighestDegreeChange() {
+                // Check if any Highest Degree checkbox is selected
+                let anySelected = Array.from(highestDegreeCheckboxes).some(checkbox => checkbox.checked);
+                mastersDegreeCheckbox.checked = anySelected; // Automatically select/deselect Master's Degree
+            }
+
+            // Attach event listeners to all Highest Degree checkboxes
+            highestDegreeCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', handleHighestDegreeChange);
+            });
+
+            // Attach event listener to the Master's Degree checkbox for manual override
+            mastersDegreeCheckbox.addEventListener('change', function () {
+                if (!mastersDegreeCheckbox.checked) {
+                    // Uncheck all Highest Degree checkboxes if Master's Degree is unchecked
+                    highestDegreeCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
+            });
+        });
+
     </script>
     
 </body>
