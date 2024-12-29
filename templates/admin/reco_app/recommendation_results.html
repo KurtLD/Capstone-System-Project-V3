@@ -1,9 +1,8 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
     <title>Recommendation Results</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="{% static 'admin/reco_app/recommendation_results.css' %}">
@@ -20,6 +19,10 @@
         .select2-container--default .select2-results__option {
             font-family: 'Poppins', sans-serif;
         }
+        .main-content {
+            height: 100vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -27,7 +30,7 @@
     <div class="no-print">
         {% include 'navbar.html' %}
     </div>
-    <div class="flex flex-1 overflow-hidden">
+    <div class="flex flex-1 main-content ">
         <!-- Sidebar -->
         <div id="sidebar" class="flex flex-col no-print">
             {% include 'sidebar.html' %}
@@ -35,7 +38,7 @@
         <!-- Main Content Wrapper -->
         <div class="flex flex-col flex-1">
             <!-- Content -->
-            <main class="flex-1 overflow-auto p-2 main-content">
+            <main class="flex-1 p-2 main-content">
                     <!-- Page Title -->
                     {% if keywords %}
                     <div class="content-container">
@@ -225,11 +228,199 @@
                         </div>
                         
                     </div>
+                    
+                    <script>
+                        // CSRF Token Setup for AJAX
+                        $.ajaxSetup({
+                            beforeSend: function(xhr, settings) {
+                                function getCookie(name) {
+                                    let cookieValue = null;
+                                    if (document.cookie && document.cookie !== '') {
+                                        const cookies = document.cookie.split(';');
+                                        for (let i = 0; cookies.length; i++) {
+                                            const cookie = cookies[i].trim();
+                                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    return cookieValue;
+                                }
+                                xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+                            }
+                        });
+                    
+                        // Sidebar toggle functionality
+                        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
+                            event.preventDefault();
+                            var sidebar = document.getElementById("sidebar");
+                            sidebar.classList.toggle("hidden");
+                        });
+                    
+                        // Enable dropdown toggle for Bootstrap
+                        $(document).ready(function () {
+                            // Ensure collapse functionality works
+                            $('[data-bs-toggle="collapse"]').on('click', function () {
+                                var target = $(this).attr('data-bs-target');
+                                $(target).collapse('toggle');
+                            });
+                
+                            // Get members and existing members as arrays
+                            const membersList = JSON.parse('{{ members_list|escapejs }}');
+                            const existingMembers = new Set(JSON.parse('{{ existing_members_set|escapejs }}'));
+                
+                            // Filter members to exclude those in existingMembers
+                            const filteredMembersList = membersList.filter(name => !existingMembers.has(name));
+                
+                            // Map filtered members to Select2-compatible data
+                            const select2Data = filteredMembersList.map(name => ({ id: name, text: name }));
+                
+                            // Initialize Select2 dropdowns
+                            $('#group_info1').select2({
+                                data: select2Data,
+                                placeholder: 'Select or Search for Member 1',
+                                allowClear: true,
+                                width: '25%'
+                            }).val('{{ member1 }}').trigger('change');
+                
+                            $('#group_info2').select2({
+                                data: select2Data,
+                                placeholder: 'Select or Search for Member 2',
+                                allowClear: true,
+                                width: '25%'
+                            }).val('{{ member2 }}').trigger('change');
+                
+                            $('#group_info3').select2({
+                                data: select2Data,
+                                placeholder: 'Select or Search for Member 3',
+                                allowClear: true,
+                                width: '25%'
+                            }).val('{{ member3 }}').trigger('change');
+                
+                            // $('#printButton').click(function () {
+                            //     // Open the print dialog
+                            //     window.print();
+                
+                            //     // After the print dialog is closed, proceed to save the data
+                            //     setTimeout(function () {
+                            //         if (confirm('Did you successfully print the document?')) {
+                            //             // Debugging: Log values
+                            //             console.log("Confirmation successful");
+                
+                            //             var groupInfo1 = $('#group_info1').val();
+                            //             var groupInfo2 = $('#group_info2').val();
+                            //             var groupInfo3 = $('#group_info3').val();
+                            //             var facultyId = $('.faculty-item').data('faculty-id');
+                            //             var approvedTitle = "{{ title }}";
+                
+                            //             console.log("facultyId:", facultyId);
+                            //             console.log("groupInfo1:", groupInfo1);
+                            //             console.log("groupInfo2:", groupInfo2);
+                            //             console.log("groupInfo3:", groupInfo3);
+                            //             console.log("approvedTitle:", approvedTitle);
+                
+                            //             if (!facultyId || !groupInfo1 || !approvedTitle) {
+                            //                 alert("Missing required data. Please check and try again.");
+                            //                 return;
+                            //             }
+                
+                            //             // AJAX request
+                            //             $.ajax({
+                            //                 url: "{% url 'save_adviser' %}",
+                            //                 method: "POST",
+                            //                 data: {
+                            //                     faculty_id: facultyId,
+                            //                     group_info1: groupInfo1,
+                            //                     group_info2: groupInfo2,
+                            //                     group_info3: groupInfo3,
+                            //                     approved_title: approvedTitle,
+                            //                     csrfmiddlewaretoken: '{{ csrf_token }}'
+                            //                 },
+                            //                 success: function (response) {
+                            //                     console.log("Success:", response);
+                            //                     alert('Adviser information successfully saved!');
+                            //                     window.location.href = "{% url 'adviser_list' %}";
+                            //                 },
+                            //                 error: function (xhr, status, error) {
+                            //                     console.error("Error occurred:", error);
+                            //                     alert('An error occurred: ' + error);
+                            //                 }
+                            //             });
+                            //         } else {
+                            //             alert("Action canceled by user.");
+                            //         }
+                            //     }, 100); // Minimal delay
+                            // });
+                            // Print and Save Button
+                            $('#printButton').click(function () {
+                                window.print();
+                
+                                setTimeout(function () {
+                                    if (confirm('Did you successfully print the document?')) {
+                                        saveAdviserData();
+                                    } else {
+                                        alert("Action canceled by user.");
+                                    }
+                                }, 100);
+                            });
+                
+                            // Save Without Printing Button
+                            $('#saveWithoutPrintButton').click(function () {
+                                if (confirm('Do you want to save without printing?')) {
+                                    saveAdviserData();
+                                }
+                            });
+                
+                            // Print Without Saving Button
+                            $('#printWithoutSaveButton').click(function () {
+                                window.print();
+                            });
+                
+                            // Save Adviser Data Function
+                            function saveAdviserData() {
+                                var groupInfo1 = $('#group_info1').val();
+                                var groupInfo2 = $('#group_info2').val();
+                                var groupInfo3 = $('#group_info3').val();
+                                var facultyId = $('.faculty-item').data('faculty-id');
+                                var approvedTitle = "{{ title }}";
+                
+                                if (!facultyId || !groupInfo1 || !approvedTitle) {
+                                    alert("Missing required data. Please check and try again.");
+                                    return;
+                                }
+                
+                                $.ajax({
+                                    url: "{% url 'save_adviser' %}",
+                                    method: "POST",
+                                    data: {
+                                        faculty_id: facultyId,
+                                        group_info1: groupInfo1,
+                                        group_info2: groupInfo2,
+                                        group_info3: groupInfo3,
+                                        approved_title: approvedTitle,
+                                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                                    },
+                                    success: function (response) {
+                                        console.log("Success:", response);
+                                        alert('Adviser information successfully saved!');
+                                        window.location.href = "{% url 'adviser_list' %}";
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("Error occurred:", error);
+                                        alert('An error occurred: ' + error);
+                                    }
+                                });
+                            }
+                
+                        });
+                
+                    </script>
                 </main>
                   <!-- Footer -->
-        <div class="footer no-print">
-            {% include 'footer.html' %}
-        </div>
+                  <div class="footer no-print">
+                    {% include 'footer.html' %}
+                </div>
             </div>
         </div>
     </div>
@@ -270,194 +461,7 @@
         </div>
     </div>
     
-    <script>
-        // CSRF Token Setup for AJAX
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                function getCookie(name) {
-                    let cookieValue = null;
-                    if (document.cookie && document.cookie !== '') {
-                        const cookies = document.cookie.split(';');
-                        for (let i = 0; cookies.length; i++) {
-                            const cookie = cookies[i].trim();
-                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                break;
-                            }
-                        }
-                    }
-                    return cookieValue;
-                }
-                xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-            }
-        });
-    
-        // Sidebar toggle functionality
-        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
-            event.preventDefault();
-            var sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle("hidden");
-        });
-    
-        // Enable dropdown toggle for Bootstrap
-        $(document).ready(function () {
-            // Ensure collapse functionality works
-            $('[data-bs-toggle="collapse"]').on('click', function () {
-                var target = $(this).attr('data-bs-target');
-                $(target).collapse('toggle');
-            });
-
-            // Get members and existing members as arrays
-            const membersList = JSON.parse('{{ members_list|escapejs }}');
-            const existingMembers = new Set(JSON.parse('{{ existing_members_set|escapejs }}'));
-
-            // Filter members to exclude those in existingMembers
-            const filteredMembersList = membersList.filter(name => !existingMembers.has(name));
-
-            // Map filtered members to Select2-compatible data
-            const select2Data = filteredMembersList.map(name => ({ id: name, text: name }));
-
-            // Initialize Select2 dropdowns
-            $('#group_info1').select2({
-                data: select2Data,
-                placeholder: 'Select or Search for Member 1',
-                allowClear: true,
-                width: '25%'
-            }).val('{{ member1 }}').trigger('change');
-
-            $('#group_info2').select2({
-                data: select2Data,
-                placeholder: 'Select or Search for Member 2',
-                allowClear: true,
-                width: '25%'
-            }).val('{{ member2 }}').trigger('change');
-
-            $('#group_info3').select2({
-                data: select2Data,
-                placeholder: 'Select or Search for Member 3',
-                allowClear: true,
-                width: '25%'
-            }).val('{{ member3 }}').trigger('change');
-
-            // $('#printButton').click(function () {
-            //     // Open the print dialog
-            //     window.print();
-
-            //     // After the print dialog is closed, proceed to save the data
-            //     setTimeout(function () {
-            //         if (confirm('Did you successfully print the document?')) {
-            //             // Debugging: Log values
-            //             console.log("Confirmation successful");
-
-            //             var groupInfo1 = $('#group_info1').val();
-            //             var groupInfo2 = $('#group_info2').val();
-            //             var groupInfo3 = $('#group_info3').val();
-            //             var facultyId = $('.faculty-item').data('faculty-id');
-            //             var approvedTitle = "{{ title }}";
-
-            //             console.log("facultyId:", facultyId);
-            //             console.log("groupInfo1:", groupInfo1);
-            //             console.log("groupInfo2:", groupInfo2);
-            //             console.log("groupInfo3:", groupInfo3);
-            //             console.log("approvedTitle:", approvedTitle);
-
-            //             if (!facultyId || !groupInfo1 || !approvedTitle) {
-            //                 alert("Missing required data. Please check and try again.");
-            //                 return;
-            //             }
-
-            //             // AJAX request
-            //             $.ajax({
-            //                 url: "{% url 'save_adviser' %}",
-            //                 method: "POST",
-            //                 data: {
-            //                     faculty_id: facultyId,
-            //                     group_info1: groupInfo1,
-            //                     group_info2: groupInfo2,
-            //                     group_info3: groupInfo3,
-            //                     approved_title: approvedTitle,
-            //                     csrfmiddlewaretoken: '{{ csrf_token }}'
-            //                 },
-            //                 success: function (response) {
-            //                     console.log("Success:", response);
-            //                     alert('Adviser information successfully saved!');
-            //                     window.location.href = "{% url 'adviser_list' %}";
-            //                 },
-            //                 error: function (xhr, status, error) {
-            //                     console.error("Error occurred:", error);
-            //                     alert('An error occurred: ' + error);
-            //                 }
-            //             });
-            //         } else {
-            //             alert("Action canceled by user.");
-            //         }
-            //     }, 100); // Minimal delay
-            // });
-            // Print and Save Button
-            $('#printButton').click(function () {
-                window.print();
-
-                setTimeout(function () {
-                    if (confirm('Did you successfully print the document?')) {
-                        saveAdviserData();
-                    } else {
-                        alert("Action canceled by user.");
-                    }
-                }, 100);
-            });
-
-            // Save Without Printing Button
-            $('#saveWithoutPrintButton').click(function () {
-                if (confirm('Do you want to save without printing?')) {
-                    saveAdviserData();
-                }
-            });
-
-            // Print Without Saving Button
-            $('#printWithoutSaveButton').click(function () {
-                window.print();
-            });
-
-            // Save Adviser Data Function
-            function saveAdviserData() {
-                var groupInfo1 = $('#group_info1').val();
-                var groupInfo2 = $('#group_info2').val();
-                var groupInfo3 = $('#group_info3').val();
-                var facultyId = $('.faculty-item').data('faculty-id');
-                var approvedTitle = "{{ title }}";
-
-                if (!facultyId || !groupInfo1 || !approvedTitle) {
-                    alert("Missing required data. Please check and try again.");
-                    return;
-                }
-
-                $.ajax({
-                    url: "{% url 'save_adviser' %}",
-                    method: "POST",
-                    data: {
-                        faculty_id: facultyId,
-                        group_info1: groupInfo1,
-                        group_info2: groupInfo2,
-                        group_info3: groupInfo3,
-                        approved_title: approvedTitle,
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    },
-                    success: function (response) {
-                        console.log("Success:", response);
-                        alert('Adviser information successfully saved!');
-                        window.location.href = "{% url 'adviser_list' %}";
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error occurred:", error);
-                        alert('An error occurred: ' + error);
-                    }
-                });
-            }
-
-        });
-
-        
-    </script>
+   
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Include Select2 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
