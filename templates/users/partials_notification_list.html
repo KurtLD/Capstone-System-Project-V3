@@ -1,46 +1,110 @@
-<!-- <ul class="notification-list" id="notification-list">
-    {% for notification in notifications %}
-    <li class="{% if request.user in notification.read_by.all %}read{% else %}unread{% endif %}">
-        <div>
-            <strong>{{ notification.notif|safe }}</strong><br>
-            <small>{{ notification.time|date:"M d, Y H:i" }}</small>
-        </div>
-        {% if request.user in notification.read_by.all %}
-        <span class="read-label">Already Read</span>
-        {% else %}
-        <a class="mark-read" href="{% url 'mark_notification_as_read' notification.id %}">Mark as Read</a>
-        {% endif %}
-    </li>
-    {% endfor %}
-</ul> -->
-
-
-
-<ul class="notification-list" id="notification-list">
-    {% for notification in notifications %}
-    <li class="{% if request.user in notification.read_by.all %}read{% else %}unread{% endif %}">
-        <div>
-            <strong>{{ notification.notif|safe }}</strong><br>
-            <small>{{ notification.time|date:"M d, Y H:i" }}</small>
-        </div>
-        {% if notification.category == "Recommender" and request.user not in notification.read_by.all %}
-            {% for record in adviser_records %}
-                {% if record.notif|safe == notification.notif|safe %}
-                    <div>
-                        <!-- <a href="{% url 'accept_adviser' adviser_id=record.id %}" class="btn btn-success">Accept</a> -->
-                        <a href="{% url 'accept_adviser_and_mark_read' adviser_id=record.id notif_id=notification.id %}" class="btn btn-success">Accept</a>
-                        <a href="{% url 'decline_adviser_and_mark_read' adviser_id=record.id notif_id=notification.id %}" class="btn btn-danger">Decline</a>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        
-        {% elif request.user not in notification.read_by.all %}
-            <a class="mark-read" href="{% url 'mark_notification_as_read' notification.id %}">Mark as Read</a>
-        {% else %}
-            <span class="read-label">Already Read</span>
-        {% endif %}
-    </li>
-    {% endfor %}
-</ul>
-
-
+<style>
+    .notification-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .notification-list li {
+        margin: 10px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f9f9f9;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .notification-list li.unread {
+        background-color: #fff3cd; /* Light yellow for unread notifications */
+    }
+    
+    .notification-list li.read {
+        background-color: #e0e0e0; /* Light gray for read notifications */
+    }
+    
+    .notification-list li:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .notification-list li div {
+        flex: 1;
+    }
+    
+    .notification-list li .mark-read {
+        display: inline-block;
+        padding: 8px 12px;
+        font-size: 12px;
+        color: white;
+        background-color: #3490dc;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-left: 10px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .notification-list li .mark-read:hover {
+        background-color: #2779bd;
+    }
+    
+    .notification-list li .read-label {
+        color: green;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+    
+    .notification-list li .btn {
+        margin-left: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+    
+    .notification-list li .btn-success {
+        background-color: #10B981;
+        color: white;
+    }
+    
+    .notification-list li .btn-success:hover {
+        background-color: #0e9e74;
+    }
+    
+    .notification-list li .btn-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .notification-list li .btn-danger:hover {
+        background-color: #c82333;
+    }
+    </style>
+    
+    <ul class="notification-list" id="notification-list">
+        {% for notification in notifications %}
+        <li class="{% if request.user in notification.read_by.all %}read{% else %}unread{% endif %}">
+            <div>
+                <strong>{{ notification.notif|safe }}</strong><br>
+                <small>{{ notification.time|date:"M d, Y H:i" }}</small>
+            </div>
+            {% if notification.category == "Recommender" and request.user not in notification.read_by.all %}
+                {% for record in adviser_records %}
+                    {% if record.notif|safe == notification.notif|safe %}
+                        <div>
+                            <a href="{% url 'accept_adviser_and_mark_read' adviser_id=record.id notif_id=notification.id %}" class="btn btn-success">Accept</a>
+                            <a href="{% url 'decline_adviser_and_mark_read' adviser_id=record.id notif_id=notification.id %}" class="btn btn-danger">Decline</a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% elif request.user not in notification.read_by.all %}
+                <a class="mark-read" href="{% url 'mark_notification_as_read' notification.id %}">Mark as Read</a>
+            {% else %}
+                <span class="read-label">Already Read</span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>

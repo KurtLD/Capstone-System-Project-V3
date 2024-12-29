@@ -50,6 +50,33 @@ nav:hover .nav-link {
     opacity: 1;
 }
 
+.main-content {
+  overflow-y: auto;
+  height: 100%;
+}
+
+/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
+.main-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background-color: maroon;
+  border-radius: 10px;
+  border: 3px solid #f1f1f1;
+}
+
+/* Customize scrollbar for Firefox */
+.main-content {
+  scrollbar-width: thin;
+  scrollbar-color: maroon #f1f1f1;
+}
+
+
 /* Footer styles */
 .footer {
     background-color: var(--header-color);

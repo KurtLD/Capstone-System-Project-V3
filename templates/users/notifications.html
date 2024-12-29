@@ -1,124 +1,145 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'notification.css' %}" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> {% endcomment %}
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'faculty/pre_oral.css' %}" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .notification-list {
-            list-style: none;
-            padding: 0;
-        }
-        .notification-list li {
-            margin: 10px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .notification-list li.unread {
-            background-color: #f9f9f9;
-        }
-        .notification-list li.read {
-            background-color: #e0e0e0; /* Light gray for read notifications */
-        }
-        .notification-list li .mark-read {
-            color: blue;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .notification-list li .mark-read:hover {
-            text-decoration: underline;
-        }
-        .notification-list li .read-label {
-            color: green;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-        .no-notifications {
-            text-align: center;
-            margin-top: 50px;
-            color: #888;
-        }
-        .bell-icon {
-            position: relative;
-            display: inline-block;
-            margin-right: 20px;
-        }
-        .bell-icon .notif-count {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: red;
-            color: white;
-            border-radius: 50%;
-            padding: 0.2rem 0.5rem;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        .search-bar {
-            margin-bottom: 20px;
-        }
-        .mark-all-read {
-            background: blue;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-        .mark-all-read:hover {
-            background: darkblue;
-        }
-    </style>
+
+
 </head>
 <body>
-    <header>
-        <!-- <div class="bell-icon">
-            <a href="{% url 'notifications' %}" style="color: black; text-decoration: none;">
-                <i class="fas fa-bell" style="font-size: 1.5rem;"></i>
-                {% if notif_count != 0 %}
-                <span class="notif-count">{{ notif_count }}</span>
-                {% endif %}
-            </a>
-        </div> -->
-        <h1>Notifications</h1>
-        
-        <!-- Search Bar -->
-        <div class="search-bar">
-            <input type="text" id="search-input" placeholder="Search notifications..." style="width: 100%; padding: 10px; font-size: 1rem;">
+    {% if user.is_superuser %}
+    <!-- Content for superuser -->
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
         </div>
-    </header>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <main class="flex-1 overflow-auto p-2 main-content">
+                    <div class="content-wrapper">
+                        <div class="container-fluid mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-12 full-height">
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h3 class="card-title">Notifications</h3>
+                                            {% comment %} <a href="javascript:history.back()" class="btn btn-secondary">Back</a> {% endcomment %}
+                                        </div>
+                                        <!-- Search Bar -->
+                                        <div class="parent-container mb-3">
+                                            <input type="text" id="search-input" class="form-control search-bar" placeholder="Search for notification..">
+                                        </div>
 
-    <main>
-        
-
-        <!-- Mark All as Read Button -->
-        {% if notif_count > 1 %}
-        <button class="mark-all-read" id="mark-all-read">Mark All as Read</button>
-        {% endif %}
-        
-        <!-- Notifications List -->
-        {% if notifications %}
-        <div id="notification-list">
-            {% include 'users/partials_notification_list.html' %}
+                                       <!-- Mark All as Read Button -->
+                                        <div class="mark-all-read-container">
+                                            {% if notif_count > 1 %}
+                                            <button class="mark-all-read btn btn-primary mb-3" id="mark-all-read">Mark All as Read</button>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Notifications List -->
+                                        {% if notifications %}
+                                        <div id="notification-list">
+                                            {% include 'users/partials_notification_list.html' %}
+                                        </div>
+                                        {% else %}
+                                        <div class="no-notifications alert alert-info">
+                                            <p>No new notifications.</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <!-- Footer -->
+                <div class="footer no-print">
+                    {% include 'footer.html' %}
+                </div>
+            </div>
         </div>
-        {% else %}
-        <div class="no-notifications">
-            <p>No new notifications.</p>
-        </div>
-        {% endif %}
+    </div>
+    {% else %}
+    <body>
+        <div class="flex h-screen flex-col">
+            <!-- Navbar -->
+            <div class="no-print">
+                {% include 'navbar.html' %}
+            </div>
+            <div class="flex flex-1 overflow-hidden">
+                <!-- Sidebar -->
+                {% include 'faculty/faculty_sidebar.html' %}
+                <!-- Main Content Wrapper -->
+                <div class="flex flex-col flex-1">
+                    <!-- Content -->
+                    <main class="main-content p-6">
+                        <div class="content-wrapper">
+                            <div class="container-fluid mt-4">
+                                <div class="row justify-content-center">
+                                    <div class="col-12 full-height">
+                                        <div class="card">
+                                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                                        <h3 class="card-title">Notifications</h3>
+                                                        {% comment %} <a href="javascript:history.back()" class="btn btn-secondary">Back</a> {% endcomment %}
+                                                    </div>
+                                                    <!-- Search Bar -->
+                                                    <div class="parent-container mb-3">
+                                                        <input type="text" id="search-input" class="form-control search-bar" placeholder="Search for notification..">
+                                                    </div>
 
-    </main>
+                                                   <!-- Mark All as Read Button -->
+                                                    <div class="mark-all-read-container">
+                                                        {% if notif_count > 1 %}
+                                                        <button class="mark-all-read btn btn-primary mb-3" id="mark-all-read">Mark All as Read</button>
+                                                        {% endif %}
+                                                    </div>
+                                                    
+                                                    <!-- Notifications List -->
+                                                    {% if notifications %}
+                                                    <div id="notification-list">
+                                                        {% include 'users/partials_notification_list.html' %}
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="no-notifications alert alert-info">
+                                                        <p>No new notifications.</p>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <script>
         // AJAX search logic
@@ -142,7 +163,6 @@
             });
         });
 
-
         // Mark All as Read logic
         $('#mark-all-read').on('click', function() {
             if (confirm("Are you sure you want to mark all notifications as read?")) {
@@ -163,5 +183,15 @@
             }
         });
     </script>
+    <!-- Sidebar toggle script -->
+    <script>
+        document
+          .getElementById("sidebarToggle")
+          .addEventListener("click", function (event) {
+            event.preventDefault();
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("hidden");
+          });
+      </script>
 </body>
 </html>
