@@ -20,13 +20,12 @@
             font-family: 'Poppins', sans-serif;
         }
         .main-content {
-            height: 100vh;
+            height: auto;
             overflow-y: auto;
         }
     </style>
 </head>
 <body>
-    
     <div class="no-print">
         {% include 'navbar.html' %}
     </div>
@@ -195,19 +194,19 @@
                             <label for="group_info">Select Group Member:</label>
                             <!-- Input Field 1 -->
                             <label for="member1">Member 1:</label>
-                            <select id="group_info1" name="group_info1" class="member-select" style="width: 100%;" required>
+                            <select id="group_info1" name="group_info1" class="member-select" style="width: 30%;" required>
                                 <option value="{{ member1 }}" selected>{{ member1 }}</option>
                             </select>
                         
                             <!-- Input Field 2 -->
                             <label for="member2">Member 2:</label>
-                            <select id="group_info2" name="group_info2" class="member-select" style="width: 100%;" required>
+                            <select id="group_info2" name="group_info2" class="member-select" style="width: 30%;" required>
                                 <option value="{{ member2 }}" selected>{{ member2 }}</option>
                             </select>
                         
                             <!-- Input Field 3 -->
                             <label for="member3">Member 3:</label>
-                            <select id="group_info3" name="group_info3" class="member-select" style="width: 100%;">
+                            <select id="group_info3" name="group_info3" class="member-select" style="width: 30%;">
                                 <option value="{{ member3 }}" selected>{{ member3 }}</option>
                             </select>
                         </div>
@@ -281,23 +280,29 @@
                                 data: select2Data,
                                 placeholder: 'Select or Search for Member 1',
                                 allowClear: true,
-                                width: '25%'
+                                width: '25%',
+                            }).on('select2:open', function() {
+                                $('.select2-search__field').attr('placeholder', 'Type to search...');
                             }).val('{{ member1 }}').trigger('change');
-                
+
                             $('#group_info2').select2({
                                 data: select2Data,
                                 placeholder: 'Select or Search for Member 2',
                                 allowClear: true,
                                 width: '25%'
+                            }).on('select2:open', function() {
+                                $('.select2-search__field').attr('placeholder', 'Type to search...');
                             }).val('{{ member2 }}').trigger('change');
-                
+
                             $('#group_info3').select2({
                                 data: select2Data,
                                 placeholder: 'Select or Search for Member 3',
                                 allowClear: true,
                                 width: '25%'
+                            }).on('select2:open', function() {
+                                $('.select2-search__field').attr('placeholder', 'Type to search...');
                             }).val('{{ member3 }}').trigger('change');
-                
+                                            
                             // $('#printButton').click(function () {
                             //     // Open the print dialog
                             //     window.print();
@@ -416,15 +421,15 @@
                         });
                 
                     </script>
-                </main>
-                  <!-- Footer -->
-                  <div class="footer no-print">
-                    {% include 'footer.html' %}
-                </div>
+            </main>
+            <br><br>
+            <!-- Footer -->
+            <div class="footer no-print">
+                {% include 'footer.html' %}
             </div>
         </div>
     </div>
-    
+
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
