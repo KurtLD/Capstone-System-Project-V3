@@ -116,6 +116,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# Session settings
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 3600
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default, ensures sessions are stored in the database
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -159,3 +165,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'markanthonyaguirre1234@gmail.com'
 EMAIL_HOST_PASSWORD = 'gpfxvkwsqudvduyw'
 DEFAULT_FROM_EMAIL = 'markanthonyaguirre1234@gmail.com'
+
+
+

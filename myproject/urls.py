@@ -180,6 +180,7 @@ urlpatterns = [
     path('enable_faculty/<int:pk>/', reco_views.enable_faculty, name='enable_faculty'),
     path('assign_capstone_teacher/<int:faculty_id>/', reco_views.assign_capstone_teacher, name='assign_capstone_teacher'),
     path('remove_capstone_teacher/<int:faculty_id>/', reco_views.remove_capstone_teacher, name='remove_capstone_teacher'),
+    path('faculty/delete/<int:pk>/', reco_views.delete_faculty, name='delete_faculty'),
     
     # Adviser related URL patterns
     path('adviser_info/', reco_views.adviser_info, name='adviser_info'),

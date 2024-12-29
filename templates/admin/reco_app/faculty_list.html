@@ -116,7 +116,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="actionModalLabel">Select Action for Capstone Teacher</h5>
+                <h5 class="modal-title" id="actionModalLabel">Select Action for Faculty</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
                <div class="modal-footer">
@@ -216,7 +216,7 @@
             var isAssigning = this.classList.contains('btn-success');
             var modalBodyText = isAssigning ? 
                 "Are you sure you want to assign this faculty as a Capstone Teacher?" : 
-                "Are you sure you want to remove this faculty from Capstone Teacher?";
+                "Are you sure you want to unassign this faculty from Capstone Teacher?";
             
             document.getElementById('capstoneModalBody').textContent = modalBodyText;
             $('#capstoneModal').modal('show');

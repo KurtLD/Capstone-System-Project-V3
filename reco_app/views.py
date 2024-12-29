@@ -1352,3 +1352,9 @@ def remove_capstone_teacher(request, faculty_id):
     )
 
     return redirect('faculty_list')
+
+def delete_faculty(request, pk):
+    faculty = get_object_or_404(Faculty, pk=pk)
+    faculty.delete()
+    # messages.success(request, "Faculty deleted permanently.")
+    return redirect('disabled_faculty_list')
