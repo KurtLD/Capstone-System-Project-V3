@@ -15,8 +15,6 @@ html {
 body {
   background-color: var(--primary-bg);
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  /* Set font size to 12px */
   margin: 0;
 }
 
@@ -24,8 +22,7 @@ body {
 .nav-link {
   transition: opacity 0.3s, background-color 0.3s;
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  /* Set font size to 12px */
+  font-size: 16px;
   padding: 0;
 }
 
@@ -50,11 +47,11 @@ nav:hover .nav-link {
   background-color: var(--header-color);
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 8px;
-  /* Set font size to 12px */
+  font-size: 12px;
   color: var(--text-light);
   text-align: center;
 }
+
 
 /* Sidebar styles */
 #sidebar {
@@ -70,36 +67,12 @@ nav:hover .nav-link {
 label {
   font-weight: 400;
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  /* Set font size to 12px */
   float: left;
 }
-
 
 .main-content {
   overflow-y: auto;
   height: 100%;
-}
-
-/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
-.main-content::-webkit-scrollbar {
-  width: 12px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background-color: maroon;
-  border-radius: 10px;
-  border: 3px solid #f1f1f1;
-}
-
-/* Customize scrollbar for Firefox */
-.main-content {
-  scrollbar-width: thin;
-  scrollbar-color: maroon #f1f1f1;
 }
 
 /* static/css/school_year_selection.css */
@@ -112,8 +85,6 @@ label {
   border-radius: 0.5rem;
   /* rounded-lg */
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .section-container form {
@@ -140,13 +111,11 @@ label {
   /* rounded */
   color: #000000;
   /* text-black */
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .section-container button {
-  font-size: 12px;
-  /* Set font size to 12px */
+  font-size: 0.875rem;
+  /* text-sm */
   font-weight: 600;
   /* font-semibold */
   color: #63b3ed;
@@ -168,12 +137,22 @@ label {
 .section-container .fa-plus-circle {
   margin-right: 0.5rem;
   /* mr-2 */
-  font-size: 14px;
+  font-size: 1.125rem;
   /* text-lg */
   color: #4299e1;
   /* text-blue-500 */
 }
 
+.container {
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--secondary-bg);
+  border-radius: 8px;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 6px 20px rgba(0, 0, 0, 0.1),
+    0 8px 30px rgba(0, 0, 0, 0.1);
+}
 
 .card {
   background-color: var(--secondary-bg);
@@ -183,19 +162,18 @@ label {
     0 6px 20px rgba(0, 0, 0, 0.1),
     0 8px 30px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  /* Set font size to 12px */
-  overflow-x: auto;
-}
 
+  overflow-x: auto;
+  /* Enable horizontal scrolling */
+
+  /* Prevent line breaks */
+}
 
 form {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 table {
@@ -205,16 +183,12 @@ table {
   background-color: var(--secondary-bg);
   overflow-x: auto;
   border-radius: 5px;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 15px;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .table th {
@@ -223,8 +197,6 @@ table {
   white-space: nowrap;
   border-radius: 8px;
   border: 1px solid var(--text-light) !important;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .table tr {
@@ -232,340 +204,100 @@ table {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
-.table td {
-  border: none;
-  font-size: 12px;
-  /* Set font size to 12px */
+tr:nth-child(even) {
+  background-color: var(--secondary-bg);
 }
 
+tr:hover {
+  background-color: var(--primary-bg);
+}
 
-
-/* Pagination styles */
 .pagination {
-  display: flex;
+  text-align: center;
   margin-bottom: 0;
-  height: 100%;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .pagination .step-links {
-  display: flex;
-  font-size: 12px;
-  /* Set font size to 12px */
+  display: inline-block;
 }
 
 .pagination .step-links a {
   margin: 0 5px;
-  padding: 2px 6px;
+  padding: 5px 10px;
   text-decoration: none;
   color: var(--highlighted-color);
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  transition: background-color 0.3s, color 0.3s;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .pagination .step-links a:hover {
-  background-color: var(--highlighted-color);
-  color: var(--text-light);
-  font-size: 12px;
-  /* Set font size to 12px */
+  background-color: var(--primary-bg);
 }
 
 .pagination .step-links .current {
   margin: 0 5px;
-  padding: 2px 6px;
+  padding: 5px 10px;
   border: 1px solid var(--border-color);
   border-radius: 4px;
   background-color: var(--highlighted-color);
   color: var(--text-light);
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .float-right {
   float: right !important;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 fieldset {
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 legend {
-  font-size: 20px;
+  font-size: 1.5em;
   font-weight: 600;
   color: var(--header-color);
   padding: 0 10px;
 }
+
 @media (max-width: 768px) {
-  .card {
-      padding: 15px !important;
-      font-size: 10px;
+  .container {
+    padding: 10px;
   }
-  table,
-  thead,
-  tbody,
+
   th,
-  td,
-  tr {
-      display: block;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  tr {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  th {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
   td {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      font-size: 12px;
-      text-align: center;
-      word-wrap: break-word;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    padding: 5px;
   }
 
-  td:first-child {
-      padding-top: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
+  .back-button {
+    padding: 8px 16px;
   }
 
-  td:last-child {
-      padding-bottom: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  td::before {
-      font-weight: 600;
-      text-transform: capitalize;
-      content: attr(data-label);
-      font-size: 12px;
-      /* Set font size to 12px */
-      /* Assuming you will use data-label attribute to provide the header text */
-  }
-
-  .pagination .step-links a {
-      margin: 0 5px;
-      padding: 2px 6px;
-      text-decoration: none;
-      color: var(--highlighted-color);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      margin-left: 0;
-      font-size: 8px;
-      /* Set font size to 12px */
-  }
-
+  .pagination .step-links a,
   .pagination .step-links .current {
-      margin: 0 5px;
-      padding: 2px 6px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background-color: var(--highlighted-color);
-      color: var(--text-light);
-      font-size: 10px;
-      /* Set font size to 12px */
+    padding: 5px 8px;
   }
 }
 
-@media (max-width: 768px) {
-  .card {
-      padding: 2px;
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5em;
   }
 
-  table,
-  thead,
-  tbody,
   th,
-  td,
-  tr {
-      display: block;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  tr {
-      display: grid;
-      grid-template-columns: 1fr;
-      margin-bottom: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  th {
-      display: grid;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
   td {
-      display: grid;
-      padding: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
-      word-wrap: break-word;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    font-size: 0.9em;
   }
 
-  td:first-child {
-      padding-top: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
+  .back-button {
+    font-size: 0.9em;
   }
 
-  td:last-child {
-      padding-bottom: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  td::before {
-      font-weight: 600;
-      text-transform: capitalize;
-      content: attr(data-label);
-      font-size: 12px;
-      /* Set font size to 12px */
-      /* Assuming you will use data-label attribute to provide the header text */
-  }
-
-  .pagination .step-links a {
-      margin: 0 5px;
-      padding: 2px 6px;
-      text-decoration: none;
-      color: var(--highlighted-color);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      margin-left: 0;
-      font-size: 2px;
-      /* Set font size to 12px */
-  }
-
+  .pagination .step-links a,
   .pagination .step-links .current {
-      margin: 0 5px;
-      padding: 2px 6px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background-color: var(--highlighted-color);
-      color: var(--text-light);
-      font-size: 10px;
-      /* Set font size to 12px */
-  }
-
-  #sidebar {
-      overflow: hidden !important;
-  }
-}
-
-@media (max-width: 992px) {
-
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-      display: block;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  tr {
-      display: grid;
-      grid-template-columns: 1fr;
-      margin-bottom: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  th {
-      display: grid;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  td {
-      display: grid;
-      padding: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
-      word-wrap: break-word;
-      overflow: hidden;
-      text-overflow: ellipsis;
-  }
-
-  td:first-child {
-      padding-top: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  td:last-child {
-      padding-bottom: 10px;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  td::before {
-      font-weight: 600;
-      text-transform: capitalize;
-      content: attr(data-label);
-      font-size: 12px;
-      /* Set font size to 12px */
-      /* Assuming you will use data-label attribute to provide the header text */
-  }
-
-  .pagination .step-links a {
-      margin: 0 5px;
-      padding: 2px 6px;
-      text-decoration: none;
-      color: var(--highlighted-color);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      margin-left: 0;
-      font-size: 12px;
-      /* Set font size to 12px */
-  }
-
-  .pagination .step-links .current {
-      margin: 0 5px;
-      padding: 2px 6px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background-color: var(--highlighted-color);
-      color: var(--text-light);
-      font-size: 8px;
-      /* Set font size to 12px */
+    font-size: 0.9em;
   }
 }

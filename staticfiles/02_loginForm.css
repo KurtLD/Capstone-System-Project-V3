@@ -94,13 +94,3 @@ button:hover {
     margin-top: 20px;
     text-decoration: none;
 }
-/* styles.css */
-::placeholder {
-    font-style: italic;
-    color: #888; /* Optional: Change the color of the placeholder text */
-}
-
-input::placeholder {
-    font-style: italic;
-    color: #888; /* Optional: Change the color of the placeholder text */
-}

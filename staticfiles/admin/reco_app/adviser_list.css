@@ -6,7 +6,6 @@
   --border-color: #7D1E22;
   --header-color: #333;
   --sidebar-hover: #606060;
-  --secondary-button: #5A6268;
 }
 
 html {
@@ -17,7 +16,7 @@ html {
 .nav-link {
   transition: opacity 0.3s, background-color 0.3s;
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 .nav-link:hover {
@@ -52,7 +51,7 @@ nav:hover .nav-link {
   background-color: var(--header-color);
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 8px;
+  font-size: 12px;
   color: var(--text-light);
   text-align: center;
 }
@@ -69,7 +68,6 @@ body {
   margin: 0 auto;
   padding: 20px;
   background-color: var(--secondary-bg);
-  font-family: 'Poppins', sans-serif;
   border-radius: 8px;
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.1),
@@ -82,65 +80,18 @@ body {
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   margin-top: 20px;
-  font-size: 20px;
+  font-size: 1.5rem;
 }
-
 
 label {
   font-weight: 400;
   font-family: 'Poppins', sans-serif;
   float: left;
-  font-size: 12px;
-}
-.btn-secondary {
-  background-color: var(--secondary-button);
-  color: var(--text-light);
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  text-decoration: none;
-  margin-left: 5px;
-  font-size: 12px;
 }
 
-.btn-secondary:hover {
-  background-color: var(--header-color);
-  color: var(--text-light);
-}
-
-.btn-secondary.btn-sm {
-  background-color: #F6C500 !important;
-  border-color: #F6C500 !important;
-  color: #333;
-  text-decoration: none;
-  font-size: 12px;
-
-}
 .main-content {
   overflow-y: auto;
   height: 100%;
-}
-
-/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
-.main-content::-webkit-scrollbar {
-  width: 12px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background-color: maroon;
-  border-radius: 10px;
-  border: 3px solid #f1f1f1;
-}
-
-/* Customize scrollbar for Firefox */
-.main-content {
-  scrollbar-width: thin;
-  scrollbar-color: maroon #f1f1f1;
 }
 
 /*School Year*/
@@ -152,7 +103,6 @@ label {
   border-radius: 0.5rem;
   /* rounded-lg */
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
 }
 
 .section-container form {
@@ -182,7 +132,7 @@ label {
 }
 
 .section-container button {
-  font-size: 12px;
+  font-size: 0.875rem;
   /* text-sm */
   font-weight: 600;
   /* font-semibold */
@@ -205,11 +155,12 @@ label {
 .section-container .fa-plus-circle {
   margin-right: 0.5rem;
   /* mr-2 */
-  font-size: 14px;
+  font-size: 1.125rem;
   /* text-lg */
   color: #4299e1;
   /* text-blue-500 */
 }
+
 
 /* Controls Styles */
 .controls {
@@ -229,7 +180,6 @@ label {
   font-family: 'Poppins', sans-serif;
   text-decoration: none;
   margin-left: 10px;
-  font-size: 12px;
 }
 
 .back-button:hover {
@@ -237,25 +187,12 @@ label {
   color: var(--text-light);
 }
 
-.parent-container {
-  display: flex;
-  justify-content: flex-end;
-}
-
 #searchInput {
-  width: 250px;
-  padding: 4px;
-  margin-bottom: 10px;
-  border: 1px solid var(--header-color);
-  font-family: 'Poppins', sans-serif;
-  border-radius: 4px;
-  font-size: 12px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-left: auto;
+  border: 2px solid var(--header-color);
   margin-top: 20px;
-
+  font-family: 'Poppins', sans-serif;
 }
+
 
 /* Table Styles */
 .table-responsive {
@@ -264,9 +201,35 @@ label {
   background-color: var(--secondary-bg);
   padding: 10px;
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
 }
 
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #900303;
+  color: #FFFFFF;
+  white-space: nowrap;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.table tr {
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
 
 .table td {
   border: none;
@@ -279,57 +242,35 @@ label {
 .table a {
   color: #7D1E22;
   text-decoration: none;
-  font-size: 12px;
 }
 
 .table a:hover {
   text-decoration: none;
 }
 
-/* Pagination styles */
+/* Pagination Styles */
 .pagination {
-  display: flex;
-  margin-bottom: 0;
-  height: 100%;
+  margin-top: 20px;
   justify-content: center;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
-.pagination .step-links {
-  display: flex;
-  font-size: 12px;
-  /* Set font size to 12px */
-}
-
-.pagination .step-links a {
-  margin: 0 5px;
-  padding: 2px 6px;
-  text-decoration: none;
-  color: var(--highlighted-color);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  transition: background-color 0.3s, color 0.3s;
-  font-size: 12px;
-  /* Set font size to 12px */
-}
-
-.pagination .step-links a:hover {
-  background-color: var(--highlighted-color);
+.pagination .page-item.active .page-link {
+  background-color: #800000;
+  border-color: #800000;
   color: var(--text-light);
-  font-size: 12px;
-  /* Set font size to 12px */
+  margin-top: 10px;
 }
 
-.pagination .step-links .current {
-  margin: 0 5px;
-  padding: 2px 6px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--highlighted-color);
-  color: var(--text-light);
-  font-size: 12px;
-  /* Set font size to 12px */
+.pagination .page-link {
+  color: #800000;
+  margin-top: 10px;
+}
+
+.pagination .page-link:hover {
+  background-color: #c5c0a1;
+  border-color: #982b1c;
+  color: #982b1c;
+  margin-top: 10px;
 }
 
 /* Button Group Styles */
@@ -338,7 +279,6 @@ label {
   border-radius: 4px;
   font-family: 'Poppins', sans-serif;
   text-decoration: none;
-  font-size: 12px;
 }
 
 .btn-group .btn-edit {
@@ -353,9 +293,14 @@ label {
 }
 
 .btn-group .btn-danger {
-  padding: 4px 8px;
+  background-color: #800000;
+  border-color: #982b1c;
 }
 
+.btn-group .btn-danger:hover {
+  background-color: #800000;
+  border-color: #800000;
+}
 
 .hidden {
   display: none;
@@ -367,30 +312,22 @@ label {
   padding: 0.1rem;
 }
 
-
-
-.modal-content {
-  font-family: 'Poppins', sans-serif;
-  font-size: 12px;
+.btn-modal {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
 }
 
-.modal-title {
-  font-weight: 600;
-  font-size: 16px;
+.btn-modal:hover {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
 }
 
 .modal-font {
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
 }
 
-
-.modal-body {
-  font-size: 12px;
-}
-
-.modal-footer .btn {
-  font-size: 12px;
+.modal-title {
+  font-weight: 600;
 }
 
 .modal-btn {
@@ -401,15 +338,16 @@ label {
 }
 
 .modal-dialog {
-  max-width: 500px;
+  max-width: 600px;
   /* Adjust the max-width as needed */
 }
 
-
+.modal-content {
+  width: 100%;
+}
 
 .form-control {
   width: 100%;
-  font-size: 12px;
 }
 
 /* Dropdown styles */
@@ -433,371 +371,3 @@ label {
   margin-left: 10px;
   /* Adjust the margin as needed */
 }
-
-
-@media (max-width: 650px) {
-  #searchInput {
-    width: auto;
-  }
-
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-    display: block;
-  }
-
-  tr {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  th {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  td {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-  }
-
-  td:first-child {
-    padding-top: 10px;
-  }
-
-  td:last-child {
-    padding-bottom: 10px;
-  }
-
-  td::before {
-    font-weight: 600;
-    text-transform: capitalize;
-    content: attr(data-label);
-    font-size: 12px;
-    /* Assuming you will use data-label attribute to provide the header text */
-  }
-
-  .pagination .step-links a {
-    margin: 0 5px;
-    padding: 2px 6px;
-    text-decoration: none;
-    color: var(--highlighted-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    margin-left: 0;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 768px) {
-  #searchInput {
-    width: auto;
-  }
-
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-    display: block;
-  }
-
-  tr {
-    display: grid;
-    grid-template-columns: 1fr;
-    margin-bottom: 10px;
-  }
-
-  th {
-    display: grid;
-    justify-content: center;
-    align-items: center;
-  }
-
-  td {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-  }
-
-  td:first-child {
-    padding-top: 10px;
-  }
-
-  td:last-child {
-    padding-bottom: 10px;
-  }
-
-  td::before {
-    font-weight: 600;
-    text-transform: capitalize;
-    content: attr(data-label);
-    font-size: 12px;
-    /* Assuming you will use data-label attribute to provide the header text */
-  }
-}
-
-@media (max-width: 992px) {
-  #searchInput {
-    width: auto;
-  }
-
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-    display: block;
-  }
-
-  tr {
-    display: grid;
-    grid-template-columns: 1fr;
-    margin-bottom: 10px;
-  }
-
-  th {
-    display: grid;
-    justify-content: center;
-    align-items: center;
-  }
-
-  td {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-  }
-
-  td:first-child {
-    padding-top: 10px;
-  }
-
-  td:last-child {
-    padding-bottom: 10px;
-  }
-
-  td::before {
-    font-weight: 600;
-    text-transform: capitalize;
-    content: attr(data-label);
-    font-size: 12px;
-    /* Assuming you will use data-label attribute to provide the header text */
-  }
-}
-
-table {
-  width: 100%;
-  margin: 0 auto 20px;
-  border-collapse: separate;
-  background-color: var(--secondary-bg);
-  overflow-x: auto;
-  border-radius: 5px;
-}
-
-.table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 15px;
-}
-
-.table th,
-.table td {
-  padding: 10px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.table th {
-  background-color: #900303;
-  color: #FFFFFF;
-  white-space: nowrap;
-  border-radius: 5px;
-  border: 1px solid var(--text-light) !important;
-  text-align: center;
-}
-
-.table tr {
-  background-color: #FFFFFF;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  text-align: center;
-}
-
-
-/* Responsive styles */
-@media screen and (max-width: 650px) {
-
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-      display: block;
-  }
-}
-
-/* Responsive styles */
-@media screen and (max-width: 650px) {
-
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-      display: block;
-  }
-
-  tr {
-      display: grid;
-      grid-template-columns: 1fr;
-      margin-bottom: 10px;
-  }
-
-  th {
-      display: grid;
-  }
-
-  td {
-      display: grid;
-      padding: 10px;
-  }
-
-  td:first-child {
-      padding-top: 10px;
-  }
-
-  td:last-child {
-      padding-bottom: 10px;
-  }
-
-  td::before {
-      font-weight: 600;
-      text-transform: capitalize;
-      content: attr(data-label);
-  }
-}
-
-@media screen and (max-width: 768px) {
-
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-      display: block;
-  }
-
-  tr {
-      display: grid;
-      grid-template-columns: 1fr;
-      margin-bottom: 10px;
-  }
-
-  th {
-      display: grid;
-  }
-
-  td {
-      display: grid;
-      padding: 10px;
-  }
-
-  td:first-child {
-      padding-top: 10px;
-  }
-
-  td:last-child {
-      padding-bottom: 10px;
-  }
-
-  td::before {
-      font-weight: 600;
-      text-transform: capitalize;
-      content: attr(data-label);
-  }
-  .footer {
-    padding: 2px !important;
-}
-}
-
-@media screen and (max-width: 992px) {
-
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-      display: block;
-  }
-
-  tr {
-      display: grid;
-      grid-template-columns: 1fr;
-      margin-bottom: 10px;
-  }
-
-  th {
-      display: grid;
-  }
-
-  td {
-      display: grid;
-      padding: 10px;
-  }
-
-  td:first-child {
-      padding-top: 10px;
-  }
-
-  td:last-child {
-      padding-bottom: 10px;
-  }
-
-  td::before {
-      font-weight: 600;
-      text-transform: capitalize;
-      content: attr(data-label);
-  }
-}
-
-/* Additional styles for responsive design */
-@media screen and (max-width: 768px) {
-  .carousel {
-      gap: 15px;
-  }
-
-  .footer {
-      padding: 15px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .carousel {
-      gap: 10px;
-      flex-direction: column;
-      align-items: center;
-  }
-
-  h1,
-  h2 {
-      font-size: 1.5rem;
-  }
-}
-

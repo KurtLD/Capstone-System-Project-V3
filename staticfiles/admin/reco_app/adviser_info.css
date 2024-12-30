@@ -17,335 +17,74 @@ body {
     padding: 0;
 }
 
-.modal-content {
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-}
-
-
-/* Navigation link styles */
-.nav-link {
-    transition: opacity 0.3s, background-color 0.3s;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-}
-
-.nav-link:hover {
-    background-color: var(--sidebar-hover);
-    transform: scale(1.0);
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    color: var(--text-light);
-    border-radius: 5px;
-}
-
-.nav-link:hover~.nav-link {
-    opacity: 0.9;
-}
-
-nav:hover .nav-link {
-    opacity: 1;
-}
-
-/* Sidebar styles */
-#sidebar {
-    transition: transform 0.5s ease, opacity 0.5s ease;
-    background-color: var(--header-color);
-    overflow: hidden;
-}
-
-#sidebar.hidden {
-    transform: translateX(-100%);
-    opacity: 0;
-}
-
-/* Footer styles */
-.footer {
-    background-color: var(--header-color);
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 8px;
-    color: var(--text-light);
-    text-align: center;
-}
-
-.main-content {
-    overflow-y: auto;
-    height: 100%;
-}
-
-/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
-.main-content::-webkit-scrollbar {
-    width: 12px;
-}
-
-.main-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-.main-content::-webkit-scrollbar-thumb {
-    background-color: maroon;
-    border-radius: 10px;
-    border: 3px solid #f1f1f1;
-}
-
-/* Customize scrollbar for Firefox */
-.main-content {
-    scrollbar-width: thin;
-    scrollbar-color: maroon #f1f1f1;
-}
-
-
-/* School Year */
-.section-container {
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    background-color: #2d3748;
-    border-radius: 0.5rem;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-}
-
-.section-container form {
-    margin-bottom: 0.5rem;
-}
-
-.section-container label {
-    display: block;
-    margin-bottom: 0.25rem;
-    color: #ffffff;
-}
-
-.section-container select {
-    width: 100%;
-    padding: 10px !important;
-    border: 1px solid #ccc;
-    border-radius: 0.25rem;
-    color: #000000;
-}
-
-.section-container button {
-    font-size: 12px;
-    font-weight: 600;
-    color: #63b3ed;
-    display: flex;
-    align-items: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.section-container button:hover {
-    color: #4299e1;
-}
-
-.section-container .fa-plus-circle {
-    margin-right: 0.5rem;
-    font-size: 14px;
-    color: #4299e1;
-}
-
-.main-content {
-    overflow-y: auto;
-    flex: 1;
-    font-size: 12px;
-}
-
 .card {
-    margin: 0 auto;
-    padding: 20px;
     background-color: var(--secondary-bg);
-    font-family: 'Poppins', sans-serif;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 8px var(--shadow-color);
     border-radius: 8px;
-    box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.1),
-        0 6px 20px rgba(0, 0, 0, 0.1),
-        0 8px 30px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    padding: 20px;
+}
+
+fieldset {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
 }
 
 legend {
-    font-size: 20px;
+    font-size: 1.5em;
     font-weight: 600;
     color: var(--header-color);
 }
 
-/* Table styles */
-.table-responsive {
-    background-color: var(--secondary-bg);
-    border-radius: 8px;
-    /* Make table scrollable horizontally */
+.card-body {
+    margin-top: 20px;
 }
 
-.table {
+table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 15px;
 }
 
-.table th,
-.table td {
-    padding: 10px;
+th,
+td {
+    padding: 12px;
     text-align: left;
-    vertical-align: middle;
-    font-size: 12px;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.table th {
-    background-color: #900303;
-    color: #FFFFFF;
-    border-radius: 5px;
-    border : 1px solid var(--text-light);
+th {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+    justify-content: space-between;
 }
 
-.table tr {
-    background-color: #FFFFFF;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+tr:nth-child(even) {
+    background-color: var(--secondary-bg);
 }
 
-/* Responsive styles */
-@media screen and (max-width: 650px) {
-
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-    }
-
-    tr {
-        display: grid;
-        grid-template-columns: 1fr;
-        margin-bottom: 10px;
-    }
-
-    th {
-        display: grid;
-        text-align: center;
-    }
-
-    td {
-        display: grid;
-        padding: 10px;
-        text-align: center;
-        align-items: center;
-    }
-
-    td:first-child {
-        padding-top: 10px;
-    }
-
-    td:last-child {
-        padding-bottom: 10px;
-    }
-
-    td::before {
-        font-weight: 600;
-        text-transform: capitalize;
-        content: attr(data-label);
-    }
-
-    legend {
-        font-size: 16px;
-        text-align: center;
-    }
+tr.highlight {
+    background-color: var(--secondary-bg);
+    color: var(--header-color);
 }
 
-@media screen and (max-width: 768px) {
-
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-    }
-
-    tr {
-        display: grid;
-        grid-template-columns: 1fr;
-        margin-bottom: 10px;
-        justify-content: center;
-        align-items: center;
-    }
-
-    th {
-        display: grid;
-        text-align: center;
-    }
-
-    td {
-        display: grid;
-        padding: 10px;
-        text-align: center;
-    }
-
-    td:first-child {
-        padding-top: 10px;
-    }
-
-    td:last-child {
-        padding-bottom: 10px;
-    }
-
-    td::before {
-        font-weight: 600;
-        text-transform: capitalize;
-        content: attr(data-label);
-    }
-
-    legend {
-        font-size: 16px;
-        text-align: center;
-    }
+.card-footer {
+    margin-top: 20px;
+    text-align: left;
+    /* Align text to the left */
 }
 
-@media screen and (max-width: 992px) {
+.card-footer a {
+    background-color: var(--header-color);
+    text-decoration: none;
+    color: var(--text-light);
+    padding: 10px 20px;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
 
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-    }
-
-    tr {
-        display: grid;
-        grid-template-columns: 1fr;
-        margin-bottom: 10px;
-    }
-
-    th {
-        display: grid;
-        text-align: center;
-    }
-
-    td {
-        display: grid;
-        padding: 10px;
-        text-align: center;
-    }
-
-    td:first-child {
-        padding-top: 10px;
-    }
-
-    td:last-child {
-        padding-bottom: 10px;
-    }
-
-    td::before {
-        font-weight: 600;
-        text-transform: capitalize;
-        content: attr(data-label);
-    }
-
-    legend {
-        font-size: 14px;
-        text-align: center;
-    }
+.card-footer a:hover {
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
 }
