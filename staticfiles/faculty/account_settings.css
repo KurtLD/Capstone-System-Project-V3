@@ -1,0 +1,367 @@
+:root {
+    --primary-bg: #EFEFEF;
+    --secondary-bg: #FFFFFF;
+    --header-color: #333;
+    --highlighted-color: #7C0404;
+    --text-light: #FFFFFF;
+    --border-color: #7D1E22;
+    --sidebar-hover: #606060;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--primary-bg);
+}
+
+/* Navigation link styles */
+.nav-link {
+    transition: opacity 0.3s, background-color 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+.nav-link:hover {
+    background-color: var(--sidebar-hover);
+    transform: scale(1.0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    color: var(--text-light);
+    border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+    opacity: 0.9;
+}
+
+nav:hover .nav-link {
+    opacity: 1;
+}
+
+/* Footer styles */
+.footer {
+    background-color: var(--header-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 8px;
+    color: var(--text-light);
+    text-align: center;
+}
+
+/* Sidebar styles */
+#sidebar {
+    transition: transform 0.9s ease, opacity 0.9s ease;
+    background-color: var(--header-color) !important;
+}
+
+#sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.nav-item p {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    color: var(--text-light);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+.main-content {
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
+.main-content::-webkit-scrollbar {
+    width: 12px;
+}
+
+.main-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+    background-color: maroon;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+}
+
+/* Customize scrollbar for Firefox */
+.main-content {
+    scrollbar-width: thin;
+    scrollbar-color: maroon #f1f1f1;
+}
+
+.container {
+    padding: 5px;
+}
+
+.card {
+    background-color: var(--secondary-bg);
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
+
+.form-group .new-expertise-input {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    color: var(--header-color);
+    border: 1px solid #ccc;
+    font-size: 12px;
+    border-radius: 4px;
+    height: 25px;
+    width: 30%;
+}
+
+.btn-modal {
+    background-color: var(--highlighted-color) !important;
+    color: var(--text-light);
+    font-size: 12px;
+    padding: 6px 6px;
+    border: none;
+}
+
+.btn-modal:hover {
+    background-color: rgb(161, 11, 11) !important;
+    color: var(--text-light);
+    font-size: 12px;
+    padding: 6px 6px;
+    border: none;
+}
+
+.btn-secondary {
+    background-color: var(--sidebar-hover) !important;
+    color: var(--text-light);
+    font-size: 12px;
+    padding: 6px 6px;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: var(--header-color) !important;
+    color: var(--text-light);
+    font-size: 12px;
+    padding: 6px 6px;
+    border: none;
+}
+
+legend {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--header-color);
+    padding: 0 10px;
+    background: var(--secondary-bg);
+    margin-left: 10px;
+    display: inline-block;
+    width: auto;
+}
+
+fieldset {
+    border: 1px solid var(--header-color);
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+fieldset legend {
+    top: -12px;
+    position: absolute;
+    left: 10px;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+    .nav-link {
+        font-size: 13px;
+    }
+
+    .footer {
+        font-size: 10px;
+    }
+
+    .nav-item p {
+        font-size: 11px;
+    }
+
+    .card {
+        font-size: 11px;
+    }
+
+    .card-title {
+        font-size: 18px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 11px;
+    }
+
+    .form-group .new-expertise-input {
+        font-size: 11px;
+    }
+
+    .btn-modal,
+    .btn-secondary {
+        font-size: 11px;
+    }
+
+    legend {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 992px) {
+    .nav-link {
+        font-size: 12px;
+    }
+
+    .footer {
+        font-size: 12px;
+    }
+
+    .nav-item p {
+        font-size: 12px;
+    }
+
+    .card {
+        font-size: 12px;
+    }
+
+    .card-title {
+        font-size: 16px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 12px;
+    }
+
+    .form-group .new-expertise-input {
+        font-size: 12px;
+    }
+
+    .btn-modal,
+    .btn-secondary {
+        font-size: 12px;
+    }
+
+    legend {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 10.5px !important;
+    }
+    .nav-link {
+        font-size: 12px;
+    }
+
+    .footer {
+        font-size: 12px;
+    }
+
+    .nav-item p {
+        font-size: 12px;
+    }
+
+    .card {
+        font-size: 12px;
+    }
+
+    .card-title {
+        font-size: 16px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 12px;
+    }
+
+    .form-group .new-expertise-input {
+        font-size: 12px;
+    }
+
+    .btn-modal,
+    .btn-secondary {
+        font-size: 12px;
+    }
+
+    legend {
+        font-size: 14px;
+    }
+     /* Add sidebar width */
+     #sidebar {
+        width: 250px !important;
+        overflow: hidden;
+        /* Adjust the width as needed */
+    }
+}
+
+@media (max-width: 576px) {
+    .card {
+        padding: 10.5px !important;
+    }
+    .nav-link {
+        font-size: 12px;
+    }
+
+    .footer {
+        font-size: 12px;
+    }
+
+    .nav-item p {
+        font-size: 12px;
+    }
+
+    .card {
+        font-size: 12px;
+    }
+
+    .card-title {
+        font-size: 16px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 12px;
+    }
+
+    .form-group .new-expertise-input {
+        font-size: 12px;
+    }
+
+    .btn-modal,
+    .btn-secondary {
+        font-size: 12px;
+    }
+
+    legend {
+        font-size: 14px;
+    }
+     /* Add sidebar width */
+     #sidebar {
+        width: 250px !important;
+        overflow: hidden;
+        /* Adjust the width as needed */
+    }
+}

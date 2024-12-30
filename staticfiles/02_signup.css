@@ -14,16 +14,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 30px;
-    margin: 20px;
     font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 
 h2 {
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 20px;
     text-align: center;
 }
 
@@ -32,9 +31,7 @@ h2 {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 800px;
-    margin: 0;
-
+    max-width: 600px;
 }
 
 .card {
@@ -45,10 +42,10 @@ h2 {
 }
 
 .card-header {
-    background-color: var(--header-color);
+    background-color: var(--highlighted-color);
     margin-top: 0px;
     color: white;
-    padding: 5px;
+    padding: 1px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
 }
@@ -59,8 +56,7 @@ h2 {
 
 /* Form Styles */
 .form-group {
-    margin-bottom: 15px;
-
+    margin-bottom: 10px;
 }
 
 .custom-label {
@@ -74,8 +70,7 @@ input[type="email"],
 input[type="date"],
 input[type="password"],
 textarea {
-    width: 100%;
-    padding: 10px;
+    padding: 5px;
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -101,7 +96,7 @@ input {
 .form-control {
     border-radius: 5px;
     padding: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     border: 1px solid #ccc;
     width: 100%;
     box-sizing: border-box;
@@ -109,21 +104,22 @@ input {
 
 .button-container {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 button {
-    padding: 10px 20px;
+    padding: 8px 14px;
     background-color: #7C0404;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
 }
 
 button:hover {
-    background-color: #c50606;
+    background-color: #e13c3c;
 }
 
 .btn-secondary {
@@ -131,7 +127,7 @@ button:hover {
 }
 
 .btn-secondary:hover {
-    background-color: var(--header-color);
+    background-color: #767373;
 }
 
 .btn-primary {
@@ -139,7 +135,7 @@ button:hover {
 }
 
 .btn-primary:hover {
-    background-color: #7C0404;
+    background-color: #ae2626;
 }
 
 a {
@@ -158,6 +154,12 @@ a:hover {
 
 .form-page.active {
     display: block;
+}
+
+/* styles.css */
+::placeholder {
+    font-style: italic;
+    font-size: 12px;
 }
 
 /* Two-column layout for form groups */
@@ -198,14 +200,26 @@ a:hover {
     justify-content: space-between;
     align-items: center;
 }
-
-.header-logo-round {
-    height: 50px;
-    /* Adjust the height as needed */
-    width: 50px;
-    /* Ensure the width is the same as the height */
-    border-radius: 50%;
-    /* Make the image round */
-    object-fit: cover;
-    /* Ensure the image covers the entire area */
+/* styles.css */
+.custom-legend {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 0 10px; /* Add padding to align with the fieldset border */
 }
+
+.custom-label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+fieldset.form-group {
+    border: 1px solid black;
+    border-radius: 6px; /* Add border-radius */
+    padding: 10px;
+}
+

@@ -19,15 +19,15 @@ html {
 body {
   background-color: var(--primary-bg);
   margin: 0;
+  font-size: 12px;
 }
 
 /* Navigation link styles */
 .nav-link {
   transition: opacity 0.3s, background-color 0.3s;
   font-family: 'Poppins', sans-serif;
-  font-size: 16px;
+  font-size: 12px;
 }
-
 
 .nav-link:hover {
   background-color: var(--sidebar-hover);
@@ -45,17 +45,15 @@ nav:hover .nav-link {
   opacity: 1;
 }
 
-
 /* Footer styles */
 .footer {
   background-color: var(--header-color);
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 8px;
   color: var(--text-light);
   text-align: center;
 }
-
 
 /* Sidebar styles */
 #sidebar {
@@ -72,6 +70,7 @@ label {
   font-weight: 400;
   font-family: 'Poppins', sans-serif;
   float: left;
+  font-size: 12px;
 }
 
 .main-content {
@@ -83,49 +82,37 @@ label {
   padding: 0.5rem;
   margin-top: 0.5rem;
   background-color: #2d3748;
-  /* bg-gray-800 */
   border-radius: 0.5rem;
-  /* rounded-lg */
   font-family: 'Poppins', sans-serif;
+  font-size: 12px;
 }
 
 .section-container form {
   margin-bottom: 0.5rem;
-  /* mb-2 */
 }
 
 .section-container label {
   display: block;
   margin-bottom: 0.25rem;
-  /* mb-1 */
   color: #ffffff;
-  /* text-white */
+  font-size: 12px;
 }
 
 .section-container select {
   width: 100%;
-  /* w-full */
   padding: 10px !important;
-  /* p-2 */
   border: 1px solid #ccc;
-  /* border */
   border-radius: 0.25rem;
-  /* rounded */
   color: #000000;
-  /* text-black */
+  font-size: 12px;
 }
 
 .section-container button {
-  font-size: 0.875rem;
-  /* text-sm */
+  font-size: 12px;
   font-weight: 600;
-  /* font-semibold */
   color: #63b3ed;
-  /* text-blue-400 */
   display: flex;
-  /* flex */
   align-items: center;
-  /* items-center */
   background: none;
   border: none;
   cursor: pointer;
@@ -133,24 +120,41 @@ label {
 
 .section-container button:hover {
   color: #4299e1;
-  /* hover:text-blue-500 */
 }
 
 .section-container .fa-plus-circle {
   margin-right: 0.5rem;
-  /* mr-2 */
-  font-size: 1.125rem;
-  /* text-lg */
+  font-size: 14px;
   color: #4299e1;
-  /* text-blue-500 */
 }
 
-.success-icon {
-  display: none;
-  font-size: 2rem;
-  color: green;
-  animation: fadeIn 1s forwards;
+.main-content {
+  overflow-y: auto;
+  height: 100%;
 }
+
+/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
+.main-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background-color: maroon;
+  border-radius: 10px;
+  border: 3px solid #f1f1f1;
+}
+
+/* Customize scrollbar for Firefox */
+.main-content {
+  scrollbar-width: thin;
+  scrollbar-color: maroon #f1f1f1;
+}
+
+
 
 @keyframes fadeIn {
   from {
@@ -170,6 +174,7 @@ label {
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', sans-serif;
+  font-size: 12px;
 }
 
 .h2 {
@@ -177,13 +182,28 @@ label {
   text-align: center;
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
-  font-size: 24px;
+  font-size: 16px;
 }
 
 h3 {
   color: var(--highlighted-color);
+  font-size: 12px;
 }
 
+.custom-input {
+  width: 100%;
+  /* Adjust the width as needed */
+  font-size: 12px;
+  /* Ensure font size is consistent */
+  padding: 5px;
+  /* Adjust padding as needed */
+  border: 1px solid var(--header-color);
+  /* Use your defined border color */
+  border-radius: 4px;
+  /* Adjust border radius as needed */
+  box-sizing: border-box;
+  /* Ensure padding and border are included in the element's total width and height */
+}
 
 .card {
   background-color: var(--secondary-bg);
@@ -193,22 +213,24 @@ h3 {
   flex: 1;
   margin: 10px;
   border: 1px solid var(--highlighted-color);
-  /* transition: transform 0.3s, box-shadow 0.3s; */
+  font-size: 12px;
 }
 
-.card:hover {
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2), 0 6px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* transform: scale(1.02); */
+input::placeholder {
+  font-style: italic;
+  font-size: 12px;
 }
 
 .form-group {
   margin-bottom: 15px;
+  font-size: 12px;
 }
 
 label {
   display: block;
   margin-bottom: 5px;
   color: var(--header-color);
+  font-size: 12px;
 }
 
 input[type="text"],
@@ -219,7 +241,8 @@ select {
   border: 1px solid var(--header-color);
   border-radius: 4px;
   box-sizing: border-box;
-
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
 }
 
 /* Button Styles */
@@ -231,6 +254,7 @@ select {
   cursor: pointer;
   font-family: 'Poppins', sans-serif;
   transition: background-color 0.3s, color 0.3s;
+  font-size: 12px;
 }
 
 .button:hover {
@@ -243,7 +267,7 @@ select {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-
+  font-size: 12px;
 }
 
 @media (max-width: 768px) {
@@ -257,11 +281,12 @@ select {
   border-radius: 8px;
   padding: 20px;
   position: relative;
+  font-size: 12px;
 }
 
 .fieldset-header {
   color: var(--highlighted-color);
-  font-size: 1.2em;
+  font-size: 14px;
   font-weight: 600;
   padding: 0 10px;
   position: absolute;
@@ -274,10 +299,12 @@ select {
 
 .modal-content {
   font-family: 'Poppins', sans-serif;
+  font-size: 12px;
 }
 
 .modal-title {
   font-weight: 600;
+  font-size: 12px;
 }
 
 .modal-btn {
@@ -285,19 +312,23 @@ select {
   justify-content: center;
   gap: 10px;
   padding: 20px;
+  font-size: 12px;
 }
 
 .modal-dialog {
   max-width: 600px;
+  font-size: 12px;
 }
 
 .modal-title {
   font-weight: 600;
+  font-size: 12px;
 }
 
 .btn-modal {
   background-color: var(--highlighted-color);
   color: var(--text-light);
+  font-size: 12px;
 }
 
 .btn-modal:hover {
@@ -305,6 +336,117 @@ select {
   color: var(--text-light);
 }
 
-.progress-bar-custom {
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent background */
+  z-index: 9998;
+  /* Ensure it is above other elements */
+  display: none;
+  /* Initially hidden */
+}
+
+.loader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 80%;
+  max-width: 400px;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  /* Ensure it is above the overlay */
+  text-align: center;
+  /* Center the content */
+}
+
+.progress {
+  width: 100%;
+  height: 20px;
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  /* Add some space below the progress bar */
+}
+
+.progress-bar {
+  height: 100%;
   background-color: #7C0404;
+  transition: width 0.4s ease;
+}
+
+.success-icon {
+  font-size: 30px;
+  color: #28a745;
+  /* Green color for success */
+  display: none;
+  /* Initially hidden */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 100%;
+    padding: 15px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 992px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 5px;
+  }
+
+  .card {
+    padding: 5px;
+  }
+
+  .h2,
+  h3 {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding: 5px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  .h2,
+  h3 {
+    font-size: 14px;
+  }
+
+  .button {
+    padding: 3px 5px;
+    font-size: 12px;
+  }
+
+  input[type="text"],
+  input[type="file"],
+  select {
+    padding: 5px;
+    font-size: 12px;
+  }
 }

@@ -1,5 +1,7 @@
 /* carousel.css */
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
 :root {
     --primary-bg: #f0f0f0;
     /* Lighter background for a softer look */
@@ -9,7 +11,6 @@
     --border-color: #7D1E22;
     --header-color: #333;
     --sidebar-hover: #606060;
-
 }
 
 /* disable an a tag */
@@ -21,13 +22,13 @@
     text-decoration: none;
 }
 
-
 /* Navigation link styles */
 .nav-link {
     transition: opacity 0.3s, background-color 0.3s;
     font-family: 'Poppins', sans-serif;
     color: var(--text-light) !important;
-    font-size: 16px;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .nav-link:hover {
@@ -57,16 +58,49 @@ nav:hover .nav-link {
     opacity: 0;
 }
 
+/* Footer styles */
+.footer {
+    background-color: var(--header-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 8px;
+    color: var(--text-light);
+    text-align: center;
+}
+
 body {
     background-color: var(--primary-bg);
-    color: var(--header-color);
     font-family: 'Poppins', sans-serif;
     margin: 0;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
+
 
 .main-content {
     overflow-y: auto;
-    flex: 1;
+    height: 100%;
+}
+
+/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
+.main-content::-webkit-scrollbar {
+    width: 12px;
+}
+
+.main-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+    background-color: maroon;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+}
+
+/* Customize scrollbar for Firefox */
+.main-content {
+    scrollbar-width: thin;
+    scrollbar-color: maroon #f1f1f1;
 }
 
 /*School Year*/
@@ -78,6 +112,8 @@ body {
     border-radius: 0.5rem;
     /* rounded-lg */
     font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .section-container form {
@@ -90,6 +126,8 @@ body {
     /* mb-1 */
     color: #ffffff;
     margin-bottom: 4px;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .section-container select {
@@ -103,11 +141,13 @@ body {
     /* rounded */
     color: #000000;
     /* text-black */
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .section-container button {
-    font-size: 0.875rem;
-    /* text-sm */
+    font-size: 12px;
+    /* Set font size to 12px */
     font-weight: 600;
     /* font-semibold */
     color: #63b3ed;
@@ -129,12 +169,11 @@ body {
 .section-container .fa-plus-circle {
     margin-right: 0.5rem;
     /* mr-2 */
-    font-size: 1.125rem;
+    font-size: 14px;
     /* text-lg */
     color: #4299e1;
     /* text-blue-500 */
 }
-
 
 .carousel {
     display: flex;
@@ -151,20 +190,25 @@ table {
     background-color: var(--secondary-bg);
     overflow-x: auto;
     border-radius: 5px;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0 15px;
-
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .table th,
 .table td {
     padding: 10px;
-    text-align: left;
+    text-align: center;
     vertical-align: middle;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .table th {
@@ -173,6 +217,9 @@ table {
     white-space: nowrap;
     border-radius: 5px;
     border: 1px solid var(--text-light) !important;
+    text-align: center;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .table tr {
@@ -181,24 +228,29 @@ table {
     border-radius: 8px;
     overflow: hidden;
     text-align: center;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
-
 
 .table ul {
     padding-left: 20px;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
-
 
 /* Card styles */
 .card {
     background-color: var(--secondary-bg);
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     /* border: 1px solid var(--highlighted-color); */
     overflow-x: auto;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
+
 
 /* Additional styles for responsive design */
 @media (max-width: 768px) {
@@ -224,28 +276,6 @@ table {
     }
 }
 
-/* Toggle button styles */
-.toggle-button {
-    background-color: var(--header-color) !important;
-    color: var(--text-light) !important;
-    border: none;
-    width: 100%;
-    text-align: left;
-    padding: 10px;
-    font-size: 18px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-.toggle-button:hover {
-    background-color: var(--highlighted-color) !important;
-    color: var(--text-light) !important;
-}
 
 /* Details section styles */
 .details-section {
@@ -257,65 +287,88 @@ table {
     display: block;
 }
 
-/* Header styles */
-.header {
-    background-color: var(--highlighted-color);
-    color: var(--text-light);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    margin-bottom: 20px;
+.title-heading {
+    font-size: 18px;
+    font-weight: 600;
 }
 
-.title-heading {
-    font-size: 24px;
+.btn-secondary {
+    color: var(--text-light);
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+
+
+.btn-warning,
+.btn-danger {
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 /* Pagination styles */
 .pagination {
     display: flex;
-    justify-content: center;
-    align-items: center;
     margin-bottom: 0;
     height: 100%;
-    /* Ensure it takes the full height of its container */
+    font-size: 12px;
+    justify-content: center;
+    /* Set font size to 12px */
 }
 
 .pagination .step-links {
     display: flex;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .pagination .step-links a {
     margin: 0 5px;
-    padding: 5px 10px;
+    padding: 2px 6px;
     text-decoration: none;
     color: var(--highlighted-color);
     border: 1px solid var(--border-color);
     border-radius: 4px;
     transition: background-color 0.3s, color 0.3s;
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .pagination .step-links a:hover {
     background-color: var(--highlighted-color);
     color: var(--text-light);
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
 .pagination .step-links .current {
     margin: 0 5px;
-    padding: 5px 10px;
+    padding: 2px 6px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     background-color: var(--highlighted-color);
     color: var(--text-light);
+    font-size: 12px;
+    /* Set font size to 12px */
 }
 
+
+/* Italic placeholder styling */
+::placeholder {
+    font-style: italic;
+    color: #6c757d;
+    /* Optional: Change the color to a lighter shade */
+}
+
+/* Custom button styles */
 .custom-no-button {
     background-color: #EFEFEF;
     /* Custom background color */
     color: black;
     /* Text color */
     border-color: #dcdcdc;
+    padding: 6px 8px;
+    font-size: 12px;
     /* Border color */
 }
 
@@ -326,13 +379,67 @@ table {
     /* Hover border color */
 }
 
+#searchInput {
+    border: 2px solid var(--header-color);
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+    float: right;
+    width: 200px;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--header-color);
+    box-shadow: 0 0 5px rgba(255, 250, 250, 0.5);
+}
+
+.parent-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-bar {
+    width: 250px;
+    padding: 4px;
+    margin-bottom: 10px;
+    border: 1px solid var(--header-color);
+    font-family: 'Poppins', sans-serif;
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    /* Pushes the search bar to the right */
+}
+
+.dropdown {
+    margin: 10px 0;
+    display: flex;
+    justify-content: flex-end;
+    /* Aligns the dropdown to the right */
+
+}
+
+.form-selects {
+    width: auto;
+    padding: 6px;
+    border-radius: 8px;
+    background-color: #10B981 !important;
+    color: #000000;
+    font-weight: 600;
+    font-size: 12px;
+}
 
 .modal-content {
     font-family: 'Poppins', sans-serif;
+    font-size: 12px;
 }
 
 .modal-title {
     font-weight: 600;
+    font-size: 16px;
 }
 
 .modal-btn {
@@ -340,18 +447,234 @@ table {
     justify-content: center;
     gap: 10px;
     padding: 20px;
+    font-size: 12px;
 }
 
 .modal-dialog {
     max-width: 600px;
+    font-size: 12px;
 }
 
 .btn-modal {
-    background-color: var(--highlighted-color);
+    background-color: #dc3545; /* Same as btn-danger */
     color: var(--text-light);
+    font-size: 12px;
+    padding: 6px 10px;
+    font-family: 'Poppins', sans-serif;
 }
 
 .btn-modal:hover {
-    background-color: var(--highlighted-color);
+    background-color: #c82333; /* Same as btn-danger:hover */
     color: var(--text-light);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="radio"],
+textarea,
+select#adviser,
+select#capstone_teacher {
+    font-size: 12px !important;
+    /* Set font size to 12px */
+}
+
+.form-group .form-control {
+    font-size: 12px;
+}
+
+
+/* Make modal labels bold */
+.modal-content label {
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 650px) {
+    .search-bar {
+        width: auto;
+    }
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    tr {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-bottom: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    th {
+        display: grid;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td {
+        display: grid;
+        padding: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td:first-child {
+        padding-top: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td:last-child {
+        padding-bottom: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td::before {
+        font-weight: 600;
+        text-transform: capitalize;
+        content: attr(data-label);
+        font-size: 12px;
+        /* Set font size to 12px */
+        /* Assuming you will use data-label attribute to provide the header text */
+    }
+}
+
+@media (max-width: 768px) {
+    .search-bar {
+        width: auto;
+    }
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    tr {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-bottom: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    th {
+        display: grid;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td {
+        display: grid;
+        padding: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td:first-child {
+        padding-top: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td:last-child {
+        padding-bottom: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td::before {
+        font-weight: 600;
+        text-transform: capitalize;
+        content: attr(data-label);
+        font-size: 12px;
+        /* Set font size to 12px */
+        /* Assuming you will use data-label attribute to provide the header text */
+    }
+
+    .btn-secondary,
+    .btn-warning,
+    .btn-danger {
+        font-size: 12px;
+        padding: 4px 6px;
+    }
+
+  
+    /* Center the content of the td with class btn */
+    td.btn {
+        justify-content: center;
+        align-items: center;
+    }
+}
+@media (max-width: 992px) {
+    .search-bar {
+        width: auto;
+    }
+
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    tr {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-bottom: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    th {
+        display: grid;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td {
+        display: grid;
+        padding: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td:first-child {
+        padding-top: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td:last-child {
+        padding-bottom: 10px;
+        font-size: 12px;
+        /* Set font size to 12px */
+    }
+
+    td::before {
+        font-weight: 600;
+        text-transform: capitalize;
+        content: attr(data-label);
+        font-size: 12px;
+        /* Set font size to 12px */
+        /* Assuming you will use data-label attribute to provide the header text */
+    }
 }

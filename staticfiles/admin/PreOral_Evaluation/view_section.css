@@ -1,0 +1,397 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+:root {
+  --primary-bg: #EFEFEF;
+  --secondary-bg: #FFFFFF;
+  --highlighted-color: #7C0404;
+  --text-light: #FFFFFF;
+  --border-color: #7D1E22;
+  --header-color: #333;
+  --sidebar-hover: #606060;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--primary-bg);
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+/* Navigation link styles */
+.nav-link {
+  transition: opacity 0.3s, background-color 0.3s;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  padding: 0;
+}
+
+.nav-link:hover {
+  background-color: var(--sidebar-hover) !important;
+  transform: scale(1.0);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  color: var(--text-light);
+  border-radius: 5px;
+}
+
+.nav-link:hover~.nav-link {
+  opacity: 0.9;
+}
+
+nav:hover .nav-link {
+  opacity: 1;
+}
+
+/* Footer styles */
+.footer {
+  background-color: var(--header-color);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-light);
+  text-align: center;
+  /* padding: 10px 0; */
+}
+
+/* Sidebar styles */
+#sidebar {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  background-color: var(--header-color) !important;
+}
+
+#sidebar.hidden {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+label {
+  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  float: left;
+}
+
+.main-content {
+  overflow-y: auto;
+  height: 100%;
+}
+
+/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
+.main-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background-color: maroon;
+  border-radius: 10px;
+  border: 3px solid #f1f1f1;
+}
+
+/* Customize scrollbar for Firefox */
+.main-content {
+  scrollbar-width: thin;
+  scrollbar-color: maroon #f1f1f1;
+}
+
+.section-container {
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  background-color: #2d3748;
+  /* bg-gray-800 */
+  border-radius: 0.5rem;
+  /* rounded-lg */
+  font-family: 'Poppins', sans-serif;
+}
+
+.section-container form {
+  margin-bottom: 0.5rem;
+  /* mb-2 */
+}
+
+.section-container label {
+  display: block;
+  margin-bottom: 0.25rem;
+  /* mb-1 */
+  color: #ffffff;
+  /* text-white */
+}
+
+.section-container select {
+  width: 100%;
+  /* w-full */
+  padding: 10px !important;
+  /* p-2 */
+  border: 1px solid #ccc;
+  /* border */
+  border-radius: 0.25rem;
+  /* rounded */
+  color: #000000;
+  /* text-black */
+}
+
+.section-container button {
+  font-size: 0.875rem;
+  /* text-sm */
+  font-weight: 600;
+  /* font-semibold */
+  color: #63b3ed;
+  /* text-blue-400 */
+  display: flex;
+  /* flex */
+  align-items: center;
+  /* items-center */
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.section-container button:hover {
+  color: #4299e1;
+  /* hover:text-blue-500 */
+}
+
+.section-container .fa-plus-circle {
+  margin-right: 0.5rem;
+  /* mr-2 */
+  font-size: 1.125rem;
+  /* text-lg */
+  color: #4299e1;
+  /* text-blue-500 */
+}
+
+.card {
+  background-color: var(--secondary-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1), 0 8px 30px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  font-family: 'Poppins', sans-serif !important;
+  overflow-x: auto;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.text-center {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+.text-muted {
+  color: #6c757d;
+}
+
+.h2 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 2.0rem;
+  color: var(--header-color);
+  text-align: center;
+}
+
+.list-group-item {
+  border: 1px solid var(--header-color);
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.btn {
+  margin-right: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+.btn-success {
+  background-color: var(--highlighted-color);
+  color: #fff;
+  display: inline-block !important;
+  font-weight: 400;
+  border: 1px solid transparent;
+}
+
+.btn-success:hover {
+  background-color: var(--highlighted-color);
+}
+
+.modal-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 650px) {
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  tr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  th {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  td {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+  }
+
+  td:first-child {
+    padding-top: 10px;
+  }
+
+  td:last-child {
+    padding-bottom: 10px;
+  }
+
+  td::before {
+    font-weight: 600;
+    text-transform: capitalize;
+    content: attr(data-label);
+    /* Assuming you will use data-label attribute to provide the header text */
+  }
+
+  .pagination .step-links a {
+    margin: 0 5px;
+    padding: 2px 6px;
+    text-decoration: none;
+    color: var(--highlighted-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  tr {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-bottom: 10px;
+  }
+
+  th {
+    display: grid;
+  }
+
+  td {
+    display: grid;
+    padding: 10px;
+  }
+
+  td:first-child {
+    padding-top: 10px;
+  }
+
+  td:last-child {
+    padding-bottom: 10px;
+  }
+
+  td::before {
+    font-weight: 600;
+    text-transform: capitalize;
+    content: attr(data-label);
+    /* Assuming you will use data-label attribute to provide the header text */
+  }
+
+  .pagination .step-links a {
+    margin: 0 5px;
+    padding: 2px 6px;
+    text-decoration: none;
+    color: var(--highlighted-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 992px) {
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  tr {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-bottom: 10px;
+  }
+
+  th {
+    display: grid;
+  }
+
+  td {
+    display: grid;
+    padding: 10px;
+  }
+
+  td:first-child {
+    padding-top: 10px;
+  }
+
+  td:last-child {
+    padding-bottom: 10px;
+  }
+
+  td::before {
+    font-weight: 600;
+    text-transform: capitalize;
+    content: attr(data-label);
+    /* Assuming you will use data-label attribute to provide the header text */
+  }
+}
