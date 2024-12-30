@@ -253,7 +253,3 @@ def get_faculty_assignments():
         })
 
     return faculty_list
-
-
-
-
