@@ -12,16 +12,13 @@
 
 body {
   background-color: var(--primary-bg);
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 /* Navigation link styles */
 .nav-link {
   transition: opacity 0.3s, background-color 0.3s;
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  /* Set font size to 12px */
+  font-size: 16px;
 }
 
 .nav-link:hover {
@@ -45,8 +42,7 @@ nav:hover .nav-link {
   background-color: var(--header-color);
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 8px;
-  /* Set font size to 12px */
+  font-size: 12px;
   color: var(--text-light);
   text-align: center;
 }
@@ -54,10 +50,9 @@ nav:hover .nav-link {
 label {
   font-weight: 400;
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  /* Set font size to 12px */
   float: left;
 }
+
 
 /* Sidebar styles */
 #sidebar {
@@ -78,8 +73,6 @@ label {
   border-radius: 0.5rem;
   /* rounded-lg */
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .section-container form {
@@ -93,8 +86,6 @@ label {
   /* mb-1 */
   color: #ffffff;
   /* text-white */
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .section-container select {
@@ -108,13 +99,11 @@ label {
   /* rounded */
   color: #000000;
   /* text-black */
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .section-container button {
-  font-size: 12px;
-  /* Set font size to 12px */
+  font-size: 0.875rem;
+  /* text-sm */
   font-weight: 600;
   /* font-semibold */
   color: #63b3ed;
@@ -136,37 +125,34 @@ label {
 .section-container .fa-plus-circle {
   margin-right: 0.5rem;
   /* mr-2 */
-  font-size: 14px;
+  font-size: 1.125rem;
   /* text-lg */
   color: #4299e1;
   /* text-blue-500 */
 }
 
+
 .container {
   background-color: var(--secondary-bg);
   margin-top: 10px !important;
-  padding: 10px;
+  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   margin: 5% auto;
   width: 80%;
   max-width: 600px;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .fieldset {
   border: 2px solid var(--header-color);
   border-radius: 8px;
-  padding: 30px;
+  padding: 20px;
   position: relative;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .fieldset-header {
   color: var(--header-color);
-  font-size: 14px;
+  font-size: 1.2em;
   font-weight: 600;
   padding: 0 10px;
   position: absolute;
@@ -176,13 +162,10 @@ label {
   background: var(--secondary-bg);
   z-index: 1;
   font-family: 'Poppins', sans-serif;
-  /* Set font size to 12px */
 }
 
 .textarea-container {
   margin-bottom: 1rem;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .textarea {
@@ -192,158 +175,39 @@ label {
   padding: 0.4rem;
   resize: none;
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .button-container {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  font-size: 12px;
-  /* Set font size to 12px */
+  gap: 1rem;
 }
 
 .button {
-  padding: 6px 10px;
+  padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   transition: background-color 0.3s, color 0.3s;
   cursor: pointer;
   font-family: 'Poppins', sans-serif;
   text-decoration: none;
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .back-button {
   background-color: var(--header-color);
   color: var(--text-light);
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .back-button:hover {
   background-color: var(--highlighted-color);
   color: var(--text-light);
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .recommend-button {
   background-color: #c5c0a1;
   color: var(--text-dark);
-  font-size: 12px;
-  /* Set font size to 12px */
 }
 
 .recommend-button:hover {
   background-color: var(--highlighted-color);
   color: var(--text-light);
-  font-size: 12px;
-  /* Set font size to 12px */
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .container {
-    width: 90%;
-    padding: 10px;
-  }
-
-  .fieldset {
-    padding: 15px;
-  }
-
-  .fieldset-header {
-    font-size: 12px;
-  }
-
-  .button-container {
-    flex-direction: column;
-    text-align: center;
-    gap: 5px;
-  }
-
-  .button {
-    width: 100%;
-    padding: 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    width: 95%;
-    padding: 5px;
-  }
-
-  .fieldset {
-    padding: 10px;
-  }
-
-  .fieldset-header {
-    font-size: 12px;
-  }
-
-  .button-container {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .button {
-    width: 100%;
-    padding: 6px;
-  }
-}
-
-.upload-wrapper {
-  margin: auto;
-  max-width: 640px;
-  padding-top: 60px;
-  text-align: center;
-}
-
-.upload-container {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.upload-title {
-  color: #130f40;
-  font-family: 'Varela Round', sans-serif;
-  letter-spacing: -.5px;
-  font-weight: 700;
-  padding-bottom: 10px;
-}
-
-.upload-box {
-  background-color: rgb(239, 239, 239);
-  border-radius: 6px;
-  padding: 10px;
-}
-
-.upload-border {
-  border: 5px dashed rgba(198, 198, 198, 0.65);
-  padding: 20px;
-}
-
-.upload-icons {
-  color: #95afc0;
-  opacity: 0.55;
-}
-
-.upload-text {
-  color: #130f40;
-  font-weight: 600;
-  font-size: 1.1em;
-  letter-spacing: -1px;
-  margin-top: 30px;
-  margin-bottom: 0;
-  opacity: 0.65;
-}
-
-.upload-link {
-  text-decoration: none;
-  color: rgb(22,42,255);
-  border-bottom: 3px dotted rgba(22, 22, 255, 0.85);
 }
