@@ -18,13 +18,16 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    font-size: 75%;
+    /* Set font size to 75% of the default 16px, which is 12px */
 }
 
 .form-container {
     max-width: 400px;
     background-color: var(--secondary-bg);
     padding: 32px 24px;
-    font-size: 14px;
+    font-size: 1rem;
+    /* 1rem now equals 12px */
     font-family: 'Poppins', sans-serif;
     color: var(--header-color);
     display: flex;
@@ -43,13 +46,21 @@ body {
 .form-container .logo-container {
     text-align: center;
     font-weight: 600;
-    font-size: 36px;
+    font-size: 2rem;
+    /* 3rem now equals 36px */
     color: var(--highlighted-color);
 }
 
 .form-container .otp-subheading {
     text-align: center;
-    font-size: 18px;
+    font-size: 13px;
+    color: var(--header-color);
+    font-weight: 600;
+}
+
+.otp-subheadings {
+    text-align: center;
+    font-size: 13px;
     color: var(--header-color);
 }
 
@@ -72,7 +83,7 @@ body {
 
 .form-container .form-group input {
     width: 100%;
-    padding: 12px 16px;
+    padding: 6px 10px;
     border-radius: 6px;
     font-family: 'Poppins', sans-serif;
     border: 1px solid var(--border-color);
@@ -98,11 +109,12 @@ body {
     background-color: var(--header-color);
     border: none;
     width: 100%;
-    padding: 12px 16px;
+    padding: 6px 10px;
     font-size: inherit;
     gap: 8px;
     margin: 12px 0;
     cursor: pointer;
+    font-size: 12px;
     border-radius: 6px;
     box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.084), 0px 2px 3px rgba(0, 0, 0, 0.168);
 }

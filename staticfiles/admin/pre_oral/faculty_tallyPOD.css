@@ -1,25 +1,22 @@
 :root {
     --primary-bg: #EFEFEF;
     --secondary-bg: #FFFFFF;
-    --header-color: #333;
     --highlighted-color: #7C0404;
     --text-light: #FFFFFF;
     --border-color: #7D1E22;
-    --shadow-color: rgba(0, 0, 0, 0.1);
-    --hover-shadow-color: rgba(0, 0, 0, 0.2);
+    --header-color: #333;
+    --sidebar-hover: #606060;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+/* General styles */
 body {
-    font-family: 'Poppins', sans-serif;
     background-color: var(--primary-bg);
-    color: var(--header-color);
     margin: 0;
-    padding: 0;
-}
-
-.modal-content {
     font-family: 'Poppins', sans-serif;
-    font-size: 12px;
 }
 
 
@@ -28,6 +25,7 @@ body {
     transition: opacity 0.3s, background-color 0.3s;
     font-family: 'Poppins', sans-serif;
     font-size: 12px;
+    /* Changed to 12px */
 }
 
 .nav-link:hover {
@@ -46,18 +44,6 @@ nav:hover .nav-link {
     opacity: 1;
 }
 
-/* Sidebar styles */
-#sidebar {
-    transition: transform 0.5s ease, opacity 0.5s ease;
-    background-color: var(--header-color);
-    overflow: hidden;
-}
-
-#sidebar.hidden {
-    transform: translateX(-100%);
-    opacity: 0;
-}
-
 /* Footer styles */
 .footer {
     background-color: var(--header-color);
@@ -66,6 +52,18 @@ nav:hover .nav-link {
     font-size: 8px;
     color: var(--text-light);
     text-align: center;
+}
+
+/* Sidebar styles */
+#sidebar {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    background-color: var(--header-color);
+    width: 225px;
+}
+
+#sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
 }
 
 .main-content {
@@ -94,37 +92,47 @@ nav:hover .nav-link {
     scrollbar-color: maroon #f1f1f1;
 }
 
-
-/* School Year */
+/*School Year*/
 .section-container {
     padding: 0.5rem;
     margin-top: 0.5rem;
     background-color: #2d3748;
+    /* bg-gray-800 */
     border-radius: 0.5rem;
+    /* rounded-lg */
     font-family: 'Poppins', sans-serif;
     font-size: 12px;
 }
 
 .section-container form {
     margin-bottom: 0.5rem;
+    /* mb-2 */
 }
 
 .section-container label {
     display: block;
     margin-bottom: 0.25rem;
+    /* mb-1 */
     color: #ffffff;
+    /* text-white */
 }
 
 .section-container select {
     width: 100%;
+    /* w-full */
     padding: 10px !important;
+    /* p-2 */
     border: 1px solid #ccc;
+    /* border */
     border-radius: 0.25rem;
+    /* rounded */
     color: #000000;
+    /* text-black */
 }
 
 .section-container button {
     font-size: 12px;
+    /* Changed to 12px */
     font-weight: 600;
     color: #63b3ed;
     display: flex;
@@ -144,35 +152,102 @@ nav:hover .nav-link {
     color: #4299e1;
 }
 
-.main-content {
-    overflow-y: auto;
-    flex: 1;
+.card-header {
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600 !important;
+    margin-bottom: 20px !important;
+}
+
+.modal-title {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.modal-btn {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+}
+
+.modal-content {
+    font-family: 'Poppins', sans-serif;
     font-size: 12px;
 }
 
+.modal-dialog {
+    max-width: 600px;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger {
+    font-size: 12px !important;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Add this rule to set the modal font size to 12px */
+.modal-content {
+    font-size: 12px !important;
+    font-family: 'Poppins', sans-serif;
+}
+
 .card {
-    margin: 0 auto;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px !important;
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.container {
+    width: 100%;
+    margin-bottom: 10px;
     padding: 20px;
     background-color: var(--secondary-bg);
+    border-radius: 8px;
+    font-size: 12px;
     font-family: 'Poppins', sans-serif;
-    border-radius: 8px;
-    box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.1),
-        0 6px 20px rgba(0, 0, 0, 0.1),
-        0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
-legend {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--header-color);
+.btn-warning {
+    background-color: #F6C500 !important;
+    border-color: #F6C500;
+    color: #333;
+    font-size: 12px !important
 }
 
-/* Table styles */
-.table-responsive {
+.btn-warning:hover {
+    background-color: #e5b200 !important;
+    border-color: #e5b200;
+    color: #222 !important;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #FFFFFF;
+    font-size: 12px;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+    color: #f8f9fa;
+}
+
+
+table {
+    width: 100%;
+    margin: 0 auto 20px;
+    border-collapse: separate;
     background-color: var(--secondary-bg);
-    border-radius: 8px;
-    /* Make table scrollable horizontally */
+    overflow-x: auto;
+    border-radius: 5px;
 }
 
 .table {
@@ -183,76 +258,38 @@ legend {
 
 .table th,
 .table td {
-    padding: 10px;
-    text-align: left;
+    padding: 6px !important;
+    text-align: center;
     vertical-align: middle;
-    font-size: 12px;
+    font-size: 11.8px !important;
 }
 
 .table th {
     background-color: #900303;
     color: #FFFFFF;
+    white-space: nowrap;
     border-radius: 5px;
-    border : 1px solid var(--text-light);
+    border: 1px solid var(--text-light) !important;
+    text-align: center;
 }
 
 .table tr {
     background-color: #FFFFFF;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
 }
 
-/* Responsive styles */
-@media screen and (max-width: 650px) {
-
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-    }
-
-    tr {
-        display: grid;
-        grid-template-columns: 1fr;
-        margin-bottom: 10px;
-    }
-
-    th {
-        display: grid;
-        text-align: center;
-    }
-
-    td {
-        display: grid;
-        padding: 10px;
-        text-align: center;
-        align-items: center;
-    }
-
-    td:first-child {
-        padding-top: 10px;
-    }
-
-    td:last-child {
-        padding-bottom: 10px;
-    }
-
-    td::before {
-        font-weight: 600;
-        text-transform: capitalize;
-        content: attr(data-label);
-    }
-
-    legend {
-        font-size: 16px;
-        text-align: center;
-    }
+.table ul {
+    padding-left: 20px;
 }
+
 
 @media screen and (max-width: 768px) {
+    .card {
+        padding: 10.5px !important;
+    }
 
     table,
     thead,
@@ -267,19 +304,15 @@ legend {
         display: grid;
         grid-template-columns: 1fr;
         margin-bottom: 10px;
-        justify-content: center;
-        align-items: center;
     }
 
     th {
         display: grid;
-        text-align: center;
     }
 
     td {
         display: grid;
         padding: 10px;
-        text-align: center;
     }
 
     td:first-child {
@@ -296,56 +329,50 @@ legend {
         content: attr(data-label);
     }
 
-    legend {
-        font-size: 16px;
+    /* Add sidebar width */
+    #sidebar {
+        width: 250px !important;
+        overflow: hidden !important;
+        /* Adjust the width as needed */
+    }
+
+    h3 {
+        font-size: 20px;
+        font-family: 'Poppins', sans-serif;
         text-align: center;
     }
 }
 
-@media screen and (max-width: 992px) {
+select {
+    cursor: pointer;
+    /* Default cursor for enabled states */
+}
 
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-    }
+select:disabled {
+    background-color: #e9ecef;
+    /* Light gray background */
+    color: #6c757d;
+    /* Dark gray text */
+    cursor: not-allowed;
+    /* Change cursor to indicate unavailability */
+}
 
-    tr {
-        display: grid;
-        grid-template-columns: 1fr;
-        margin-bottom: 10px;
-    }
+option:disabled {
+    background-color: #e9ecef;
+    /* Light gray background */
+    color: #6c757d;
+    /* Dark gray text */
+    cursor: not-allowed;
+    /* Change cursor to indicate unavailability */
+}
 
-    th {
-        display: grid;
-        text-align: center;
-    }
+option {
+    cursor: pointer;
+}
 
-    td {
-        display: grid;
-        padding: 10px;
-        text-align: center;
-    }
-
-    td:first-child {
-        padding-top: 10px;
-    }
-
-    td:last-child {
-        padding-bottom: 10px;
-    }
-
-    td::before {
-        font-weight: 600;
-        text-transform: capitalize;
-        content: attr(data-label);
-    }
-
-    legend {
-        font-size: 14px;
-        text-align: center;
-    }
+.disabled-option {
+    color: #6c757d;
+    /* Dark gray text color */
+    background-color: #e9ecef;
+    /* Light gray background */
 }

@@ -17,13 +17,16 @@ html {
 body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--primary-bg);
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 /* Navigation link styles */
 .nav-link {
   transition: opacity 0.3s, background-color 0.3s;
   font-family: 'Poppins', sans-serif;
-  font-size: 16px;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .nav-link:hover {
@@ -47,7 +50,8 @@ nav:hover .nav-link {
   background-color: var(--header-color);
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 8px;
+  /* Set font size to 12px */
   color: var(--text-light);
   text-align: center;
 }
@@ -76,6 +80,8 @@ nav:hover .nav-link {
   border-radius: 0.5rem;
   /* rounded-lg */
   font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .section-container form {
@@ -89,6 +95,8 @@ nav:hover .nav-link {
   /* mb-1 */
   color: #ffffff;
   /* text-white */
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .section-container select {
@@ -102,11 +110,13 @@ nav:hover .nav-link {
   /* rounded */
   color: #000000;
   /* text-black */
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .section-container button {
-  font-size: 0.875rem;
-  /* text-sm */
+  font-size: 12px;
+  /* Set font size to 12px */
   font-weight: 600;
   /* font-semibold */
   color: #63b3ed;
@@ -128,7 +138,7 @@ nav:hover .nav-link {
 .section-container .fa-plus-circle {
   margin-right: 0.5rem;
   /* mr-2 */
-  font-size: 1.125rem;
+  font-size: 14px;
   /* text-lg */
   color: #4299e1;
   /* text-blue-500 */
@@ -136,11 +146,14 @@ nav:hover .nav-link {
 
 .container {
   margin-top: 10px !important;
-  padding: 25px;
+  padding: 10px;
   background-color: var(--secondary-bg);
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  /* Set font size to 12px */
+  margin-bottom: 10px;
 }
 
 /* Card styles */
@@ -156,12 +169,15 @@ nav:hover .nav-link {
 /* Form group styles */
 .form-group {
   margin-bottom: 15px;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 /* Form label styles */
 .form-group label {
   font-family: 'Poppins', sans-serif;
-  font-size: 16px;
+  font-size: 12px;
+  /* Set font size to 12px */
   font-weight: 500;
   color: #555555;
   display: block;
@@ -177,7 +193,8 @@ nav:hover .nav-link {
   border: 1px solid #dddddd;
   border-radius: 5px;
   font-family: 'Poppins', sans-serif;
-  font-size: 16px;
+  font-size: 12px;
+  /* Set font size to 12px */
   color: #333333;
 }
 
@@ -186,10 +203,14 @@ nav:hover .nav-link {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .form-check input {
   margin-right: 10px;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 /* Button styles */
@@ -197,13 +218,16 @@ nav:hover .nav-link {
   display: flex;
   gap: 10px;
   /* Add gap between buttons */
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .btn-group .btn {
   font-family: 'Poppins', sans-serif;
-  font-size: 14px;
+  font-size: 12px;
+  /* Set font size to 12px */
   font-weight: 500;
-  padding: 10px 20px;
+  padding: 6px 10px;
   border-radius: 5px;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -212,28 +236,37 @@ nav:hover .nav-link {
   background-color: #6c757d;
   color: #ffffff;
   border: none;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .btn-group .btn-secondary:hover {
   background-color: #5a6268;
   color: #ffffff;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .btn-group .btn-primary {
   background-color: var(--highlighted-color);
   color: #ffffff;
   border: none;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .btn-group .btn-primary:hover {
   background-color: var(--highlighted-color);
   color: #ffffff;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 /* Custom label styles */
 .custom-label {
   font-family: 'Poppins', sans-serif;
-  font-size: 14px;
+  font-size: 12px;
+  /* Set font size to 12px */
   font-weight: 500;
   color: #555555;
 }
@@ -241,6 +274,8 @@ nav:hover .nav-link {
 /* Degree choices styles */
 .degree-choices .form-check {
   margin-bottom: 10px;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 /* Expertise grid styles */
@@ -248,10 +283,14 @@ nav:hover .nav-link {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .expertise-grid .form-check {
   break-inside: avoid;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 fieldset.form-group {
@@ -259,11 +298,14 @@ fieldset.form-group {
   border-radius: 5px !important;
   padding: 20px !important;
   color: #333;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 fieldset.form-group legend {
   font-family: 'Poppins', sans-serif !important;
-  font-size: 16px !important;
+  font-size: 12px !important;
+  /* Set font size to 12px */
   color: #555555;
   font-weight: 500;
   font-family: 'Poppins', sans-serif !important;
@@ -275,30 +317,42 @@ fieldset.form-group legend {
   /* Light blue background color */
   padding: 10px;
   border-radius: 5px;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .btn-modal {
   background-color: var(--highlighted-color);
   color: var(--text-light);
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .btn-modal:hover {
   background-color: var(--highlighted-color);
   color: var(--text-light) !important;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .modal-dialog {
   max-width: 600px;
   font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .modal-title {
   font-weight: 600;
   color: var(--header-color);
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .success-icon {
   color: green;
+  font-size: 12px;
+  /* Set font size to 12px */
 }
 
 .modal-content {
@@ -307,4 +361,198 @@ fieldset.form-group legend {
   width: 100%;
   font-family: 'Poppins', sans-serif;
   color: var(--header-color);
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+.italic-placeholder::placeholder {
+  font-style: italic;
+  font-size: 12px;
+  /* Set font size to 12px */
+}
+
+/* CSS for italic placeholders */
+::placeholder {
+  font-style: italic;
+  color: #6c757d;
+  /* Optional: Change the placeholder color */
+}
+
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  font-style: italic;
+  color: #6c757d;
+  /* Optional: Change the placeholder color */
+}
+
+::-ms-input-placeholder {
+  /* Microsoft Edge */
+  font-style: italic;
+  color: #6c757d;
+  /* Optional: Change the placeholder color */
+}
+
+.form-group label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  /* Set font size to 12px */
+  font-weight: 600;
+  color: #555555;
+  display: block;
+  margin-bottom: 5px;
+}
+
+
+@media (max-width: 768px) {
+  .card {
+    padding: 2px;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  tr {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-bottom: 10px;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  th {
+    display: grid;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  td {
+    display: grid;
+    padding: 10px;
+    font-size: 12px;
+    /* Set font size to 12px */
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  td:first-child {
+    padding-top: 10px;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  td:last-child {
+    padding-bottom: 10px;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  td::before {
+    font-weight: 600;
+    text-transform: capitalize;
+    content: attr(data-label);
+    font-size: 12px;
+    /* Set font size to 12px */
+    /* Assuming you will use data-label attribute to provide the header text */
+  }
+
+  #sidebar {
+    overflow: hidden !important;
+  }
+
+  .btn-group .btn {
+    font-size: 10px;
+    padding: 2px 4px;
+
+  }
+}
+
+@media (max-width: 992px) {
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  tr {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-bottom: 10px;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  th {
+    display: grid;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  td {
+    display: grid;
+    padding: 10px;
+    font-size: 12px;
+    /* Set font size to 12px */
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  td:first-child {
+    padding-top: 10px;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  td:last-child {
+    padding-bottom: 10px;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  td::before {
+    font-weight: 600;
+    text-transform: capitalize;
+    content: attr(data-label);
+    font-size: 12px;
+    /* Set font size to 12px */
+    /* Assuming you will use data-label attribute to provide the header text */
+  }
+
+  .pagination .step-links a {
+    margin: 0 5px;
+    padding: 2px 6px;
+    text-decoration: none;
+    color: var(--highlighted-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-left: 0;
+    font-size: 12px;
+    /* Set font size to 12px */
+  }
+
+  .pagination .step-links .current {
+    margin: 0 5px;
+    padding: 2px 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--highlighted-color);
+    color: var(--text-light);
+    font-size: 8px;
+    /* Set font size to 12px */
+  }
 }

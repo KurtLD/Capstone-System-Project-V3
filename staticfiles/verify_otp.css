@@ -83,7 +83,6 @@ body {
 .form-container .form-group input:focus {
   outline: none;
   border-color: var(--highlighted-color);
-  padding: 14px 16px;
   /* Adjusted padding to maintain consistency */
 }
 

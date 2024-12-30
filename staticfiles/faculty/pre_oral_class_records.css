@@ -67,7 +67,6 @@ nav:hover .nav-link {
 #sidebar {
     transition: transform 0.9s ease, opacity 0.9s ease;
     background-color: var(--header-color) !important;
-    overflow: hidden;
 }
 
 #sidebar.hidden {
@@ -100,6 +99,7 @@ nav:hover .nav-link {
     scrollbar-width: thin;
     scrollbar-color: maroon #f1f1f1;
 }
+
 .no-hover {
     pointer-events: none;
 }
@@ -164,7 +164,7 @@ tr:hover {
 }
 
 .btn-warning {
-    padding: 8px 8px;
+    padding: 4px 8px;
     text-decoration: none;
     border-radius: 5px;
     text-align: center;
@@ -257,7 +257,7 @@ tr:hover {
 /* Pagination styles */
 .pagination {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     margin-bottom: 0;
     height: 100%;
@@ -335,7 +335,11 @@ fieldset {
 
 @media (max-width: 768px) {
     .card {
-        padding: 15.8px;
+        padding: 10.5px !important;
+    }
+    .card-title {
+        font-size: 18px;
+        text-align: center;
     }
 
     table,
@@ -377,7 +381,7 @@ fieldset {
 
     td::before {
         font-weight: 600;
-        text-transform: capitalize;
+        text-transform: capitalize!important;
         content: attr(data-label);
     }
 
@@ -389,17 +393,6 @@ fieldset {
         border: 1px solid var(--border-color);
         border-radius: 4px;
         margin-left: 0;
-
-    }
-
-    .pagination .step-links .current {
-        margin: 0 5px;
-        padding: 2px 6px;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background-color: var(--highlighted-color);
-        color: var(--text-light);
-        font-size: 6px;
     }
 
 
@@ -421,5 +414,6 @@ fieldset {
         width: 250px !important;
         /* Adjust the width as needed */
     }
+
 
 }

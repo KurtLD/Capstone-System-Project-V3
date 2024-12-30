@@ -67,7 +67,6 @@ nav:hover .nav-link {
 #sidebar {
     transition: transform 0.9s ease, opacity 0.9s ease;
     background-color: var(--header-color) !important;
-    overflow: hidden;
 }
 
 #sidebar.hidden {
@@ -100,6 +99,7 @@ nav:hover .nav-link {
     scrollbar-width: thin;
     scrollbar-color: maroon #f1f1f1;
 }
+
 .no-hover {
     pointer-events: none;
 }
@@ -109,7 +109,8 @@ nav:hover .nav-link {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    padding: 30px;
+
+    padding: 15px;
     font-size: 12px;
     font-family: 'Poppins', sans-serif;
 }
@@ -117,6 +118,7 @@ nav:hover .nav-link {
 .card-title {
     font-size: 20px;
     font-weight: 600;
+    text-align: center;
 }
 
 .nav-navbar {
@@ -164,7 +166,7 @@ tr:hover {
 }
 
 .btn-warning {
-    padding: 8px 8px;
+    padding: 4px 8px;
     text-decoration: none;
     border-radius: 5px;
     text-align: center;
@@ -203,10 +205,12 @@ tr:hover {
     float: right;
     padding: 5px;
     border-radius: 5px;
-    background-color: var(--header-color);
+    background-color: #10B981;
     color: var(--text-light);
     font-size: 13px;
     font-family: 'Poppins', sans-serif;
+    border: none !important;
+    font-weight: 600;
 }
 
 .dropdown:focus {
@@ -221,12 +225,13 @@ tr:hover {
 
 .btn-secondary {
     font-size: 12px;
+    padding: 4px 8px;
 }
 
 .btn-maroon {
     background-color: var(--highlighted-color);
     color: var(--text-light);
-    font-size: 12px;
+    font-size: 10px;
     padding: 4px 8px;
 }
 
@@ -234,7 +239,10 @@ tr:hover {
     background-color: var(--highlighted-color);
     color: var(--text-light);
 }
-
+.btn-success, .btn-warning {
+    font-size: 11px !important;
+    padding: 4px 4px;
+}
 .faculty-info-highlight {
     background-color: #F6C500;
     color: var(--header-color);
@@ -257,7 +265,7 @@ tr:hover {
 /* Pagination styles */
 .pagination {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     margin-bottom: 0;
     height: 100%;
@@ -334,8 +342,13 @@ fieldset {
 }
 
 @media (max-width: 768px) {
-    .card {
-        padding: 15.8px;
+    #groupSelector {
+        margin-bottom: 20px;
+    }
+
+    .card-title {
+        font-size: 18px !important;
+        text-align: center;
     }
 
     table,
@@ -349,8 +362,7 @@ fieldset {
 
     tr {
         display: block;
-        /* grid-template-columns: 100px 4fr; */
-        grid-template-columns: 1fr;
+        grid-template-columns: 100px 4fr;
         margin-bottom: 10px;
     }
 
@@ -358,7 +370,6 @@ fieldset {
         display: grid;
         text-align: center;
         justify-content: center;
-        text-align: center;
     }
 
     td {
@@ -381,25 +392,24 @@ fieldset {
         content: attr(data-label);
     }
 
+    .pagination .step-links .current {
+        margin: 0 5px;
+        padding: 2px 4px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background-color: var(--highlighted-color);
+        color: var(--text-light);
+    }
+
+
     .pagination .step-links a {
         margin: 0 5px;
-        padding: 2px 6px;
+        padding: 2px 4px;
         text-decoration: none;
         color: var(--highlighted-color);
         border: 1px solid var(--border-color);
         border-radius: 4px;
         margin-left: 0;
-
-    }
-
-    .pagination .step-links .current {
-        margin: 0 5px;
-        padding: 2px 6px;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background-color: var(--highlighted-color);
-        color: var(--text-light);
-        font-size: 6px;
     }
 
 
@@ -414,12 +424,14 @@ fieldset {
     .card-title {
         text-align: center;
         font-size: 20px;
+        justify-content: center;
     }
 
     /* Add sidebar width */
     #sidebar {
-        width: 250px !important;
+        width: 250px;
         /* Adjust the width as needed */
     }
+
 
 }
