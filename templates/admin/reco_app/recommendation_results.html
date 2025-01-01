@@ -13,35 +13,31 @@
     <!-- Include Select2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/select2.min.css" rel="stylesheet" />
     <style>
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             font-family: 'Poppins', sans-serif;
         }
         .select2-container--default .select2-results__option {
             font-family: 'Poppins', sans-serif;
         }
-        
+        .main-content {
+            height: auto;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
-    
-    <div class="flex h-screen flex-col">
-        <!-- Navbar -->
-        <div class="no-print">
-            {% include 'navbar.html' %}
+    <div class="no-print">
+        {% include 'navbar.html' %}
+    </div>
+    <div class="flex flex-1 main-content ">
+        <!-- Sidebar -->
+        <div id="sidebar" class="flex flex-col no-print">
+            {% include 'sidebar.html' %}
         </div>
-        <div class="flex flex-1 overflow-hidden">
-            <!-- Sidebar -->
-            <div id="sidebar" class="flex flex-col">
-                {% include 'sidebar.html' %}
-            </div>
-            <!-- Main Content Wrapper -->
-            <div class="flex flex-col flex-1">
-                <!-- Content -->
-                <main class="flex-1 overflow-auto p-2 main-content">
+        <!-- Main Content Wrapper -->
+        <div class="flex flex-col flex-1">
+            <!-- Content -->
+            <main class="flex-1 p-2 main-content">
                     <!-- Page Title -->
                     {% if keywords %}
                     <div class="content-container">
@@ -198,19 +194,19 @@
                             <label for="group_info">Select Group Member:</label>
                             <!-- Input Field 1 -->
                             <label for="member1">Member 1:</label>
-                            <select id="group_info1" name="group_info1" class="member-select" style="width: 100%;" required>
+                            <select id="group_info1" name="group_info1" class="member-select" style="width: 30%;" required>
                                 <option value="{{ member1 }}" selected>{{ member1 }}</option>
                             </select>
                         
                             <!-- Input Field 2 -->
                             <label for="member2">Member 2:</label>
-                            <select id="group_info2" name="group_info2" class="member-select" style="width: 100%;" required>
+                            <select id="group_info2" name="group_info2" class="member-select" style="width: 30%;" required>
                                 <option value="{{ member2 }}" selected>{{ member2 }}</option>
                             </select>
                         
                             <!-- Input Field 3 -->
                             <label for="member3">Member 3:</label>
-                            <select id="group_info3" name="group_info3" class="member-select" style="width: 100%;">
+                            <select id="group_info3" name="group_info3" class="member-select" style="width: 30%;">
                                 <option value="{{ member3 }}" selected>{{ member3 }}</option>
                             </select>
                         </div>
@@ -284,23 +280,29 @@
                                 data: select2Data,
                                 placeholder: 'Select or Search for Member 1',
                                 allowClear: true,
-                                width: '25%'
+                                width: '25%',
+                            }).on('select2:open', function() {
+                                $('.select2-search__field').attr('placeholder', 'Type to search...');
                             }).val('{{ member1 }}').trigger('change');
-                
+
                             $('#group_info2').select2({
                                 data: select2Data,
                                 placeholder: 'Select or Search for Member 2',
                                 allowClear: true,
                                 width: '25%'
+                            }).on('select2:open', function() {
+                                $('.select2-search__field').attr('placeholder', 'Type to search...');
                             }).val('{{ member2 }}').trigger('change');
-                
+
                             $('#group_info3').select2({
                                 data: select2Data,
                                 placeholder: 'Select or Search for Member 3',
                                 allowClear: true,
                                 width: '25%'
+                            }).on('select2:open', function() {
+                                $('.select2-search__field').attr('placeholder', 'Type to search...');
                             }).val('{{ member3 }}').trigger('change');
-                
+                                            
                             // $('#printButton').click(function () {
                             //     // Open the print dialog
                             //     window.print();
@@ -419,15 +421,15 @@
                         });
                 
                     </script>
-                </main>
-                  <!-- Footer -->
-                  <div class="footer no-print">
-                    {% include 'footer.html' %}
-                </div>
+            </main>
+            <br><br>
+            <!-- Footer -->
+            <div class="footer no-print">
+                {% include 'footer.html' %}
             </div>
         </div>
     </div>
-    
+
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">

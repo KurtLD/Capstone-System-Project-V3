@@ -7302,13 +7302,19 @@ def notification_list(request):
         # Render only the notification list as a partial response
         return render(request, 'users/partials_notification_list.html', {
             'notifications': notifications,
-            'adviser_records': adviser_records
+            'adviser_records': adviser_records,
+            'selected_school_year': selected_school_year,
+            'school_years': school_years,
+            'last_school_year': last_school_year
         })
 
     # If not an AJAX request, render the full page
     return render(request, 'users/notifications.html', {
         'notifications': notifications,
-        'adviser_records': adviser_records
+        'adviser_records': adviser_records,
+        'selected_school_year': selected_school_year,
+        'school_years': school_years,
+        'last_school_year': last_school_year
     })
 
 
