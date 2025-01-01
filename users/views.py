@@ -7352,7 +7352,7 @@ def accept_adviser_and_mark_read(request, adviser_id, notif_id):
     # Create a notification (optional, based on your logic)
     Notif.objects.create(
         created_by=request.user,
-        notif=f"{adviser.faculty} has accepted the request for an adviser with title: {adviser.approved_title}",
+        notif=f"{adviser.faculty} has accepted the request for an adviser with title:<br> {adviser.approved_title}",
     )
 
     # Fetch the notification
