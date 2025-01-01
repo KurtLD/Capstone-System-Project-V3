@@ -13,31 +13,34 @@
     <!-- Include Select2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/select2.min.css" rel="stylesheet" />
     <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             font-family: 'Poppins', sans-serif;
         }
         .select2-container--default .select2-results__option {
             font-family: 'Poppins', sans-serif;
         }
-        .main-content {
-            height: auto;
-            overflow-y: auto;
-        }
+        
     </style>
 </head>
 <body>
-    <div class="no-print">
-        {% include 'navbar.html' %}
-    </div>
-    <div class="flex flex-1 main-content ">
-        <!-- Sidebar -->
-        <div id="sidebar" class="flex flex-col no-print">
-            {% include 'sidebar.html' %}
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
         </div>
-        <!-- Main Content Wrapper -->
-        <div class="flex flex-col flex-1">
-            <!-- Content -->
-            <main class="flex-1 p-2 main-content">
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            <div id="sidebar" class="flex flex-col">
+                {% include 'sidebar.html' %}
+            </div>
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <main class="flex-1 overflow-auto p-2 main-content">
                     <!-- Page Title -->
                     {% if keywords %}
                     <div class="content-container">

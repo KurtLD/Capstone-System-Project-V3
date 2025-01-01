@@ -1,766 +1,651 @@
 :root {
-    --primary-bg: #EFEFEF;
-    --secondary-bg: #FFFFFF;
-    --highlighted-color: #7C0404;
-    --text-light: #FFFFFF;
-    --border-color: #7D1E22;
-    --header-color: #333;
-    --sidebar-hover: #606060;
-  }
-  
+  --primary-bg: #EFEFEF;
+  --secondary-bg: #FFFFFF;
+  --highlighted-color: #7C0404;
+  --text-light: #FFFFFF;
+  --border-color: #7D1E22;
+  --header-color: #333;
+  --sidebar-hover: #606060;
+}
 
-  body {
-    background-color: var(--primary-bg);
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    /* Set font size to 12px */
-    margin: 0;
-  }
-  
-  .btn-secondary {
-    background-color: #6c757d;
-    color: #ffffff;
-    border: none;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .btn-secondary:hover {
-    background-color: #5a6268;
-    color: #ffffff;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-    .btn-primary {
-        background-color: #007bff;
-        color: #ffffff;
-        border: none;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-  .card {
-    background-color: var(--secondary-bg);
-    border-radius: 8px;
-    box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.1),
-      0 6px 20px rgba(0, 0, 0, 0.1),
-      0 8px 30px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 10px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-    overflow-x: auto;
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--primary-bg);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  margin: 0;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #ffffff;
+  border: none;
+  font-size: 12px;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  font-size: 12px;
+}
+
+.card {
+  background-color: var(--secondary-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1), 0 8px 30px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  overflow-x: auto;
 }
 
 .card-header {
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .card-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--header-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--header-color);
 }
-
-
-
-
 
 .no-notifications {
-    text-align: center;
-    margin-top: 20px;
-    color: #888;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-}
-  .search-bar {
-    width: 250px;
-    padding: 4px;
-    margin-bottom: 10px;
-    border: 1px solid var(--header-color);
-    font-family: 'Poppins', sans-serif;
-    border-radius: 4px;
-    font-size: 12px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-left: auto;
-    margin-top: 20px;
+  text-align: center;
+  margin-top: 20px;
+  color: #888;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
 }
 
-
-  /* Navigation link styles */
-  .nav-link {
-    transition: opacity 0.3s, background-color 0.3s;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    /* Set font size to 12px */
-    padding: 0;
-  }
-  
-  .nav-link:hover {
-    background-color: var(--sidebar-hover);
-    transform: scale(1.0);
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    color: var(--text-light);
-    border-radius: 5px;
-  }
-  
-  .nav-link:hover~.nav-link {
-    opacity: 0.9;
-  }
-  
-  nav:hover .nav-link {
-    opacity: 1;
-  }
-  
-  /* Footer styles */
-  .footer {
-    background-color: var(--header-color);
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 8px !important;
-    /* Set font size to 12px */
-    color: var(--text-light);
-    text-align: center;
-  }
-  
-  /* Sidebar styles */
-  #sidebar {
-    transition: transform 0.5s ease, opacity 0.5s ease;
-    background-color: var(--header-color);
-  }
-  
-  #sidebar.hidden {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  
-  label {
-    font-weight: 400;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    /* Set font size to 12px */
-    float: left;
-  }
-  
-  
-  .main-content {
-    overflow-y: auto;
-    height: 100%;
-  }
-  
-  /* Customize scrollbar for WebKit browsers (Chrome, Safari) */
-  .main-content::-webkit-scrollbar {
-    width: 12px;
-  }
-  
-  .main-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-  
-  .main-content::-webkit-scrollbar-thumb {
-    background-color: maroon;
-    border-radius: 10px;
-    border: 3px solid #f1f1f1;
-  }
-  
-  /* Customize scrollbar for Firefox */
-  .main-content {
-    scrollbar-width: thin;
-    scrollbar-color: maroon #f1f1f1;
-  }
-  
-  /* static/css/school_year_selection.css */
-  
-  .section-container {
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    background-color: #2d3748;
-    /* bg-gray-800 */
-    border-radius: 0.5rem;
-    /* rounded-lg */
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .section-container form {
-    margin-bottom: 0.5rem;
-    /* mb-2 */
-  }
-  
-  .section-container label {
-    display: block;
-    margin-bottom: 0.25rem;
-    /* mb-1 */
-    color: #ffffff;
-    /* text-white */
-  }
-  
-  .section-container select {
-    width: 100%;
-    /* w-full */
-    padding: 10px !important;
-    /* p-2 */
-    border: 1px solid #ccc;
-    /* border */
-    border-radius: 0.25rem;
-    /* rounded */
-    color: #000000;
-    /* text-black */
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .section-container button {
-    font-size: 12px;
-    /* Set font size to 12px */
-    font-weight: 600;
-    /* font-semibold */
-    color: #63b3ed;
-    /* text-blue-400 */
-    display: flex;
-    /* flex */
-    align-items: center;
-    /* items-center */
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .section-container button:hover {
-    color: #4299e1;
-    /* hover:text-blue-500 */
-  }
-  
-  .section-container .fa-plus-circle {
-    margin-right: 0.5rem;
-    /* mr-2 */
-    font-size: 14px;
-    /* text-lg */
-    color: #4299e1;
-    /* text-blue-500 */
-  }
-  
-  
-  .card {
-    background-color: var(--secondary-bg);
-    border-radius: 8px;
-    box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.1),
-      0 6px 20px rgba(0, 0, 0, 0.1),
-      0 8px 30px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 10px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    /* Set font size to 12px */
-    overflow-x: auto;
-  }
-  
-  
-  form {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  table {
-    width: 100%;
-    margin: 0 auto 20px;
-    border-collapse: separate;
-    background-color: var(--secondary-bg);
-    overflow-x: auto;
-    border-radius: 5px;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 15px;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .table th {
-    background-color: var(--highlighted-color);
-    color: #FFFFFF;
-    white-space: nowrap;
-    border-radius: 8px;
-    border: 1px solid var(--text-light) !important;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .table tr {
-    background-color: #EFEFEF;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .table td {
-    border: none;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  
-  
-  /* Pagination styles */
-  .pagination {
-    display: flex;
-    margin-bottom: 0;
-    height: 100%;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .pagination .step-links {
-    display: flex;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .pagination .step-links a {
-    margin: 0 5px;
-    padding: 2px 6px;
-    text-decoration: none;
-    color: var(--highlighted-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    transition: background-color 0.3s, color 0.3s;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .pagination .step-links a:hover {
-    background-color: var(--highlighted-color);
-    color: var(--text-light);
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .pagination .step-links .current {
-    margin: 0 5px;
-    padding: 2px 6px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--highlighted-color);
-    color: var(--text-light);
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  .float-right {
-    float: right !important;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  fieldset {
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 12px;
-    /* Set font size to 12px */
-  }
-  
-  legend {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--header-color);
-    padding: 0 10px;
-  }
-  @media (max-width: 768px) {
-    .card {
-        padding: 15px !important;
-        font-size: 10px;
-    }
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    tr {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    th {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    td {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 10px;
-        font-size: 12px;
-        text-align: center;
-        word-wrap: break-word;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-  
-    td:first-child {
-        padding-top: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    td:last-child {
-        padding-bottom: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    td::before {
-        font-weight: 600;
-        text-transform: capitalize;
-        content: attr(data-label);
-        font-size: 12px;
-        /* Set font size to 12px */
-        /* Assuming you will use data-label attribute to provide the header text */
-    }
-  
-    .pagination .step-links a {
-        margin: 0 5px;
-        padding: 2px 6px;
-        text-decoration: none;
-        color: var(--highlighted-color);
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        margin-left: 0;
-        font-size: 8px;
-        /* Set font size to 12px */
-    }
-  
-    .pagination .step-links .current {
-        margin: 0 5px;
-        padding: 2px 6px;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background-color: var(--highlighted-color);
-        color: var(--text-light);
-        font-size: 10px;
-        /* Set font size to 12px */
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .card {
-        padding: 2px;
-    }
-  
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    tr {
-        display: grid;
-        grid-template-columns: 1fr;
-        margin-bottom: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    th {
-        display: grid;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    td {
-        display: grid;
-        padding: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-        word-wrap: break-word;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-  
-    td:first-child {
-        padding-top: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    td:last-child {
-        padding-bottom: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    td::before {
-        font-weight: 600;
-        text-transform: capitalize;
-        content: attr(data-label);
-        font-size: 12px;
-        /* Set font size to 12px */
-        /* Assuming you will use data-label attribute to provide the header text */
-    }
-  
-    .pagination .step-links a {
-        margin: 0 5px;
-        padding: 2px 6px;
-        text-decoration: none;
-        color: var(--highlighted-color);
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        margin-left: 0;
-        font-size: 2px;
-        /* Set font size to 12px */
-    }
-  
-    .pagination .step-links .current {
-        margin: 0 5px;
-        padding: 2px 6px;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background-color: var(--highlighted-color);
-        color: var(--text-light);
-        font-size: 10px;
-        /* Set font size to 12px */
-    }
-  
-    #sidebar {
-        overflow: hidden !important;
-    }
-  }
-  
-  @media (max-width: 992px) {
-  
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    tr {
-        display: grid;
-        grid-template-columns: 1fr;
-        margin-bottom: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    th {
-        display: grid;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    td {
-        display: grid;
-        padding: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-        word-wrap: break-word;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-  
-    td:first-child {
-        padding-top: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    td:last-child {
-        padding-bottom: 10px;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    td::before {
-        font-weight: 600;
-        text-transform: capitalize;
-        content: attr(data-label);
-        font-size: 12px;
-        /* Set font size to 12px */
-        /* Assuming you will use data-label attribute to provide the header text */
-    }
-  
-    .pagination .step-links a {
-        margin: 0 5px;
-        padding: 2px 6px;
-        text-decoration: none;
-        color: var(--highlighted-color);
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        margin-left: 0;
-        font-size: 12px;
-        /* Set font size to 12px */
-    }
-  
-    .pagination .step-links .current {
-        margin: 0 5px;
-        padding: 2px 6px;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background-color: var(--highlighted-color);
-        color: var(--text-light);
-        font-size: 8px;
-        /* Set font size to 12px */
-    }
-  }
-
+.search-bar {
+  width: 250px;
+  padding: 4px;
+  margin-bottom: 10px;
+  border: 1px solid var(--header-color);
+  font-family: 'Poppins', sans-serif;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+  margin-top: 20px;
+}
 
 /* Navigation link styles */
 .nav-link {
-    transition: opacity 0.3s, background-color 0.3s;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    /* Added font size */
+  transition: opacity 0.3s, background-color 0.3s;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  padding: 0;
 }
 
 .nav-link:hover {
-    background-color: var(--sidebar-hover);
-    transform: scale(1.0);
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    color: var(--text-light);
-    border-radius: 5px;
+  background-color: var(--sidebar-hover);
+  transform: scale(1.0);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  color: var(--text-light);
+  border-radius: 5px;
 }
 
 .nav-link:hover~.nav-link {
-    opacity: 0.9;
+  opacity: 0.9;
 }
 
 nav:hover .nav-link {
-    opacity: 1;
+  opacity: 1;
 }
 
+/* Footer styles */
+.footer {
+  background-color: var(--header-color);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 8px !important;
+  color: var(--text-light);
+  text-align: center;
+}
 
 /* Sidebar styles */
 #sidebar {
-    transition: transform 0.9s ease, opacity 0.9s ease;
-    background-color: var(--header-color) !important;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  background-color: var(--header-color);
 }
 
 #sidebar.hidden {
-    transform: translateX(-100%);
-    opacity: 0;
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+label {
+  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  float: left;
 }
 
 .main-content {
-    overflow-y: auto;
-    height: 100%;
+  overflow-y: auto;
+  height: 100%;
 }
 
+/* Customize scrollbar for WebKit browsers (Chrome, Safari) */
+.main-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background-color: maroon;
+  border-radius: 10px;
+  border: 3px solid #f1f1f1;
+}
+
+/* Customize scrollbar for Firefox */
+.main-content {
+  scrollbar-width: thin;
+  scrollbar-color: maroon #f1f1f1;
+}
+
+/* static/css/school_year_selection.css */
 .section-container {
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    background-color: #2d3748;
-    /* bg-gray-800 */
-    border-radius: 0.5rem;
-    /* rounded-lg */
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-    /* Set font size to 12px */
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  background-color: #2d3748;
+  border-radius: 0.5rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
 }
 
 .section-container form {
-    margin-bottom: 0.5rem;
-    /* mb-2 */
+  margin-bottom: 0.5rem;
 }
 
 .section-container label {
-    display: block;
-    margin-bottom: 0.25rem;
-    /* mb-1 */
-    color: #ffffff;
-    /* text-white */
-    font-size: 12px;
-    /* Set font size to 12px */
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #ffffff;
+  font-size: 12px;
 }
 
 .section-container select {
-    width: 100%;
-    /* w-full */
-    padding: 10px !important;
-    /* p-2 */
-    border: 1px solid #ccc;
-    /* border */
-    border-radius: 0.25rem;
-    /* rounded */
-    color: #000000;
-    /* text-black */
-    font-size: 12px;
-    /* Set font size to 12px */
+  width: 100%;
+  padding: 10px !important;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  color: #000000;
+  font-size: 12px;
 }
 
 .section-container button {
-    font-size: 12px;
-    /* Set font size to 12px */
-    font-weight: 600;
-    /* font-semibold */
-    color: #63b3ed;
-    /* text-blue-400 */
-    display: flex;
-    /* flex */
-    align-items: center;
-    /* items-center */
-    background: none;
-    border: none;
-    cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #63b3ed;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
+.section-container button:hover {
+  color: #4299e1;
+}
+
+.section-container .fa-plus-circle {
+  margin-right: 0.5rem;
+  font-size: 14px;
+  color: #4299e1;
+}
+
+form {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+
+table {
+  width: 100%;
+  margin: 0 auto 20px;
+  border-collapse: separate;
+  background-color: var(--secondary-bg);
+  overflow-x: auto;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 15px;
+  font-size: 12px;
+}
+
+.table th {
+  background-color: var(--highlighted-color);
+  color: #FFFFFF;
+  white-space: nowrap;
+  border-radius: 8px;
+  border: 1px solid var(--text-light) !important;
+  font-size: 12px;
+}
+
+.table tr {
+  background-color: #EFEFEF;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+.table td {
+  border: none;
+  font-size: 12px;
+}
+
+/* Pagination styles */
+.pagination {
+  display: flex;
+  margin-bottom: 0;
+  height: 100%;
+  font-size: 12px;
+}
+
+.pagination .step-links {
+  display: flex;
+  font-size: 12px;
+}
+
+.pagination .step-links a {
+  margin: 0 5px;
+  padding: 2px 6px;
+  text-decoration: none;
+  color: var(--highlighted-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  transition: background-color 0.3s, color 0.3s;
+  font-size: 12px;
+}
+
+.pagination .step-links a:hover {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
+  font-size: 12px;
+}
+
+.pagination .step-links .current {
+  margin: 0 5px;
+  padding: 2px 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--highlighted-color);
+  color: var (--text-light);
+  font-size: 12px;
+}
+
+.float-right {
+  float: right !important;
+  font-size: 12px;
+}
+
+fieldset {
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+
+legend {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--header-color);
+  padding: 0 10px;
+}
+
+@media (max-width: 768px) {
+  .card {
+      padding: 15px !important;
+      font-size: 10px;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+      display: block;
+      font-size: 12px;
+  }
+
+  tr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 12px;
+  }
+
+  th {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+  }
+
+  td {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      font-size: 12px;
+      text-align: center;
+      word-wrap: break-word;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+
+  td:first-child {
+      padding-top: 10px;
+      font-size: 12px;
+  }
+
+  td:last-child {
+      padding-bottom: 10px;
+      font-size: 12px;
+  }
+
+  td::before {
+      font-weight: 600;
+      text-transform: capitalize;
+      content: attr(data-label);
+      font-size: 12px;
+  }
+
+  .pagination .step-links a {
+      margin: 0 5px;
+      padding: 2px 6px;
+      text-decoration: none;
+      color: var(--highlighted-color);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      margin-left: 0;
+      font-size: 8px;
+  }
+
+  .pagination .step-links .current {
+      margin: 0 5px;
+      padding: 2px 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--highlighted-color);
+      color: var(--text-light);
+      font-size: 10px;
+  }
+
+  #sidebar {
+      overflow: hidden !important;
+  }
+}
+
+@media (max-width: 992px) {
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+      display: block;
+      font-size: 12px;
+  }
+
+  tr {
+      display: grid;
+      grid-template-columns: 1fr;
+      margin-bottom: 10px;
+      font-size: 12px;
+  }
+
+  th {
+      display: grid;
+      font-size: 12px;
+  }
+
+  td {
+      display: grid;
+      padding: 10px;
+      font-size: 12px;
+      word-wrap: break-word;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+
+  td:first-child {
+      padding-top: 10px;
+      font-size: 12px;
+  }
+
+  td:last-child {
+      padding-bottom: 10px;
+      font-size: 12px;
+  }
+
+  td::before {
+      font-weight: 600;
+      text-transform: capitalize;
+      content: attr(data-label);
+      font-size: 12px;
+  }
+
+  .pagination .step-links a {
+      margin: 0 5px;
+      padding: 2px 6px;
+      text-decoration: none;
+      color: var(--highlighted-color);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      margin-left: 0;
+      font-size: 12px;
+  }
+
+  .pagination .step-links .current {
+      margin: 0 5px;
+      padding: 2px 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--highlighted-color);
+      color: var(--text-light);
+      font-size: 8px;
+  }
+}
+
+.no-hover {
+  pointer-events: none;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.nav-navbar {
+  background-color: var(--highlighted-color) !important;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+a.nav-link {
+  color: var(--text-light);
+}
+
+tr:nth-child(even) {
+  background-color: var(--secondary-bg);
+}
+
+tr:hover {
+  background-color: var(--primary-bg);
+}
+
+.btn-warning {
+  padding: 8px 8px;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.form-group input {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--highlighted-color);
+}
+
+#searchInput {
+  border: 2px solid var(--header-color);
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  float: right;
+  width: 200px;
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: var(--header-color);
+  box-shadow: 0 0 5px rgba(255, 250, 250, 0.5);
+}
+
+.dropdown {
+  float: right;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: var(--header-color);
+  color: var(--text-light);
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.dropdown:focus {
+  outline: none;
+}
+
+.dropdown option {
+  padding: 10px;
+  background-color: #ffffff;
+  color: #333;
+}
+
+.btn-maroon {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
+  font-size: 10px;
+  padding: 4px 4px;
+}
+
+.btn-maroon:hover {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
+}
+
+.faculty-info-highlight {
+  background-color: #5b97f8;
+  color: var(--header-color);
+  padding: 3px;
+  border-radius: 3px;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nav-item p {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  color: var(--text-light);
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.form-header {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+legend {
+  border-radius: 4px;
+  font-size: 12px;
+  transition: background-color 0.3s, color 0.3s;
+  z-index: 10000;
+  background-color: #F6C500;
+}
+
+fieldset {
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.form-check {
+  break-inside: avoid;
+  width: 100%;
+}
+
+.btn-modal {
+  background-color: var(--highlighted-color);
+  font-size: 12px;
+  padding: 4px 8px;
+  color: var(--text-light);
+}
+
+.btn-modal:hover {
+  background-color: var(--highlighted-color);
+  color: var(--text-light);
+}
 
 /* Flexbox for aligning icon and text */
 .nav-link {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .nav-link span {
-    flex-shrink: 0;
-
+  flex-shrink: 0;
 }
 
 .nav-link p {
-    flex-grow: 1;
-    /* Allow the text to grow */
-    margin: 0;
-    /* Remove default margin */
-    font-size: 13px;
-    /* Adjust the font size as needed */
+  flex-grow: 1;
+  margin: 0;
+  font-size: 13px;
 }
+
