@@ -1564,7 +1564,7 @@ def add_groupPOD(request):
                     return redirect(url)
                 else:
                     # Reset previous capstone teachers before setting the new one
-                    reset_previous_capstone_teachers()
+                    # reset_previous_capstone_teachers()
 
                     # Set the `is_capstone_teacher` field to True for the selected faculty
                     if capstone_teacher:

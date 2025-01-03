@@ -167,8 +167,9 @@ class GroupInfoPODForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(GroupInfoPODForm, self).__init__(*args, **kwargs)
-        active_faculty = Faculty.objects.filter(is_active=True)
-        self.fields['adviser'].queryset = active_faculty
+        active_faculty = Faculty.objects.filter(is_active=True, is_capstone_teacher=True)
+        active_faculty_v2 = Faculty.objects.filter(is_active=True)
+        self.fields['adviser'].queryset = active_faculty_v2
         self.fields['capstone_teacher'].queryset = active_faculty
 
     def save(self, commit=True):

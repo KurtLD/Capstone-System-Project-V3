@@ -110,6 +110,16 @@
                 </li> -->
                 {% if user.is_authenticated and user.faculty_profile.is_capstone_teacher %}
                 <li class="nav-item">
+                    <a href="{% url 'add_groupPOD' %}" class="nav-link">
+                        <span class="fa-stack fa-md">
+                            <i class="fas fa-circle fa-stack-2x" style="color: #FFFFFF;"></i>
+                            <i class="fas fa-users fa-stack-1x" style="color: #900303"></i>
+                        </span>
+                        <span class="ml-2 custom-span">Add Group Pre-Oral Defense</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
                     <a href="{% url 'class_record' %}" class="nav-link">
                         <span class="fa-stack fa-md">
                             <i class="fas fa-circle fa-stack-2x text-green-500"></i>
