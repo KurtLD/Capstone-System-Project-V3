@@ -1668,6 +1668,7 @@ def add_groupPOD(request):
             SchoolYear.create_new_school_year()
             school_years = SchoolYear.objects.all().order_by('start_year')
 
+    print("error_message: ", error_message)
     return render(request, 'admin/pre_oral/add_groupPOD.html', {
         'form': form, 
         'upload_file_form': upload_file_form,

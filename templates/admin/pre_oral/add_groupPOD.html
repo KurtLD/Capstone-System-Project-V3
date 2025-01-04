@@ -105,18 +105,27 @@
                                         <label for="id_title">Approved Title:</label>
                                         {{ form.title|attr:"placeholder:Enter the approved title"|attr:"class:custom-input" }}
                                     </div>
-                                    <div class="form-group">
-                                        <label for="id_subject_teacher">Subject Teacher:</label>
+                                    <!-- <div class="form-group">
+                                        <label for="id_subject_teacher">Capstone Teacher:</label>
                                         {{ form.capstone_teacher|attr:"placeholder:Enter Subject Teacher" }}
+                                    </div> -->
+                                    <div class="form-group">
+                                        <label for="id_capstone_teacher">Capstone Teacher:</label>
+                                        {{ form.capstone_teacher|attr:"id:id_capstone_teacher"|attr:"placeholder:Enter Subject Teacher" }}
                                     </div>
                                     <div class="form-group">
                                         <label for="id_section">Section:</label>
                                         {{ form.section|attr:"placeholder:Enter Section" }}
                                     </div>
-                                    <div class="form-group">
+                                    <!-- <div class="form-group">
                                         <label for="id_adviser">Adviser:</label>
                                         {{ form.adviser|attr:"placeholder:Enter Adviser" }}
+                                    </div> -->
+                                    <div class="form-group">
+                                        <label for="id_adviser">Adviser:</label>
+                                        {{ form.adviser|attr:"id:id_adviser"|attr:"placeholder:Enter Adviser" }}
                                     </div>
+                                    
                                     <button type="submit" class="button"><i class="fas fa-plus-circle"></i> Add Group</button>
                                 </fieldset>
                             </form>
@@ -218,32 +227,74 @@
             });
         }
     
-        $(document).ready(function() {
-            $('form').on('submit', function(event) {
-                event.preventDefault();
+        // $(document).ready(function() {
+        //     $('form').on('submit', function(event) {
+        //         event.preventDefault();
+        //         var form = this;
+        //         showLoaderModal();
+        //         $.ajax({
+        //             url: form.action,
+        //             type: form.method,
+        //             data: new FormData(form),
+        //             processData: false,
+        //             contentType: false,
+        //             success: function(response) {
+        //                 // Wait for the loader to complete before showing the success modal
+        //                 setTimeout(function() {
+        //                     $('#loaderModal').modal('hide');
+        //                     showSuccessModal();
+        //                 }, 5000); // Adjust this timeout to match the loader duration
+        //             },
+        //             error: function(response) {
+        //                 $('#loaderModal').modal('hide');
+        //                 alert('An error occurred. Please try again.');
+        //             }
+        //         });
+        //     });
+        // });
+    
+        $(document).ready(function () {
+            // Handle form submission
+            $('form').on('submit', function (event) {
+                event.preventDefault(); // Prevent the default form submission
                 var form = this;
+
+                // Get the values of Capstone Teacher and Adviser
+                var capstoneTeacher = document.getElementById("id_capstone_teacher").value;
+                var adviser = document.getElementById("id_adviser").value;
+
+                // Check if they are the same
+                if (capstoneTeacher === adviser) {
+                    // Show a warning message
+                    alert("Cannot assign the same faculty for both Capstone Teacher and Adviser.");
+                    return false; // Stop the form submission
+                }
+
+                // Show the loader modal if validation passes
                 showLoaderModal();
+
+                // AJAX submission logic
                 $.ajax({
                     url: form.action,
                     type: form.method,
                     data: new FormData(form),
                     processData: false,
                     contentType: false,
-                    success: function(response) {
+                    success: function (response) {
                         // Wait for the loader to complete before showing the success modal
-                        setTimeout(function() {
+                        setTimeout(function () {
                             $('#loaderModal').modal('hide');
                             showSuccessModal();
                         }, 5000); // Adjust this timeout to match the loader duration
                     },
-                    error: function(response) {
+                    error: function (response) {
                         $('#loaderModal').modal('hide');
                         alert('An error occurred. Please try again.');
                     }
                 });
             });
         });
-    
+
         document.getElementById("sidebarToggle").addEventListener("click", function (event) {
             event.preventDefault();
             var sidebar = document.getElementById("sidebar");
