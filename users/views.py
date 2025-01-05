@@ -212,6 +212,12 @@ def signup_view(request):
 
                     faculty.save()
 
+                    Notif.objects.create(
+                        created_by=request.user,
+                        notif=f"A new user has registered, check it.",
+                        category="User",
+                    )
+
                     login(request, user)
                     return redirect('login')
                 else:

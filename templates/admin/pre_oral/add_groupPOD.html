@@ -253,25 +253,76 @@
         //     });
         // });
     
+        // $(document).ready(function () {
+        //     // Handle form submission
+        //     $('form').on('submit', function (event) {
+        //         event.preventDefault(); // Prevent the default form submission
+        //         var form = this;
+
+        //         // Get the values of Capstone Teacher and Adviser
+        //         var capstoneTeacher = document.getElementById("id_capstone_teacher").value;
+        //         var adviser = document.getElementById("id_adviser").value;
+
+        //         // Check if they are the same
+        //         if (capstoneTeacher === adviser) {
+        //             // Show a warning message
+        //             alert("Cannot assign the same faculty for both Capstone Teacher and Adviser.");
+        //             return false; // Stop the form submission
+        //         }
+
+        //         // Show the loader modal if validation passes
+        //         showLoaderModal();
+
+        //         // AJAX submission logic
+        //         $.ajax({
+        //             url: form.action,
+        //             type: form.method,
+        //             data: new FormData(form),
+        //             processData: false,
+        //             contentType: false,
+        //             success: function (response) {
+        //                 // Wait for the loader to complete before showing the success modal
+        //                 setTimeout(function () {
+        //                     $('#loaderModal').modal('hide');
+        //                     showSuccessModal();
+        //                 }, 5000); // Adjust this timeout to match the loader duration
+        //             },
+        //             error: function (response) {
+        //                 $('#loaderModal').modal('hide');
+        //                 alert('An error occurred. Please try again.');
+        //             }
+        //         });
+        //     });
+        // });
+
         $(document).ready(function () {
             // Handle form submission
             $('form').on('submit', function (event) {
                 event.preventDefault(); // Prevent the default form submission
                 var form = this;
 
-                // Get the values of Capstone Teacher and Adviser
-                var capstoneTeacher = document.getElementById("id_capstone_teacher").value;
-                var adviser = document.getElementById("id_adviser").value;
+                // Check if the submitted form is the manual form
+                if (form.id === "manualForm") {
+                    // Get the values of Capstone Teacher and Adviser
+                    var capstoneTeacher = document.getElementById("id_capstone_teacher").value;
+                    var adviser = document.getElementById("id_adviser").value;
 
-                // Check if they are the same
-                if (capstoneTeacher === adviser) {
-                    // Show a warning message
-                    alert("Cannot assign the same faculty for both Capstone Teacher and Adviser.");
-                    return false; // Stop the form submission
+                    // Check if they are the same
+                    if (capstoneTeacher === adviser) {
+                        // Show a warning message
+                        alert("Cannot assign the same faculty for both Capstone Teacher and Adviser.");
+                        return false; // Stop the form submission
+                    }
+
+                    // Show the loader modal if validation passes
+                    showLoaderModal();
+                } 
+
+                 // Handle upload form submission
+                if (form.id === "uploadForm") {
+                    // Show the loader modal for upload form
+                    showLoaderModal();
                 }
-
-                // Show the loader modal if validation passes
-                showLoaderModal();
 
                 // AJAX submission logic
                 $.ajax({
