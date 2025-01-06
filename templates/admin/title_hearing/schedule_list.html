@@ -25,6 +25,11 @@
     </style>
 </head>
 <body> 
+    {% if conflict %}
+        <script>
+            alert("{{message}}");
+        </script>
+    {% endif %}
     <div class="flex h-screen flex-col">
         <!-- Navbar -->
         <div class="no-print">
@@ -322,7 +327,6 @@
                     </h5>
                 </div>
                 <div class="modal-body">
-                    <!-- <input type="text" id="last_used_date" name="last_used_date" value="{{ last_used_date }}"> -->
                     <label for="current_date">Current Date:</label>
                     <input type="text" id="current_date" class="form-control" readonly>
                     <label for="current_time" class="mt-2">Current Time Slot:</label>
