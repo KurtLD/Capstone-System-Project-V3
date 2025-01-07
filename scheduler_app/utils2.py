@@ -391,11 +391,17 @@ def generate_schedulePOD(request, start_date):
                             faculty_bookings, current_date.strftime('%B %d, %Y'), slot, faculty_loads
                         )
 
-                        print("assigned_faculty: ", assigned_faculty)
+                        # print("assigned_faculty: ", assigned_faculty)
 
                         # Ensure at least one faculty has a master's degree
                         if not any(faculty.has_master_degree for faculty in assigned_faculty):
                             logger.warning(f"Group {group} cannot be assigned due to lack of master's degree.")
+                            conflict_groups.append(group)
+                            continue
+
+                        # Check for duplicate faculty assignments
+                        if len(set(f.id for f in assigned_faculty)) < 3:
+                            logger.warning(f"Group {group} cannot be assigned due to duplicate faculty assignments.")
                             conflict_groups.append(group)
                             continue
 
@@ -462,7 +468,7 @@ def generate_schedulePOD(request, start_date):
                 for assignment in assignments
             ])
             logger.info("Transaction completed successfully.")
-            print("Scheduling completed successfully.")
+            # print("Scheduling completed successfully.")
 
     except Exception as e:
         logger.error(f"An error occurred: {e}")

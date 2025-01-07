@@ -24,6 +24,11 @@
     </style>
 </head>
 <body>
+    {% if conflict %}
+        <script>
+            alert("{{message}}");
+        </script>
+    {% endif %}
     <div class="flex h-screen flex-col">
         <!-- Navbar -->
         <div class="no-print">
@@ -601,12 +606,12 @@
             const conflict = urlParams.get('conflict');
             const message = urlParams.get('message');
 
-            if (conflict && message) {
-                const errorMessage = document.getElementById('error_message');
-                errorMessage.innerHTML = decodeURIComponent(message.replace(/\+/g, ' '));
-                errorMessage.style.display = 'block';
-                $('#reassignModal').modal('show');
-            }
+            // if (conflict && message) {
+            //     const errorMessage = document.getElementById('error_message');
+            //     errorMessage.innerHTML = decodeURIComponent(message.replace(/\+/g, ' '));
+            //     errorMessage.style.display = 'block';
+            //     $('#reassignModal').modal('show');
+            // }
         });
     </script>
 

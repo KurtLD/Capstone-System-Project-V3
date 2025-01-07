@@ -2363,7 +2363,7 @@ def evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: '{request.user}', Submitted evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Submitted evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
         )
 
         # Retrieve all PreOral_Grade objects with the given project title
@@ -2793,7 +2793,7 @@ def update_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: '{request.user}', Updated evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Updated evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
         )
 
 
@@ -4079,7 +4079,7 @@ def mock_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: '{request.user}', Submitted evaluation in Mock Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Submitted evaluation in Mock Defense Schedule for project title '{schedule.title}'",
         )
 
         # Retrieve all PreOral_Grade objects with the given project title
@@ -4507,7 +4507,7 @@ def mock_update_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Updated evaluation in Mock Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Updated evaluation in Mock Defense Schedule for project title '{schedule.title}'",
         )
 
 
@@ -5698,7 +5698,7 @@ def final_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: '{request.user}', Submitted evaluation in Final Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Submitted evaluation in Final Defense Schedule for project title '{schedule.title}'",
         )
 
 
@@ -6123,7 +6123,7 @@ def final_update_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: '{request.user}', Updated evaluation in Final Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Updated evaluation in Final Defense Schedule for project title '{schedule.title}'",
         )
 
         # Process the checkboxes
