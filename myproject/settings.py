@@ -120,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Session settings
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 3600
+SESSION_COOKIE_AGE = 10800
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default, ensures sessions are stored in the database
 
 

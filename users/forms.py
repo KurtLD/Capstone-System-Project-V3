@@ -166,7 +166,7 @@ class AccountSettingsForm(forms.ModelForm):
         model = CustomUser
         fields = [
             'username', 'email', 'first_name', 'middle_name', 
-            'last_name', 'date_of_birth', 'age', 'address'
+            'last_name', 'date_of_birth', 'age', 'address', "has_master_degree"
         ]
         # Add conditional fields if the user is not a superuser
         admin_excluded_fields = [

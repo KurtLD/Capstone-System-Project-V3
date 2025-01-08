@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <!-- Include Select2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/select2.min.css" rel="stylesheet" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Include Select2 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <style>
         html, body {
             height: 100%;
@@ -231,15 +235,35 @@
                         
                     </div>
                     
-                    <script>
+                    <!-- <script>
                         // CSRF Token Setup for AJAX
+                        // $.ajaxSetup({
+                        //     beforeSend: function(xhr, settings) {
+                        //         function getCookie(name) {
+                        //             let cookieValue = null;
+                        //             if (document.cookie && document.cookie !== '') {
+                        //                 const cookies = document.cookie.split(';');
+                        //                 for (let i = 0; cookies.length; i++) {
+                        //                     const cookie = cookies[i].trim();
+                        //                     if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        //                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        //                         break;
+                        //                     }
+                        //                 }
+                        //             }
+                        //             return cookieValue;
+                        //         }
+                        //         xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+                        //     }
+                        // });
+
                         $.ajaxSetup({
                             beforeSend: function(xhr, settings) {
                                 function getCookie(name) {
                                     let cookieValue = null;
                                     if (document.cookie && document.cookie !== '') {
                                         const cookies = document.cookie.split(';');
-                                        for (let i = 0; cookies.length; i++) {
+                                        for (let i = 0; i < cookies.length; i++) {
                                             const cookie = cookies[i].trim();
                                             if (cookie.substring(0, name.length + 1) === (name + '=')) {
                                                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
@@ -306,125 +330,320 @@
                                 $('.select2-search__field').attr('placeholder', 'Type to search...');
                             }).val('{{ member3 }}').trigger('change');
                                             
-                            // $('#printButton').click(function () {
-                            //     // Open the print dialog
-                            //     window.print();
+                           
+                        //     $('#printButton').click(function () {
+                        //         alert("print");
+                        //         window.print();
                 
-                            //     // After the print dialog is closed, proceed to save the data
-                            //     setTimeout(function () {
-                            //         if (confirm('Did you successfully print the document?')) {
-                            //             // Debugging: Log values
-                            //             console.log("Confirmation successful");
+                        //         setTimeout(function () {
+                        //             if (confirm('Did you successfully print the document?')) {
+                        //                 saveAdviserData();
+                        //             } else {
+                        //                 alert("Action canceled by user.");
+                        //             }
+                        //         }, 100);
+                        //     });
                 
-                            //             var groupInfo1 = $('#group_info1').val();
-                            //             var groupInfo2 = $('#group_info2').val();
-                            //             var groupInfo3 = $('#group_info3').val();
-                            //             var facultyId = $('.faculty-item').data('faculty-id');
-                            //             var approvedTitle = "{{ title }}";
+                        //     // Save Without Printing Button
+                        //     $('#saveWithoutPrintButton').click(function () {
+                        //         if (confirm('Do you want to save without printing?')) {
+                        //             saveAdviserData();
+                        //         }
+                        //     });
                 
-                            //             console.log("facultyId:", facultyId);
-                            //             console.log("groupInfo1:", groupInfo1);
-                            //             console.log("groupInfo2:", groupInfo2);
-                            //             console.log("groupInfo3:", groupInfo3);
-                            //             console.log("approvedTitle:", approvedTitle);
+                        //     // Print Without Saving Button
+                        //     $('#printWithoutSaveButton').click(function () {
+                        //         window.print();
+                        //         alert("print");
+                        //     });
                 
-                            //             if (!facultyId || !groupInfo1 || !approvedTitle) {
-                            //                 alert("Missing required data. Please check and try again.");
-                            //                 return;
-                            //             }
+                        //     // Save Adviser Data Function
+                        //     function saveAdviserData() {
+                        //         var groupInfo1 = $('#group_info1').val();
+                        //         var groupInfo2 = $('#group_info2').val();
+                        //         var groupInfo3 = $('#group_info3').val();
+                        //         var facultyId = $('.faculty-item').data('faculty-id');
+                        //         var approvedTitle = "{{ title }}";
                 
-                            //             // AJAX request
-                            //             $.ajax({
-                            //                 url: "{% url 'save_adviser' %}",
-                            //                 method: "POST",
-                            //                 data: {
-                            //                     faculty_id: facultyId,
-                            //                     group_info1: groupInfo1,
-                            //                     group_info2: groupInfo2,
-                            //                     group_info3: groupInfo3,
-                            //                     approved_title: approvedTitle,
-                            //                     csrfmiddlewaretoken: '{{ csrf_token }}'
-                            //                 },
-                            //                 success: function (response) {
-                            //                     console.log("Success:", response);
-                            //                     alert('Adviser information successfully saved!');
-                            //                     window.location.href = "{% url 'adviser_list' %}";
-                            //                 },
-                            //                 error: function (xhr, status, error) {
-                            //                     console.error("Error occurred:", error);
-                            //                     alert('An error occurred: ' + error);
-                            //                 }
-                            //             });
-                            //         } else {
-                            //             alert("Action canceled by user.");
-                            //         }
-                            //     }, 100); // Minimal delay
-                            // });
-                            // Print and Save Button
-                            $('#printButton').click(function () {
-                                window.print();
+                        //         if (!facultyId || !groupInfo1 || !approvedTitle) {
+                        //             alert("Missing required data. Please check and try again.");
+                        //             return;
+                        //         }
                 
-                                setTimeout(function () {
-                                    if (confirm('Did you successfully print the document?')) {
-                                        saveAdviserData();
-                                    } else {
-                                        alert("Action canceled by user.");
-                                    }
-                                }, 100);
-                            });
+                        //         $.ajax({
+                        //             url: "{% url 'save_adviser' %}",
+                        //             method: "POST",
+                        //             data: {
+                        //                 faculty_id: facultyId,
+                        //                 group_info1: groupInfo1,
+                        //                 group_info2: groupInfo2,
+                        //                 group_info3: groupInfo3,
+                        //                 approved_title: approvedTitle,
+                        //                 csrfmiddlewaretoken: '{{ csrf_token }}'
+                        //             },
+                        //             success: function (response) {
+                        //                 console.log("Success:", response);
+                        //                 alert('Adviser information successfully saved!');
+                        //                 window.location.href = "{% url 'adviser_list' %}";
+                        //             },
+                        //             error: function (xhr, status, error) {
+                        //                 console.error("Error occurred:", error);
+                        //                 alert('An error occurred: ' + error);
+                        //             }
+                        //         });
+                        //     }
                 
-                            // Save Without Printing Button
-                            $('#saveWithoutPrintButton').click(function () {
-                                if (confirm('Do you want to save without printing?')) {
+                        // });
+
+                         // Print and Save Button
+                        $('#printButton').click(function () {
+                            window.print();
+                            
+                            setTimeout(function () {
+                                if (confirm('Did you successfully print the document?')) {
                                     saveAdviserData();
+                                } else {
+                                    alert("Action canceled by user.");
                                 }
-                            });
-                
-                            // Print Without Saving Button
-                            $('#printWithoutSaveButton').click(function () {
-                                window.print();
-                            });
-                
-                            // Save Adviser Data Function
-                            function saveAdviserData() {
-                                var groupInfo1 = $('#group_info1').val();
-                                var groupInfo2 = $('#group_info2').val();
-                                var groupInfo3 = $('#group_info3').val();
-                                var facultyId = $('.faculty-item').data('faculty-id');
-                                var approvedTitle = "{{ title }}";
-                
-                                if (!facultyId || !groupInfo1 || !approvedTitle) {
-                                    alert("Missing required data. Please check and try again.");
-                                    return;
-                                }
-                
-                                $.ajax({
-                                    url: "{% url 'save_adviser' %}",
-                                    method: "POST",
-                                    data: {
-                                        faculty_id: facultyId,
-                                        group_info1: groupInfo1,
-                                        group_info2: groupInfo2,
-                                        group_info3: groupInfo3,
-                                        approved_title: approvedTitle,
-                                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                                    },
-                                    success: function (response) {
-                                        console.log("Success:", response);
-                                        alert('Adviser information successfully saved!');
-                                        window.location.href = "{% url 'adviser_list' %}";
-                                    },
-                                    error: function (xhr, status, error) {
-                                        console.error("Error occurred:", error);
-                                        alert('An error occurred: ' + error);
-                                    }
-                                });
-                            }
-                
+                            }, 100);
                         });
+
+                        // Save Without Printing Button
+                        $('#saveWithoutPrintButton').click(function () {
+                            if (confirm('Do you want to save without printing?')) {
+                                saveAdviserData();
+                            }
+                        });
+
+                        // Print Without Saving Button
+                        $('#printWithoutSaveButton').click(function () {
+                            window.print();
+                        });
+
+                        // Save Adviser Data Function
+                        function saveAdviserData() {
+                            var groupInfo1 = $('#group_info1').val();
+                            var groupInfo2 = $('#group_info2').val();
+                            var groupInfo3 = $('#group_info3').val();
+                            
+                            // Get the faculty ID from the first row of the table (assuming that's the selected one)
+                            var facultyId = $('table tbody tr:first-child .faculty-item').data('faculty-id');
+                            var approvedTitle = "{{ title }}";
+
+                            if (!facultyId) {
+                                alert("No faculty selected. Please check the data.");
+                                return;
+                            }
+
+                            if (!groupInfo1 || !approvedTitle) {
+                                alert("Missing required data. Please check and try again.");
+                                return;
+                            }
+
+                            // Add loading state
+                            const $buttons = $('.btn-printButton');
+                            $buttons.prop('disabled', true);
+
+                            $.ajax({
+                                url: "{% url 'save_adviser' %}",
+                                method: "POST",
+                                data: {
+                                    faculty_id: facultyId,
+                                    group_info1: groupInfo1,
+                                    group_info2: groupInfo2,
+                                    group_info3: groupInfo3,
+                                    approved_title: approvedTitle,
+                                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                                },
+                                success: function (response) {
+                                    console.log("Success:", response);
+                                    alert('Adviser information successfully saved!');
+                                    window.location.href = "{% url 'adviser_list' %}";
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error("Error occurred:", error);
+                                    alert('An error occurred: ' + error);
+                                },
+                                complete: function() {
+                                    // Re-enable buttons
+                                    $buttons.prop('disabled', false);
+                                }
+                            });
+                        }
+                    });
                 
+                    </script> -->
+                    <script>
+                        // CSRF Token Setup for AJAX
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+    }
+});
+
+$(document).ready(function () {
+    // Ensure collapse functionality works for sidebar
+    $('[data-bs-toggle="collapse"]').on('click', function () {
+        var target = $(this).attr('data-bs-target');
+        $(target).collapse('toggle');
+    });
+
+    // Get members and existing members as arrays
+    const membersList = JSON.parse('{{ members_list|escapejs }}');
+    const existingMembers = new Set(JSON.parse('{{ existing_members_set|escapejs }}'));
+
+    // Filter members to exclude those in existingMembers
+    const filteredMembersList = membersList.filter(name => !existingMembers.has(name));
+
+    // Map filtered members to Select2-compatible data
+    const select2Data = filteredMembersList.map(name => ({ id: name, text: name }));
+
+    // Initialize Select2 dropdowns
+    $('#group_info1').select2({
+        data: select2Data,
+        placeholder: 'Select or Search for Member 1',
+        allowClear: true,
+        width: '25%',
+    }).on('select2:open', function() {
+        $('.select2-search__field').attr('placeholder', 'Type to search...');
+    }).val('{{ member1 }}').trigger('change');
+
+    $('#group_info2').select2({
+        data: select2Data,
+        placeholder: 'Select or Search for Member 2',
+        allowClear: true,
+        width: '25%'
+    }).on('select2:open', function() {
+        $('.select2-search__field').attr('placeholder', 'Type to search...');
+    }).val('{{ member2 }}').trigger('change');
+
+    $('#group_info3').select2({
+        data: select2Data,
+        placeholder: 'Select or Search for Member 3',
+        allowClear: true,
+        width: '25%'
+    }).on('select2:open', function() {
+        $('.select2-search__field').attr('placeholder', 'Type to search...');
+    }).val('{{ member3 }}').trigger('change');
+
+    // Sidebar toggle functionality
+    $('#sidebarToggle').on('click', function(event) {
+        event.preventDefault();
+        $('#sidebar').toggleClass('hidden');
+    });
+
+    // Print and Save Button
+    $('#printButton').on('click', function() {
+        window.print();
+        
+        setTimeout(function() {
+            if (confirm('Did you successfully print the document?')) {
+                saveAdviserData();
+            } else {
+                alert('Action canceled by user.');
+            }
+        }, 100);
+    });
+
+    // Save Without Printing Button
+    $('#saveWithoutPrintButton').on('click', function() {
+        if (confirm('Do you want to save without printing?')) {
+            saveAdviserData();
+        }
+    });
+
+    // Print Without Saving Button
+    $('#printWithoutSaveButton').on('click', function() {
+        window.print();
+    });
+
+    // Save Adviser Data Function
+    function saveAdviserData() {
+        var groupInfo1 = $('#group_info1').val();
+        var groupInfo2 = $('#group_info2').val();
+        var groupInfo3 = $('#group_info3').val();
+        
+        // Get the faculty ID from the first row of the table
+        var facultyId = $('table tbody tr:first-child .faculty-item').data('faculty-id');
+        var approvedTitle = "{{ title }}";
+
+        // Validate required data
+        if (!facultyId) {
+            showErrorModal("No faculty selected. Please check the data.");
+            return;
+        }
+
+        if (!groupInfo1 || !approvedTitle) {
+            showErrorModal("Missing required data. Please check and try again.");
+            return;
+        }
+
+        // Add loading state
+        const $buttons = $('.btn-printButton');
+        $buttons.prop('disabled', true);
+
+        // Make the AJAX call
+        $.ajax({
+            url: "{% url 'save_adviser' %}",
+            method: "POST",
+            data: {
+                faculty_id: facultyId,
+                group_info1: groupInfo1,
+                group_info2: groupInfo2,
+                group_info3: groupInfo3,
+                approved_title: approvedTitle,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                showSuccessModal('Adviser information successfully saved!');
+                setTimeout(function() {
+                    window.location.href = "{% url 'adviser_list' %}";
+                }, 1500);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error occurred:", error);
+                showErrorModal('An error occurred while saving: ' + error);
+            },
+            complete: function() {
+                // Re-enable buttons
+                $buttons.prop('disabled', false);
+            }
+        });
+    }
+
+    // Helper function to show success modal
+    function showSuccessModal(message) {
+        $('#successModal .modal-body').text(message);
+        $('#successModal').modal('show');
+    }
+
+    // Helper function to show error modal
+    function showErrorModal(message) {
+        $('#errorModal #errorMessage').text(message);
+        $('#errorModal').modal('show');
+    }
+
+    // Close modal buttons
+    $('.modal .btn-close, .modal .btn-secondary').on('click', function() {
+        $(this).closest('.modal').modal('hide');
+    });
+});
                     </script>
-            </main>
+                </main>
             <br><br>
             <!-- Footer -->
             <div class="footer no-print">
@@ -470,9 +689,7 @@
     </div>
     
    
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <!-- Include Select2 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    
+    
 </body>
 </html>

@@ -2730,6 +2730,101 @@ def reassignPOD(request, schedule_id):
 
 #     return render(request, 'admin/pre_oral/faculty_tally.html', context)
 
+# def faculty_tally_viewPOD(request):
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the last school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     # Initialize a dictionary to hold faculty assignments
+#     faculty_tally = defaultdict(lambda: defaultdict(int))
+#     capstone_teacher_count = defaultdict(int)
+
+#     # Get all schedules
+#     schedules = SchedulePOD.objects.all()
+
+#     # Count the number of groups each faculty is assigned as a panel member
+#     for schedule in schedules:
+#         # Extract the actual date from the string
+#         date_str = schedule.date  # Assuming date is in 'Month Day, Year' format
+#         date = datetime.strptime(date_str, '%B %d, %Y')  # Parse the date string
+#         weekday = date.strftime('%A')  # Get the day name, e.g., "Monday"
+
+#         # Count assignments for each faculty
+#         faculty_tally[schedule.faculty1.id][weekday] += 1
+#         faculty_tally[schedule.faculty2.id][weekday] += 1
+#         faculty_tally[schedule.faculty3.id][weekday] += 1
+
+#         # Count capstone teacher assignments
+#         capstone_teacher_count[schedule.capstone_teacher.id] += 1
+
+#     # Prepare data for the template
+#     faculty_summary = []
+#     week_dates = {}
+
+#     # Create a mapping of weekday to actual dates
+#     for schedule in schedules:
+#         date_str = schedule.date
+#         date = datetime.strptime(date_str, '%B %d, %Y')
+#         weekday = date.strftime('%A')
+#         if weekday not in week_dates:
+#             week_dates[weekday] = date_str  # Store the first occurrence of the date for that weekday
+
+#     # Get all active faculty members
+#     faculties = list(Faculty.objects.filter(is_active=True))
+
+#     for faculty in faculties:
+#         days = faculty_tally[faculty.id]
+#         adviser_count = Adviser.objects.filter(faculty=faculty, school_year=selected_school_year).count()  # Get the adviser count
+#         capstone_count = capstone_teacher_count[faculty.id]  # Get the capstone teacher count
+
+#         row = {
+#             'faculty_name': faculty.name,
+#             'adviser_count': adviser_count,
+#             'capstone_teacher_count': capstone_count,
+#             'monday_count': days.get('Monday', 0),
+#             'tuesday_count': days.get('Tuesday', 0),
+#             'wednesday_count': days.get('Wednesday', 0),
+#             'thursday_count': days.get('Thursday', 0),
+#             'friday_count': days.get('Friday', 0),
+#         }
+
+#         # Calculate total assignments including adviser and capstone teacher counts
+#         total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count']) #+ adviser_count + capstone_count
+#         row['total'] = total
+        
+#         # Add actual dates for each weekday
+#         row['monday_date'] = week_dates.get('Monday', '')
+#         row['tuesday_date'] = week_dates.get('Tuesday', '')
+#         row['wednesday_date'] = week_dates.get('Wednesday', '')
+#         row['thursday_date'] = week_dates.get('Thursday', '')
+#         row['friday_date'] = week_dates.get('Friday', '')
+
+#         faculty_summary.append(row)
+
+#     # Sort the faculty summary based on years of teaching and degree criteria
+#     faculty_summary.sort(key=lambda x: (
+#         not next((f for f in faculties if f.name == x['faculty_name']), None).has_master_degree,  # Ensure those with a master's degree come first
+#         -next((f for f in faculties if f.name == x['faculty_name']), None).years_of_teaching,     # Sort by years of teaching in descending order
+#         next((f for f in faculties if f.name == x['faculty_name']), None).highest_degree         # Sort by highest degree in ascending order (if needed)
+#     ))
+
+#     context = {
+#         'faculty_summary': faculty_summary,
+#         'selected_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#     }
+
+#     return render(request, 'admin/pre_oral/faculty_tally.html', context)
+
 def faculty_tally_viewPOD(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
     selected_school_year_id = request.session.get('selected_school_year_id')
@@ -2797,8 +2892,11 @@ def faculty_tally_viewPOD(request):
         }
 
         # Calculate total assignments including adviser and capstone teacher counts
-        total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count']) #+ adviser_count + capstone_count
+        total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count']) + adviser_count + capstone_count
         row['total'] = total
+
+        panel_total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count'])
+        row['panel_total'] = panel_total
         
         # Add actual dates for each weekday
         row['monday_date'] = week_dates.get('Monday', '')
@@ -2810,11 +2908,20 @@ def faculty_tally_viewPOD(request):
         faculty_summary.append(row)
 
     # Sort the faculty summary based on years of teaching and degree criteria
-    faculty_summary.sort(key=lambda x: (
-        not next((f for f in faculties if f.name == x['faculty_name']), None).has_master_degree,  # Ensure those with a master's degree come first
-        -next((f for f in faculties if f.name == x['faculty_name']), None).years_of_teaching,     # Sort by years of teaching in descending order
-        next((f for f in faculties if f.name == x['faculty_name']), None).highest_degree         # Sort by highest degree in ascending order (if needed)
-    ))
+    # faculty_summary.sort(key=lambda x: (
+    #     not next((f for f in faculties if f.name == x['faculty_name']), None).has_master_degree,  # Ensure those with a master's degree come first
+    #     -next((f for f in faculties if f.name == x['faculty_name']), None).years_of_teaching,     # Sort by years of teaching in descending order
+    #     next((f for f in faculties if f.name == x['faculty_name']), None).highest_degree         # Sort by highest degree in ascending order (if needed)
+    # ))
+
+    # faculty_summary.sort(key=lambda x: (
+    #     next((f for f in faculties if f.name == x['faculty_name']), None).has_master_degree,  # Ensure those with a master's degree come first
+    #     next((f for f in faculties if f.name == x['faculty_name']), None).years_of_teaching,  # Sort by years of teaching in descending order
+    #     -next((f for f in faculties if f.name == x['faculty_name']), None).highest_degree     # Sort by highest degree in descending order
+    # ), reverse=True)
+    # Sort the faculty summary based on total assignments in descending order
+    faculty_summary.sort(key=lambda x: x['total'], reverse=True)
+
 
     context = {
         'faculty_summary': faculty_summary,
@@ -2824,6 +2931,7 @@ def faculty_tally_viewPOD(request):
     }
 
     return render(request, 'admin/pre_oral/faculty_tally.html', context)
+
 
 def reset_schedulePOD(request):
     # get the last added school year in the db
@@ -4400,25 +4508,118 @@ def reassignMD(request, schedule_id):
         return redirect('schedule_listMD')
 
 
+# def faculty_tally_viewMD(request):
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+#     # current_school_year = SchoolYear.get_active_school_year()
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     # get the last school year added to the db
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the active school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         # Retrieve the selected school year based on the session
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     # Initialize a dictionary to hold faculty assignments
+#     faculty_tally = defaultdict(lambda: defaultdict(int))
+
+#     # Get all schedules
+#     schedules = ScheduleMD.objects.filter(school_year=selected_school_year)
+
+#     # Count the number of groups each faculty is assigned as a panel member
+#     for schedule in schedules:
+#         # Extract the actual date from the string
+#         date_str = schedule.date  # Assuming date is in 'Month Day, Year' format
+#         date = datetime.strptime(date_str, '%B %d, %Y')  # Parse the date string
+#         weekday = date.strftime('%A')  # Get the day name, e.g., "Monday"
+
+#         # Count assignments for each faculty
+#         faculty_tally[schedule.faculty1.id][weekday] += 1
+#         faculty_tally[schedule.faculty2.id][weekday] += 1
+#         faculty_tally[schedule.faculty3.id][weekday] += 1
+
+#     # Prepare data for the template
+#     faculty_summary = []
+    
+#     # To store the mapping of weekday to actual dates for this week
+#     week_dates = {}
+    
+#     # Iterate through the schedules to create a mapping of weekday to actual dates
+#     for schedule in schedules:
+#         date_str = schedule.date
+#         date = datetime.strptime(date_str, '%B %d, %Y')
+#         weekday = date.strftime('%A')
+#         if weekday not in week_dates:
+#             week_dates[weekday] = date_str  # Store the first occurrence of the date for that weekday
+
+#     # Get all active faculty members and store them in a list for sorting later
+#     faculties = list(Faculty.objects.filter(is_active=True))
+
+#     for faculty in faculties:
+#         days = faculty_tally[faculty.id]
+#         adviser_count = Adviser.objects.filter(faculty=faculty).count()  # Get the adviser count
+
+#         row = {
+#             'faculty_name': faculty.name,
+#             'adviser_count': adviser_count,
+#             'monday_count': days.get('Monday', 0),
+#             'tuesday_count': days.get('Tuesday', 0),
+#             'wednesday_count': days.get('Wednesday', 0),
+#             'thursday_count': days.get('Thursday', 0),
+#             'friday_count': days.get('Friday', 0),
+#         }
+
+#         # Calculate total assignments including adviser count
+#         total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count']) #+ adviser_count
+#         row['total'] = total
+        
+#         # Add actual dates for each weekday
+#         row['monday_date'] = week_dates.get('Monday', '')
+#         row['tuesday_date'] = week_dates.get('Tuesday', '')
+#         row['wednesday_date'] = week_dates.get('Wednesday', '')
+#         row['thursday_date'] = week_dates.get('Thursday', '')
+#         row['friday_date'] = week_dates.get('Friday', '')
+
+#         faculty_summary.append(row)
+
+#     # Sort the faculty summary based on years of teaching and degree criteria
+#     faculty_summary.sort(key=lambda x: (
+#         not next((f for f in faculties if f.name == x['faculty_name']), None).has_master_degree,  # Ensure those with a master's degree come first
+#         -next((f for f in faculties if f.name == x['faculty_name']), None).years_of_teaching,     # Sort by years of teaching in descending order
+#         next((f for f in faculties if f.name == x['faculty_name']), None).highest_degree         # Sort by highest degree in ascending order (if needed)
+#     ))
+
+#     context = {
+#         'faculty_summary': faculty_summary,
+#         # 'current_school_year': current_school_year,
+#         'selected_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#     }
+
+#     return render(request, 'admin/mock/faculty_tally.html', context)
+
 def faculty_tally_viewMD(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-    # current_school_year = SchoolYear.get_active_school_year()
     selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
 
-    # Get the selected school year from session or fallback to the active school year
+    # Get the selected school year from session or fallback to the last school year
     selected_school_year = ''
     if not selected_school_year_id:
         selected_school_year = last_school_year
         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
     else:
-        # Retrieve the selected school year based on the session
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
     # Initialize a dictionary to hold faculty assignments
     faculty_tally = defaultdict(lambda: defaultdict(int))
+    capstone_teacher_count = defaultdict(int)
 
     # Get all schedules
     schedules = ScheduleMD.objects.filter(school_year=selected_school_year)
@@ -4435,13 +4636,14 @@ def faculty_tally_viewMD(request):
         faculty_tally[schedule.faculty2.id][weekday] += 1
         faculty_tally[schedule.faculty3.id][weekday] += 1
 
+        # Count capstone teacher assignments
+        capstone_teacher_count[schedule.capstone_teacher.id] += 1
+
     # Prepare data for the template
     faculty_summary = []
-    
-    # To store the mapping of weekday to actual dates for this week
     week_dates = {}
-    
-    # Iterate through the schedules to create a mapping of weekday to actual dates
+
+    # Create a mapping of weekday to actual dates
     for schedule in schedules:
         date_str = schedule.date
         date = datetime.strptime(date_str, '%B %d, %Y')
@@ -4449,16 +4651,18 @@ def faculty_tally_viewMD(request):
         if weekday not in week_dates:
             week_dates[weekday] = date_str  # Store the first occurrence of the date for that weekday
 
-    # Get all active faculty members and store them in a list for sorting later
+    # Get all active faculty members
     faculties = list(Faculty.objects.filter(is_active=True))
 
     for faculty in faculties:
         days = faculty_tally[faculty.id]
-        adviser_count = Adviser.objects.filter(faculty=faculty).count()  # Get the adviser count
+        adviser_count = Adviser.objects.filter(faculty=faculty, school_year=selected_school_year).count()  # Get the adviser count
+        capstone_count = capstone_teacher_count[faculty.id]  # Get the capstone teacher count
 
         row = {
             'faculty_name': faculty.name,
             'adviser_count': adviser_count,
+            'capstone_teacher_count': capstone_count,
             'monday_count': days.get('Monday', 0),
             'tuesday_count': days.get('Tuesday', 0),
             'wednesday_count': days.get('Wednesday', 0),
@@ -4466,10 +4670,14 @@ def faculty_tally_viewMD(request):
             'friday_count': days.get('Friday', 0),
         }
 
-        # Calculate total assignments including adviser count
-        total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count']) #+ adviser_count
+        # Calculate panel total (weekday assignments only)
+        panel_total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count'])
+        row['panel_total'] = panel_total
+
+        # Calculate total assignments including adviser and capstone counts
+        total = panel_total + adviser_count + capstone_count
         row['total'] = total
-        
+
         # Add actual dates for each weekday
         row['monday_date'] = week_dates.get('Monday', '')
         row['tuesday_date'] = week_dates.get('Tuesday', '')
@@ -4479,22 +4687,18 @@ def faculty_tally_viewMD(request):
 
         faculty_summary.append(row)
 
-    # Sort the faculty summary based on years of teaching and degree criteria
-    faculty_summary.sort(key=lambda x: (
-        not next((f for f in faculties if f.name == x['faculty_name']), None).has_master_degree,  # Ensure those with a master's degree come first
-        -next((f for f in faculties if f.name == x['faculty_name']), None).years_of_teaching,     # Sort by years of teaching in descending order
-        next((f for f in faculties if f.name == x['faculty_name']), None).highest_degree         # Sort by highest degree in ascending order (if needed)
-    ))
+    # Sort the faculty summary based on total assignments in descending order
+    faculty_summary.sort(key=lambda x: x['total'], reverse=True)
 
     context = {
         'faculty_summary': faculty_summary,
-        # 'current_school_year': current_school_year,
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
     }
 
     return render(request, 'admin/mock/faculty_tally.html', context)
+
 
 def reset_scheduleMD(request):
     # get the last added school year in the db
@@ -5738,29 +5942,121 @@ def reassignFD(request, schedule_id):
         messages.error(request, 'Invalid request method.')
         return redirect('schedule_listFD')
 
+# def faculty_tally_viewFD(request):
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+#     # current_school_year = SchoolYear.get_active_school_year()
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     # get the last school year added to the db
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the active school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         # Retrieve the selected school year based on the session
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+#     # Initialize a dictionary to hold faculty assignments
+#     faculty_tally = defaultdict(lambda: defaultdict(int))
+
+#     # Get all schedules
+#     schedules = ScheduleFD.objects.filter(school_year=selected_school_year)
+
+#     # Count the number of groups each faculty is assigned as a panel member
+#     for schedule in schedules:
+#         # Extract the actual date from the string
+#         date_str = schedule.date  # Assuming date is in 'Month Day, Year' format
+#         date = datetime.strptime(date_str, '%B %d, %Y')  # Parse the date string
+#         weekday = date.strftime('%A')  # Get the day name, e.g., "Monday"
+
+#         # Count assignments for each faculty
+#         faculty_tally[schedule.faculty1.id][weekday] += 1
+#         faculty_tally[schedule.faculty2.id][weekday] += 1
+#         faculty_tally[schedule.faculty3.id][weekday] += 1
+
+#     # Prepare data for the template
+#     faculty_summary = []
+    
+#     # To store the mapping of weekday to actual dates for this week
+#     week_dates = {}
+    
+#     # Iterate through the schedules to create a mapping of weekday to actual dates
+#     for schedule in schedules:
+#         date_str = schedule.date
+#         date = datetime.strptime(date_str, '%B %d, %Y')
+#         weekday = date.strftime('%A')
+#         if weekday not in week_dates:
+#             week_dates[weekday] = date_str  # Store the first occurrence of the date for that weekday
+
+#     # Get all active faculty members and store them in a list for sorting later
+#     faculties = list(Faculty.objects.filter(is_active=True))
+
+#     for faculty in faculties:
+#         days = faculty_tally[faculty.id]
+#         adviser_count = Adviser.objects.filter(faculty=faculty).count()  # Get the adviser count
+
+#         row = {
+#             'faculty_name': faculty.name,
+#             'adviser_count': adviser_count,
+#             'monday_count': days.get('Monday', 0),
+#             'tuesday_count': days.get('Tuesday', 0),
+#             'wednesday_count': days.get('Wednesday', 0),
+#             'thursday_count': days.get('Thursday', 0),
+#             'friday_count': days.get('Friday', 0),
+#         }
+
+#         # Calculate total assignments including adviser count
+#         total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count']) #+ adviser_count
+#         row['total'] = total
+        
+#         # Add actual dates for each weekday
+#         row['monday_date'] = week_dates.get('Monday', '')
+#         row['tuesday_date'] = week_dates.get('Tuesday', '')
+#         row['wednesday_date'] = week_dates.get('Wednesday', '')
+#         row['thursday_date'] = week_dates.get('Thursday', '')
+#         row['friday_date'] = week_dates.get('Friday', '')
+
+#         faculty_summary.append(row)
+
+#     # Sort the faculty summary based on years of teaching and degree criteria
+#     faculty_summary.sort(key=lambda x: (
+#         not next((f for f in faculties if f.name == x['faculty_name']), None).has_master_degree,  # Ensure those with a master's degree come first
+#         -next((f for f in faculties if f.name == x['faculty_name']), None).years_of_teaching,     # Sort by years of teaching in descending order
+#         next((f for f in faculties if f.name == x['faculty_name']), None).highest_degree         # Sort by highest degree in ascending order (if needed)
+#     ))
+
+#     context = {
+#         'faculty_summary': faculty_summary,
+#         # 'current_school_year': current_school_year,
+#         'selected_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#     }
+
+#     return render(request, 'admin/final/faculty_tally.html', context)
 def faculty_tally_viewFD(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-    # current_school_year = SchoolYear.get_active_school_year()
     selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
 
-    # Get the selected school year from session or fallback to the active school year
+    # Get the selected school year from session or fallback to the last school year
     selected_school_year = ''
     if not selected_school_year_id:
         selected_school_year = last_school_year
         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
     else:
-        # Retrieve the selected school year based on the session
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
-    # Initialize a dictionary to hold faculty assignments
+
+    # Initialize dictionaries to hold faculty assignments
     faculty_tally = defaultdict(lambda: defaultdict(int))
+    capstone_teacher_count = defaultdict(int)
 
     # Get all schedules
     schedules = ScheduleFD.objects.filter(school_year=selected_school_year)
 
-    # Count the number of groups each faculty is assigned as a panel member
+    # Count the number of groups each faculty is assigned as a panel member and capstone teacher
     for schedule in schedules:
         # Extract the actual date from the string
         date_str = schedule.date  # Assuming date is in 'Month Day, Year' format
@@ -5772,13 +6068,14 @@ def faculty_tally_viewFD(request):
         faculty_tally[schedule.faculty2.id][weekday] += 1
         faculty_tally[schedule.faculty3.id][weekday] += 1
 
+        # Count capstone teacher assignments
+        capstone_teacher_count[schedule.capstone_teacher.id] += 1
+
     # Prepare data for the template
     faculty_summary = []
-    
-    # To store the mapping of weekday to actual dates for this week
     week_dates = {}
-    
-    # Iterate through the schedules to create a mapping of weekday to actual dates
+
+    # Create a mapping of weekday to actual dates
     for schedule in schedules:
         date_str = schedule.date
         date = datetime.strptime(date_str, '%B %d, %Y')
@@ -5786,16 +6083,18 @@ def faculty_tally_viewFD(request):
         if weekday not in week_dates:
             week_dates[weekday] = date_str  # Store the first occurrence of the date for that weekday
 
-    # Get all active faculty members and store them in a list for sorting later
+    # Get all active faculty members
     faculties = list(Faculty.objects.filter(is_active=True))
 
     for faculty in faculties:
         days = faculty_tally[faculty.id]
-        adviser_count = Adviser.objects.filter(faculty=faculty).count()  # Get the adviser count
+        adviser_count = Adviser.objects.filter(faculty=faculty, school_year=selected_school_year).count()  # Get the adviser count
+        capstone_count = capstone_teacher_count[faculty.id]  # Get the capstone teacher count
 
         row = {
             'faculty_name': faculty.name,
             'adviser_count': adviser_count,
+            'capstone_teacher_count': capstone_count,
             'monday_count': days.get('Monday', 0),
             'tuesday_count': days.get('Tuesday', 0),
             'wednesday_count': days.get('Wednesday', 0),
@@ -5803,10 +6102,12 @@ def faculty_tally_viewFD(request):
             'friday_count': days.get('Friday', 0),
         }
 
-        # Calculate total assignments including adviser count
-        total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count']) #+ adviser_count
+        # Calculate totals
+        panel_total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count'])
+        total = panel_total + adviser_count + capstone_count
+        row['panel_total'] = panel_total
         row['total'] = total
-        
+
         # Add actual dates for each weekday
         row['monday_date'] = week_dates.get('Monday', '')
         row['tuesday_date'] = week_dates.get('Tuesday', '')
@@ -5816,22 +6117,18 @@ def faculty_tally_viewFD(request):
 
         faculty_summary.append(row)
 
-    # Sort the faculty summary based on years of teaching and degree criteria
-    faculty_summary.sort(key=lambda x: (
-        not next((f for f in faculties if f.name == x['faculty_name']), None).has_master_degree,  # Ensure those with a master's degree come first
-        -next((f for f in faculties if f.name == x['faculty_name']), None).years_of_teaching,     # Sort by years of teaching in descending order
-        next((f for f in faculties if f.name == x['faculty_name']), None).highest_degree         # Sort by highest degree in ascending order (if needed)
-    ))
+    # Sort the faculty summary based on total assignments in descending order
+    faculty_summary.sort(key=lambda x: x['total'], reverse=True)
 
     context = {
         'faculty_summary': faculty_summary,
-        # 'current_school_year': current_school_year,
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
     }
 
     return render(request, 'admin/final/faculty_tally.html', context)
+
 
 def reset_scheduleFD(request):
     # get the last added school year in the db

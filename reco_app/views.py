@@ -661,132 +661,256 @@ def clean_title(title):
     return title.strip()  # Strip leading/trailing whitespace
 
 
+# @login_required
+# def recommend_faculty_again(request, adviser_id):
+#     success_message = None
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     # Get the last added school year in the db
+#     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the current active school year
+#     # current_school_year = SchoolYear.get_active_school_year()
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     # get the last school year added to the db
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the active school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         # Retrieve the selected school year based on the session
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     # Check if the active school year is same as the last added school year
+#     if selected_school_year != last_school_year:
+#         return HttpResponse("Oops, you are no longer allowed to access this page.")
+
+#     try:
+#         adviser = Adviser.objects.get(id=adviser_id)
+#         if adviser:
+#             title = adviser.approved_title  # Access the title directly from the model
+#             try:
+#                 title = clean_title(title)  # Use the custom cleaning function
+#                 print(f"Cleaned Title: {title}")
+#             except ValueError as e:
+#                 print(f"Error cleaning title: {e}")
+
+#             keywords = extract_keywords(title)
+
+#             # Fetch recommended faculty and their scores
+#             ranked_faculty, selected_expertise, adviser_limit_per_faculty = filter_and_rank_faculty(request, keywords)
+
+#             # Create a set of needed expertise names for quick lookup
+#             needed_expertise_names = set(exp.name for exp in selected_expertise)
+
+#             # Prepare faculty scores with expertise (either filtered or all)
+#             faculty_scores = []
+#             for index, (faculty, score) in enumerate(ranked_faculty):
+#                 # Check if the faculty already exists in the Adviser model with the same title and declined = True
+#                 if Adviser.objects.filter(faculty=faculty, approved_title=title, declined=True).exists():
+#                     continue  # Skip this faculty if they have declined the title
+
+#                 # Filter expertise based on selected expertise
+#                 if needed_expertise_names:
+#                     filtered_expertise = [exp.name for exp in faculty.expertise.all() if exp.name in needed_expertise_names]
+#                 else:
+#                     filtered_expertise = [exp.name for exp in faculty.expertise.all()]
+
+#                 # Get the advisee count
+#                 advisee_count = faculty.advisee_count()
+
+#                 # Append to faculty_scores, including advisee_count
+#                 faculty_scores.append((faculty, filtered_expertise, faculty.years_of_teaching, score, advisee_count))
+
+#             # Ensure that the list has at least 3 faculty members
+#             if len(faculty_scores) < 3:
+#                 remaining_faculties = Faculty.objects.filter(is_active=True).exclude(id__in=[faculty.id for faculty, _, _, _, _ in faculty_scores])
+#                 for faculty in remaining_faculties:
+#                     if Adviser.objects.filter(faculty=faculty, approved_title=title, declined=True).exists():
+#                         continue  # Skip if this faculty has declined
+
+#                     filtered_expertise = [exp.name for exp in faculty.expertise.all() if exp.name in needed_expertise_names]
+#                     years_of_teaching = faculty.years_of_teaching
+#                     advisee_count = faculty.advisee_count()  # Get advisee count for remaining faculties
+                    
+#                     # Append faculty with default score of 0 for those not initially matched
+#                     faculty_scores.append((faculty, filtered_expertise, years_of_teaching, 0, advisee_count))  # use len to maintain the index correctly
+                    
+#                     # Break loop when at least 3 faculties are listed
+#                     if len(faculty_scores) >= 3:
+#                         break
+
+#             # Recalculate the index after filtering
+#             faculty_scores = [(index + 1, faculty, filtered_expertise, years_of_teaching, score, advisee_count)
+#                               for index, (faculty, filtered_expertise, years_of_teaching, score, advisee_count) in enumerate(faculty_scores)]
+
+#             # Sort faculty scores, including those added based on general criteria
+#             faculty_scores.sort(key=lambda x: (x[4], x[3], len(x[2]), -x[5]), reverse=True)  # Sorting by advisee_count as the last parameter
+
+#             group_info_options = GroupInfoTH.objects.filter(school_year=selected_school_year)
+
+#             # Initialize a list to store group names
+#             # group_names_list = []
+#             # for group_info in group_info_options:
+#             #     # Construct the group name
+#             #     group_name = f"{group_info.member1}<br>{group_info.member2}<br>{group_info.member3}"
+                    
+#             #     # Check if the group_name already exists in the Adviser model
+#             #     group_exists = Adviser.objects.filter(group_name=group_name).exists()
+                    
+#             #     if not group_exists:
+#             #         # Append the group name to the list if it doesn't exist
+#             #         group_names_list.append(group_info)
+#             members = adviser.group_name.split('<br>')
+#             members = [member.strip() for member in members]
+
+#             # Fill with None or empty strings if fewer than 3 members are present
+#             member1, member2, member3 = (members + [None] * 3)[:3]
+
+#             return render(request, 'admin/reco_app/recommendation_results.html', {
+#                 'title': title,
+#                 'needed_expertise': selected_expertise if selected_expertise else [],
+#                 'faculty_scores': faculty_scores,
+#                 'success_message': success_message,
+#                 'keywords': keywords,  # Add keywords to the context
+#                 # 'group_names_list': group_names_list,  # Pass group_info options to template
+#                 # 'current_school_year': current_school_year,
+#                 'selected_school_year': selected_school_year,
+#                 'last_school_year': last_school_year,
+#                 'school_years': school_years,
+#                 'adviser_limit_per_faculty': adviser_limit_per_faculty,
+#                 'member1': member1,
+#                 'member2': member2,
+#                 'member3': member3 
+#             })
+#     except Adviser.DoesNotExist:
+#         messages.error(request, "Adviser not found.")
 @login_required
 def recommend_faculty_again(request, adviser_id):
     success_message = None
     school_years = SchoolYear.objects.all().order_by('start_year')
-    # Get the last added school year in the db
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-
-    # Get the current active school year
-    # current_school_year = SchoolYear.get_active_school_year()
     selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
 
-    # Get the selected school year from session or fallback to the active school year
-    selected_school_year = ''
+    # Get the selected school year from session or fallback to the last school year
     if not selected_school_year_id:
         selected_school_year = last_school_year
-        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+        request.session['selected_school_year_id'] = selected_school_year.id
     else:
-        # Retrieve the selected school year based on the session
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
-    # Check if the active school year is same as the last added school year
+    # Check if the selected school year is the last added school year
     if selected_school_year != last_school_year:
         return HttpResponse("Oops, you are no longer allowed to access this page.")
 
     try:
         adviser = Adviser.objects.get(id=adviser_id)
-        if adviser:
-            title = adviser.approved_title  # Access the title directly from the model
-            try:
-                title = clean_title(title)  # Use the custom cleaning function
-                print(f"Cleaned Title: {title}")
-            except ValueError as e:
-                print(f"Error cleaning title: {e}")
+        title = adviser.approved_title
+        try:
+            title = clean_title(title)
+        except ValueError as e:
+            print(f"Error cleaning title: {e}")
 
-            keywords = extract_keywords(title)
+        keywords = extract_keywords(title)
+        ranked_faculty, selected_expertise, adviser_limit_per_faculty = filter_and_rank_faculty(request, keywords)
+        needed_expertise_names = set(exp.name for exp in selected_expertise)
 
-            # Fetch recommended faculty and their scores
-            ranked_faculty, selected_expertise, adviser_limit_per_faculty = filter_and_rank_faculty(request, keywords)
+        # Prepare faculty scores
+        faculty_scores = []
+        for index, (faculty, score) in enumerate(ranked_faculty):
+            if Adviser.objects.filter(faculty=faculty, approved_title=title, declined=True).exists():
+                continue
 
-            # Create a set of needed expertise names for quick lookup
-            needed_expertise_names = set(exp.name for exp in selected_expertise)
+            filtered_expertise = [exp.name for exp in faculty.expertise.all() 
+                               if exp.name in needed_expertise_names] if needed_expertise_names else [
+                               exp.name for exp in faculty.expertise.all()]
+            
+            advisee_count = faculty.advisee_count()
+            faculty_scores.append((faculty, filtered_expertise, faculty.years_of_teaching, score, advisee_count))
 
-            # Prepare faculty scores with expertise (either filtered or all)
-            faculty_scores = []
-            for index, (faculty, score) in enumerate(ranked_faculty):
-                # Check if the faculty already exists in the Adviser model with the same title and declined = True
+        # Ensure minimum of 3 faculty members
+        if len(faculty_scores) < 3:
+            remaining_faculties = Faculty.objects.filter(is_active=True).exclude(
+                id__in=[faculty.id for faculty, _, _, _, _ in faculty_scores]
+            )
+            for faculty in remaining_faculties:
                 if Adviser.objects.filter(faculty=faculty, approved_title=title, declined=True).exists():
-                    continue  # Skip this faculty if they have declined the title
+                    continue
 
-                # Filter expertise based on selected expertise
-                if needed_expertise_names:
-                    filtered_expertise = [exp.name for exp in faculty.expertise.all() if exp.name in needed_expertise_names]
-                else:
-                    filtered_expertise = [exp.name for exp in faculty.expertise.all()]
+                filtered_expertise = [exp.name for exp in faculty.expertise.all() 
+                                   if exp.name in needed_expertise_names]
+                faculty_scores.append((
+                    faculty,
+                    filtered_expertise,
+                    faculty.years_of_teaching,
+                    0,
+                    faculty.advisee_count()
+                ))
+                if len(faculty_scores) >= 3:
+                    break
 
-                # Get the advisee count
-                advisee_count = faculty.advisee_count()
+        # Add indices and sort
+        faculty_scores = [(index + 1, faculty, filtered_expertise, years_of_teaching, score, advisee_count)
+                         for index, (faculty, filtered_expertise, years_of_teaching, score, advisee_count) 
+                         in enumerate(faculty_scores)]
+        faculty_scores.sort(key=lambda x: (x[4], x[3], len(x[2]), -x[5]), reverse=True)
 
-                # Append to faculty_scores, including advisee_count
-                faculty_scores.append((faculty, filtered_expertise, faculty.years_of_teaching, score, advisee_count))
+        # Get members list and existing members
+        members_list = []
+        existing_members_set = set()
+        
+        # Get existing members
+        existing_advisers = Adviser.objects.filter(school_year=selected_school_year)
+        for existing_adviser in existing_advisers:
+            for member in existing_adviser.group_name.split('<br>'):
+                member = member.strip()
+                if member:
+                    existing_members_set.add(member)
 
-            # Ensure that the list has at least 3 faculty members
-            if len(faculty_scores) < 3:
-                remaining_faculties = Faculty.objects.filter(is_active=True).exclude(id__in=[faculty.id for faculty, _, _, _, _ in faculty_scores])
-                for faculty in remaining_faculties:
-                    if Adviser.objects.filter(faculty=faculty, approved_title=title, declined=True).exists():
-                        continue  # Skip if this faculty has declined
+        # Get current members from declined adviser
+        members = adviser.group_name.split('<br>')
+        members = [member.strip() for member in members]
+        
+        # Add members to members_list if not in existing_members_set
+        for member in members:
+            if member and member not in existing_members_set:
+                members_list.append(member)
 
-                    filtered_expertise = [exp.name for exp in faculty.expertise.all() if exp.name in needed_expertise_names]
-                    years_of_teaching = faculty.years_of_teaching
-                    advisee_count = faculty.advisee_count()  # Get advisee count for remaining faculties
-                    
-                    # Append faculty with default score of 0 for those not initially matched
-                    faculty_scores.append((faculty, filtered_expertise, years_of_teaching, 0, advisee_count))  # use len to maintain the index correctly
-                    
-                    # Break loop when at least 3 faculties are listed
-                    if len(faculty_scores) >= 3:
-                        break
+        # Get additional members from group_info_options
+        group_info_options = GroupInfoTH.objects.filter(school_year=selected_school_year)
+        for group_info in group_info_options:
+            for member in [group_info.member1, group_info.member2, group_info.member3]:
+                if member and member.strip() not in existing_members_set:
+                    members_list.append(member.strip())
 
-            # Recalculate the index after filtering
-            faculty_scores = [(index + 1, faculty, filtered_expertise, years_of_teaching, score, advisee_count)
-                              for index, (faculty, filtered_expertise, years_of_teaching, score, advisee_count) in enumerate(faculty_scores)]
+        # Remove duplicates while preserving order
+        members_list = list(dict.fromkeys(members_list))
 
-            # Sort faculty scores, including those added based on general criteria
-            faculty_scores.sort(key=lambda x: (x[4], x[3], len(x[2]), -x[5]), reverse=True)  # Sorting by advisee_count as the last parameter
+        # Get the current members
+        member1, member2, member3 = (members + [None] * 3)[:3]
 
-            group_info_options = GroupInfoTH.objects.filter(school_year=selected_school_year)
+        return render(request, 'admin/reco_app/recommendation_results.html', {
+            'title': title,
+            'needed_expertise': selected_expertise if selected_expertise else [],
+            'faculty_scores': faculty_scores,
+            'success_message': success_message,
+            'keywords': keywords,
+            'selected_school_year': selected_school_year,
+            'last_school_year': last_school_year,
+            'school_years': school_years,
+            'adviser_limit_per_faculty': adviser_limit_per_faculty,
+            'member1': member1,
+            'member2': member2,
+            'member3': member3,
+            'members_list': json.dumps(members_list),
+            'existing_members_set': json.dumps(list(existing_members_set))
+        })
 
-            # Initialize a list to store group names
-            # group_names_list = []
-            # for group_info in group_info_options:
-            #     # Construct the group name
-            #     group_name = f"{group_info.member1}<br>{group_info.member2}<br>{group_info.member3}"
-                    
-            #     # Check if the group_name already exists in the Adviser model
-            #     group_exists = Adviser.objects.filter(group_name=group_name).exists()
-                    
-            #     if not group_exists:
-            #         # Append the group name to the list if it doesn't exist
-            #         group_names_list.append(group_info)
-            members = adviser.group_name.split('<br>')
-            members = [member.strip() for member in members]
-
-            # Fill with None or empty strings if fewer than 3 members are present
-            member1, member2, member3 = (members + [None] * 3)[:3]
-
-            return render(request, 'admin/reco_app/recommendation_results.html', {
-                'title': title,
-                'needed_expertise': selected_expertise if selected_expertise else [],
-                'faculty_scores': faculty_scores,
-                'success_message': success_message,
-                'keywords': keywords,  # Add keywords to the context
-                # 'group_names_list': group_names_list,  # Pass group_info options to template
-                # 'current_school_year': current_school_year,
-                'selected_school_year': selected_school_year,
-                'last_school_year': last_school_year,
-                'school_years': school_years,
-                'adviser_limit_per_faculty': adviser_limit_per_faculty,
-                'member1': member1,
-                'member2': member2,
-                'member3': member3 
-            })
     except Adviser.DoesNotExist:
         messages.error(request, "Adviser not found.")
+        return redirect('adviser_list')
 
 @login_required
 def home(request):
