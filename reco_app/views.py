@@ -1300,9 +1300,17 @@ def save_adviser(request):
 
         # Handle previously declined adviser, if applicable.
         try:
-            adviser_from_db = Adviser.objects.get(approved_title=approved_title, declined=True)
-            adviser_from_db.has_been_replaced = True
-            adviser_from_db.save()
+            # adviser_from_db = Adviser.objects.get(approved_title=approved_title, declined=True)
+            # adviser_from_db.has_been_replaced = True
+            # adviser_from_db.save()
+            adviser_from_db = Adviser.objects.filter(
+                Q(approved_title=approved_title, declined=True) |
+                Q(faculty=faculty, approved_title=approved_title, declined=True, has_been_replaced=True)
+            ).first()  # Use first() instead of get() to avoid MultipleObjectsReturned error
+
+            if adviser_from_db:
+                adviser_from_db.has_been_replaced = True
+                adviser_from_db.save()
         except Adviser.DoesNotExist:
             pass  # No declined adviser found, so no action needed.
 
