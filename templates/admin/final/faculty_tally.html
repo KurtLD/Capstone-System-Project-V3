@@ -39,13 +39,15 @@
                                     <thead>
                                         <tr>
                                             <th>Faculty</th>
-                                            <th>Monday ({{ faculty_summary.0.monday_date }})</th>
-                                            <th>Tuesday ({{ faculty_summary.0.tuesday_date }})</th>
-                                            <th>Wednesday ({{ faculty_summary.0.wednesday_date }})</th>
-                                            <th>Thursday ({{ faculty_summary.0.thursday_date }})</th>
-                                            <th>Friday ({{ faculty_summary.0.friday_date }})</th>
+                                            <th>Monday <br>({{ faculty_summary.0.monday_date }})</th>
+                                            <th>Tuesday <br>({{ faculty_summary.0.tuesday_date }})</th>
+                                            <th>Wednesday <br>({{ faculty_summary.0.wednesday_date }})</th>
+                                            <th>Thursday <br>({{ faculty_summary.0.thursday_date }})</th>
+                                            <th>Friday <br>({{ faculty_summary.0.friday_date }})</th>
+                                            <th>Panel Total</th>
                                             <th>Advisee Count</th>
-                                            <th>Total</th>
+                                            <th>Capstone Teacher Count</th>
+                                            <th>Overall Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -57,7 +59,9 @@
                                                 <td>{{ faculty.wednesday_count }}</td>
                                                 <td>{{ faculty.thursday_count }}</td>
                                                 <td>{{ faculty.friday_count }}</td>
+                                                <td>{{ faculty.panel_total }}</td>
                                                 <td>{{ faculty.adviser_count }}</td>
+                                                <td>{{ faculty.capstone_teacher_count }}</td>
                                                 <td>{{ faculty.total }}</td>
                                             </tr>
                                         {% endfor %}
