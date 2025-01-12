@@ -89,7 +89,8 @@
         <li class="{% if request.user in notification.read_by.all %}read{% else %}unread{% endif %}">
             <div>
                 <strong>{{ notification.notif|safe }}</strong><br>
-                <small>{{ notification.time|date:"M d, Y H:i" }}</small>
+                <!-- <small>{{ notification.time|date:"M d, Y H:i" }}</small> -->
+                <small>{{ notification.time|date:"M d, Y h:i A" }}</small>
             </div>
             {% if notification.category == "Recommender" and request.user not in notification.read_by.all %}
                 {% for record in adviser_records %}
