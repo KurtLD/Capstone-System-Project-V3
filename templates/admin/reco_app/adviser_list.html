@@ -15,6 +15,11 @@
   </head>
   <body>
     <body>
+      {% if error_message %}
+        <script>
+            alert("{{error_message}}");
+        </script>
+      {% endif %}
       <div class="flex h-screen flex-col">
           <!-- Navbar -->
           <div class="no-print">

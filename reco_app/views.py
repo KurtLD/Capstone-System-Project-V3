@@ -20,6 +20,7 @@ import json
 from django.urls import reverse
 from .my_dictionary import IMPORTANT_TERMS, EXPERTISE_SYNONYMS, EXPERTISE_DICTIONARY
 from django.db.models.functions import Lower
+from urllib.parse import urlencode
 
 
 # Load the spaCy model
@@ -808,10 +809,30 @@ def recommend_faculty_again(request, adviser_id):
     try:
         adviser = Adviser.objects.get(id=adviser_id)
         title = adviser.approved_title
+
+        # Check if the title already exists with declined=False and accepted=False
+        if Adviser.objects.filter(approved_title=title, declined=False, accepted=False).exists():
+            # Prepare the message
+            error_message = f"Cannot recommend again since there is already a new recommended adviser for that title that needs to be confirmed."
+
+            # Encode the message in the URL
+            query_params = urlencode({'error_message': error_message})
+            return redirect(f"{reverse('adviser_list')}?{query_params}")
+
+
         try:
             title = clean_title(title)
         except ValueError as e:
             print(f"Error cleaning title: {e}")
+
+        # # Check if the title already exists with declined=False and accepted=False
+        # if Adviser.objects.filter(approved_title=title, declined=False, accepted=False).exists():
+        #     # Prepare the message
+        #     error_message = f"Cannot recommend again since there is already a new recommended adviser for this title '{title}' that needs to be confirmed."
+
+        #     # Encode the message in the URL
+        #     query_params = urlencode({'error_message': error_message})
+        #     return redirect(f"{reverse('adviser_list')}?{query_params}")
 
         keywords = extract_keywords(title)
         ranked_faculty, selected_expertise, adviser_limit_per_faculty = filter_and_rank_faculty(request, keywords)
@@ -1023,12 +1044,14 @@ def adviser_list(request):
     # "All" does not require additional filtering
 
     # Ensure the queryset is ordered
-    advisers = advisers.order_by('id')
+    advisers = advisers.order_by('-id')
 
     # Paginate the results
     paginator = Paginator(advisers, 10)  # Show 10 advisers per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    error_message = request.GET.get('error_message', None)
 
     return render(request, 'admin/reco_app/adviser_list.html', {
         'page_obj': page_obj, 
@@ -1038,7 +1061,8 @@ def adviser_list(request):
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
-        'count': count
+        'count': count,
+        'error_message': error_message
     })
 
 
@@ -1485,8 +1509,25 @@ def remove_capstone_teacher(request, faculty_id):
 
     return redirect('faculty_list')
 
+# def delete_faculty(request, pk):
+#     faculty = get_object_or_404(Faculty, pk=pk)
+#     faculty.delete()
+#     # messages.success(request, "Faculty deleted permanently.")
+#     return redirect('disabled_faculty_list')
+
 def delete_faculty(request, pk):
     faculty = get_object_or_404(Faculty, pk=pk)
+    # Retrieve the associated CustomUser
+    custom_user = faculty.custom_user
+
+    # Delete the Faculty instance
     faculty.delete()
-    # messages.success(request, "Faculty deleted permanently.")
+
+    # Delete the associated CustomUser instance, if it exists
+    if custom_user:
+        custom_user.delete()
+
+    # Optional: Add a success message
+    # messages.success(request, "Faculty and associated user deleted permanently.")
+
     return redirect('disabled_faculty_list')

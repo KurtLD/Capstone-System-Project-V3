@@ -213,7 +213,7 @@ def signup_view(request):
                     faculty.save()
 
                     Notif.objects.create(
-                        created_by=request.user,
+                        created_by=user,
                         notif=f"A new user has registered, check it.",
                         category="User",
                     )
@@ -7262,6 +7262,8 @@ def notification_list(request):
     else:
         # Retrieve the selected school year based on the session
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+    
+    
 
     user = request.user
     query = request.GET.get('search', '')
@@ -7329,16 +7331,44 @@ def mark_notification_as_read(request, notif_id):
     notif.read_by.add(request.user)  # Mark the notification as read for this user
     return redirect('notifications')  # Redirect back to the notifications list
 
+# @login_required
+# def mark_all_notifications_as_read(request):
+#     user = request.user
+#     if user.is_superuser:
+#         notifications = Notif.objects.filter(created_by__is_superuser=False)
+#     else:
+#         notifications = Notif.objects.filter(created_by__is_superuser=True)
+#     for notification in notifications:
+#         notification.read_by.add(user)
+#     return JsonResponse({'status': 'success'})
+
 @login_required
 def mark_all_notifications_as_read(request):
     user = request.user
+
+    # Determine the notifications to be marked as read based on user's role
     if user.is_superuser:
         notifications = Notif.objects.filter(created_by__is_superuser=False)
     else:
         notifications = Notif.objects.filter(created_by__is_superuser=True)
+
+    # Mark all notifications as read for the user
     for notification in notifications:
+        # Add the user to the read_by field in the Notif model
         notification.read_by.add(user)
+
+        # Update or create an entry in the UserNotif model
+        user_notif, created = UserNotif.objects.get_or_create(
+            user=user,
+            notif=notification,
+            defaults={'read': True}  # Set read to True if created
+        )
+        if not created:
+            user_notif.read = True  # Update the read status if it already exists
+            user_notif.save()
+
     return JsonResponse({'status': 'success'})
+
 
 @login_required
 def accept_adviser_and_mark_read(request, adviser_id, notif_id):
