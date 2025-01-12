@@ -23,19 +23,22 @@
 <body>
     <div class="flex h-screen flex-col">
         <!-- Navbar -->
-        {% include 'navbar.html' %}
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
         <div class="flex flex-1 overflow-hidden">
             <!-- Sidebar -->
-            <!-- Sidebar -->
             {% if user.is_superuser %}
-            {% include 'sidebar.html' %}
+              {% include 'sidebar.html' %}
             {% else %}
-                {% include 'faculty/faculty_sidebar.html' %}
+              {% include 'faculty/faculty_sidebar.html' %}
             {% endif %}
-            <!-- Content -->
-            <main class="flex-1 overflow-auto relative main-content">
-                <div class="container mt-4">
-                    <div class="card">
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+              <main class="flex-1 overflow-auto relative main-content">
+                  <div class="container mt-4">
+                      <div class="card">
                         <fieldset>
                             <legend>Record Detail</legend>
                             {% if error %}
@@ -191,6 +194,7 @@
                 {% include 'footer.html' %}
             </footer>
         </div>
+      </div>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
