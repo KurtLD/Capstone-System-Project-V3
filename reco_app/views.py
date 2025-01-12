@@ -466,6 +466,9 @@ def recommend_faculty(request):
                     'adviser': adviser.faculty,
                     'highlighted_title': title,
                     'all_titles': Adviser.objects.filter(faculty=adviser.faculty),
+                    'selected_school_year': selected_school_year,
+                    'last_school_year': last_school_year,
+                    'school_years': school_years,
                 })
             except Adviser.DoesNotExist:
                 # Handle case where no adviser with declined=False exists
