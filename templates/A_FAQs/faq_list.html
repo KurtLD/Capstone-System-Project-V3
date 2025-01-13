@@ -227,12 +227,14 @@
                     {% if review.user == faculty_member %}
                         <p>You wrote this review.</p>
                     {% else %}
-                        <form method="post" action="{% url 'review_helpful_vote' review.id %}">
-                            {% csrf_token %}
-                            <label>Was this review helpful?</label><br>
-                            <button name="vote" value="yes">Yes</button>
-                            <button name="vote" value="no">No</button>
-                        </form>
+                        {% if user.is_authenticated and not user.is_superuser %}
+                            <form method="post" action="{% url 'review_helpful_vote' review.id %}">
+                                {% csrf_token %}
+                                <label>Was this review helpful?</label><br>
+                                <button name="vote" value="yes">Yes</button>
+                                <button name="vote" value="no">No</button>
+                            </form>
+                        {% endif %}
                     {% endif %}
 
                 </div>
