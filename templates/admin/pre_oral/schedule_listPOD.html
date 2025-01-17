@@ -134,17 +134,13 @@
                                 }
                             });
                         </script>
-
-                        <br><br><br>
                         <div class="schedule-container">
-                            <center>
+                            <div class="d-flex justify-content-between align-items-center">
                                 <h2 class="header">Schedule for Upcoming Pre-Oral Defense</h2>
-                            </center>
-                            {% comment %} {% if conflict %}
-                                <script>
-                                    alert("{{ message }}");
-                                </script>
-                            {% endif %}  {% endcomment %}
+                                <div class="col-md-4">
+                                    <input type="text" id="myInput" class="form-control search-bar" placeholder="Search for schedule...">
+                                </div>
+                            </div>
                             {% if grouped_schedulesPOD %}
                                 {% for day_room, schedulesPOD in grouped_schedulesPOD.items %}
                                     {% if day_room|length == 3 %}
@@ -155,7 +151,7 @@
                                                 Date: <span class="highlight">{{ day_room.1 }}</span><br>
                                                 Room: <span class="highlight">{{ day_room.2 }}</span>
                                             </h4>
-                                            <table class="table table-striped">
+                                            <table class="table table-striped schedule-table" data-room="{{ day_room.2 }}">
                                                 <thead>
                                                     <tr>
                                                         <th>Time</th>
@@ -165,45 +161,11 @@
                                                         <th>Panelists</th>
                                                         <th>Adviser</th>
                                                         <th class="no-print">Action</th>
-                                                        
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {% for schedule in schedulesPOD %}
                                                         {% if not schedule.has_been_rescheduled %}
-                                                            <!-- <tr class="avoid-page-break" style="background: #007bff;">
-                                                                <td data-label="Time">{{ schedule.slot }}</td>
-                                                                <td class="group-members" data-label="Group Members">
-                                                                    {{ schedule.group.member1 }}<br>
-                                                                    {{ schedule.group.member2 }}<br>
-                                                                    {{ schedule.group.member3 }}
-                                                                </td>
-                                                                <td data-label="Section">{{ schedule.group.section }} ({{ schedule.group.capstone_teacher.name }})</td>
-                                                                <td data-label="Title">{{ schedule.group.title }}</td>
-                                                                <td class="panels" data-label="Panelists">
-                                                                    <div style="background-color: #5b97f8; padding: 3px; display: inline-block; border-radius: 3px;font-weight: bold;">
-                                                                        {{ schedule.faculty1.name }} {% if schedule.faculty1 == faculty_member %}<span class="role">(Panelist)</span>{% endif %}
-                                                                    </div>
-                                                                    <div style="padding: 3px;">
-                                                                        {{ schedule.faculty2.name }} {% if schedule.faculty2 == faculty_member %}<span class="role">(Panelist)</span>{% endif %}
-                                                                    </div>
-                                                                    <div style="padding: 3px;">
-                                                                        {{ schedule.faculty3.name }} {% if schedule.faculty3 == faculty_member %}<span class="role">(Panelist)</span>{% endif %}
-                                                                    </div>
-                                                                </td>
-                                                                <td data-label="Adviser">{{ schedule.group.adviser.name }}</td>
-                                                                {% if current_school_year == last_school_year %}
-                                                                    <td class="no-print" data-label="Action">
-                                                                        {% if schedule.has_been_rescheduled %}
-                                                                            HAS BEEN RESCHEDULED!
-                                                                        {% else %}
-                                                                            <a href="#" class="buttons" data-bs-toggle="modal" data-bs-target="#actionModal" data-schedule-id="{{ schedule.id }}" data-current-slot="{{ schedule.slot }}" data-current-date="{{ schedule.date }}">Reschedule</a>
-                                                                        {% endif %}
-                                                                    </td>
-                                                                {% else %}
-                                                                    <td><i>Not Available</i></td>
-                                                                {% endif %}
-                                                            </tr> -->
                                                             {% if schedule.new_sched %}
                                                                 <tr class="avoid-page-break" style="background-color: #00ff55;">
                                                                     <td data-label="Time">{{ schedule.slot }}</td>
@@ -273,7 +235,7 @@
                                                                     {% endif %}
                                                                 </tr>
                                                             {% endif %}
-
+                        
                                                             {% if schedule.slot == "9:30AM-11AM" %}
                                                                 <tr class="lunch-break">
                                                                     <td colspan="7" class="highlights">11AM-12PM Lunch Break</td>
@@ -294,6 +256,33 @@
                             {% endif %}
                         </div>
                         
+                        <!-- Include jQuery -->
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script>
+                            $(document).ready(function() {
+                                $("#myInput").on("keyup", function() {
+                                    var value = $(this).val().toLowerCase();
+                                    $(".schedule-table").each(function() {
+                                        var hasVisibleRows = false;
+                                        var table = $(this);
+                                        table.find("tbody tr").filter(function() {
+                                            var isVisible = $(this).text().toLowerCase().indexOf(value) > -1;
+                                            $(this).toggle(isVisible);
+                                            if (isVisible) {
+                                                hasVisibleRows = true;
+                                            }
+                                        });
+                                        if (!hasVisibleRows) {
+                                            table.find("thead").hide();
+                                            table.find("tbody").append('<tr class="no-results"><td colspan="7" class="text-center">No matching schedule found</td></tr>');
+                                        } else {
+                                            table.find("thead").show();
+                                            table.find("tbody .no-results").remove();
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
                         <br><br>
                     </div>
                 </main>
