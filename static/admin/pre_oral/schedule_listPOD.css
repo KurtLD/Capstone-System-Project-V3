@@ -496,10 +496,11 @@ table {
     font-size: 12px;
 }
 
-
-
 .form-control {
     font-size: 12px;
+}
+.form-control::placeholder {
+    font-weight: 500;
 }
 
 
@@ -934,13 +935,4 @@ table {
     /* Green color for success */
     display: none;
     /* Initially hidden */
-}
-.container {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 20px;
-    background-color: var(--secondary-bg);
-    border-radius: 8px;
-    font-size: 12px;
-    font-family: 'Poppins', sans-serif;
 }

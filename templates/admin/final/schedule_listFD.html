@@ -5,12 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedules for Pre-Oral Defense</title>
+    <title>Schedule for Final Defense</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'admin/pre_oral/schedule_listPOD.css' %}">
     <style>
         @media print {
@@ -316,7 +317,7 @@
                 background: white;
                 padding: 20px;
                 border-radius: 5px;
-                width: 600px;
+                width: 800px;
                 text-align: left;
             }
 
@@ -324,7 +325,7 @@
             .close-btn {
                 margin-top: 15px;
                 padding: 8px 16px;
-                background-color: #007bff;
+                background-color: #333;
                 color: white;
                 border: none;
                 border-radius: 5px;
@@ -335,12 +336,42 @@
         <!-- Modal HTML Structure -->
         <div class="modal-overlay" id="modal">
             <div class="modal-content">
-                <p>The New schedule of <br> <strong>{{ new_group|safe }}</strong> is</p>
-                <p><strong>Time:</strong> {{ new_schedule.slot }}</p>
-                <p><strong>Date:</strong> {{ new_schedule.date }}</p>
-                <p><strong>Day:</strong> {{ new_schedule.day }}</p>
-                <p><strong>Room:</strong> {{ new_schedule.room }}</p>
-                <button class="close-btn" onclick="closeModal()">Close</button>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <strong><h3 class="card-header" colspan="2" style="font-size: 18px;">New Schedule</h3></strong>
+                        </tr>
+                        <tr>
+                            <th>Detail</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Group</strong></td>
+                            <td>{{ new_group|safe }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time</strong></td>
+                            <td>{{ new_schedule.slot }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date</strong></td>
+                            <td>{{ new_schedule.date }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Day</strong></td>
+                            <td>{{ new_schedule.day }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Room</strong></td>
+                            <td>{{ new_schedule.room }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <button class="close-btn btn-secondary" onclick="closeModal()" style="float: right;">Close</button>
+                </div>
             </div>
         </div>
 
@@ -799,10 +830,12 @@
 
     <!-- Confirmation Modal for resetting -->
     <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmationModalLabel">Confirm Reset</h5>
+                    <h5 class="modal-title" id="confirmationModalLabel">
+                        <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i> Confirm Reset
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

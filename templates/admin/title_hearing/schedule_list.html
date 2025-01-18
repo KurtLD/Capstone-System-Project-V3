@@ -13,6 +13,7 @@
     <link href="{% static 'admin/title_hearing/schedule_list.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         @media print {
             .page-break {
@@ -291,23 +292,54 @@
             .close-btn {
                 margin-top: 15px;
                 padding: 8px 16px;
-                background-color: #007bff;
+                background-color: #333;
                 color: white;
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
+                float: right; !important/* Align the button to the left */
             }
         </style>
 
         <!-- Modal HTML Structure -->
         <div class="modal-overlay" id="modal">
             <div class="modal-content">
-                <p>The New schedule of <br> <strong>{{ new_group|safe }}</strong> is</p>
-                <p><strong>Time:</strong> {{ new_schedule.slot }}</p>
-                <p><strong>Date:</strong> {{ new_schedule.date }}</p>
-                <p><strong>Day:</strong> {{ new_schedule.day }}</p>
-                <p><strong>Room:</strong> {{ new_schedule.room }}</p>
-                <button class="close-btn" onclick="closeModal()">Close</button>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <strong><h1 class="card-header" colspan="2" style="font-size: 18px;">New Schedule</h1></strong>
+                        </tr>
+                        <tr>
+                            <th>Detail</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Group</strong></td>
+                            <td>{{ new_group|safe }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time</strong></td>
+                            <td>{{ new_schedule.slot }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date</strong></td>
+                            <td>{{ new_schedule.date }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Day</strong></td>
+                            <td>{{ new_schedule.day }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Room</strong></td>
+                            <td>{{ new_schedule.room }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <button class="close-btn btn-secondary" onclick="closeModal()" style="float: right;">Close</button>
+                </div>
             </div>
         </div>
 
@@ -523,26 +555,28 @@
         });
     </script>
 
-    <!-- Confirmation Modal for resetting -->
-    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmationModalLabel">Confirm Reset</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to reset the schedule? This action cannot be undone.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <a href="{% url 'reset_schedule' %}" class="btn btn-danger">Reset Schedule</a>
+        <!-- Confirmation Modal for resetting -->
+        <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">
+                            <i class="fas fa-exclamation-triangle" style="color: red; margin-right: 10px;"></i> Confirm Reset
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to reset the schedule? This action cannot be undone.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <a href="{% url 'reset_schedule' %}" class="btn btn-danger">Reset Schedule</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Include Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
