@@ -8,15 +8,114 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static '02_loginForm.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+        }
+        .card-container {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+        }
+        .card {
+            width: 30%;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* Added gradient color */
+        }
+        .card-header {
+            font-size: 1.5em;
+            margin-bottom: 16px;
+        }
+        .profile-picture {
+            width: 220px !important;
+            height: 220px !important;
+            border-radius: 50% !important;
+            margin-bottom: 16px;
+            object-fit: cover;
+            border: 1px solid black; /* Added black border */
+            transition: transform 0.3s ease; /* Added transition for smooth zoom effect */
+        }
+        
+        .profile-picture:hover {
+            transform: scale(0.9); /* Zoom out effect */
+        }
+        .container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            object-fit: cover; /* Ensures the image covers the container */
+        }
+        .developer p {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+        .developer p i {
+            margin-right: 8px;
+        }
+        .header {
+            text-align: center;
+            font-size: 2em;
+            margin: 20px 0;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5em;
+            text-decoration: none;
+            color: #000;
+        }
+    </style>
 </head>
 <body>
+    <a href="{% url 'login' %}" class="back-button"><i class="fas fa-arrow-left"></i></a>
     <div class="container">
-        <h1>Developer Profile</h1>
-        <p>Name: Ivan Kurt Mark</p>
-        <p>Role: Developer</p>
-        <p>Contact: <a href="mailto:ivan@example.com">ivan@example.com</a></p>
-        <p>Facebook: <a href="https://www.facebook.com/your-profile-link" target="_blank">Ivan Kurt Mark</a></p>
-        <!-- Add more details as needed -->
+        <div class="header"><strong>Development Team</strong></div>
+        <div class="card-container">
+            <div class="card">
+                <img src="{% static 'images/ivan.jpg' %}" alt="Ivan's Profile Picture" class="profile-picture">
+                <div class="developer">
+                    <p><i class="fas fa-user"></i>Name: Ivan</p>
+                    <p><i class="fas fa-map-marker-alt"></i>Address: Samar</p>
+                    <p><i class="fas fa-envelope"></i>Contact: <a href="mailto:ivan@example.com">ivan@example.com</a></p>
+                    <p><i class="fab fa-facebook"></i>Facebook: <a href="https://www.facebook.com/ivan-profile-link" target="_blank">Ivan</a></p>
+                    <p><i class="fab fa-github"></i>Github: <a href="https://github.com/ivan-github" target="_blank">Ivan</a></p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="{% static 'images/kurt.webp' %}" alt="Kurt's Profile Picture" class="profile-picture">
+                <div class="developer">
+                    <p><i class="fas fa-user"></i>Name: Kurt</p>
+                    <p><i class="fas fa-map-marker-alt"></i>Address: Samar</p>
+                    <p><i class="fas fa-envelope"></i>Contact: <a href="mailto:kurt@example.com">kurt@example.com</a></p>
+                    <p><i class="fab fa-facebook"></i>Facebook: <a href="https://www.facebook.com/kurt-profile-link" target="_blank">Kurt</a></p>
+                    <p><i class="fab fa-github"></i>Github: <a href="https://github.com/kurt-github" target="_blank">Kurt</a></p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="{% static 'images/mark.jpg' %}" alt="Mark's Profile Picture" class="profile-picture">
+                <div class="developer">
+                    <p><i class="fas fa-user"></i>Name: Mark</p>
+                    <p><i class="fas fa-map-marker-alt"></i>Address: Leyte</p>
+                    <p><i class="fas fa-envelope"></i>Contact: <a href="mailto:mark@example.com">mark@example.com</a></p>
+                    <p><i class="fab fa-facebook"></i>Facebook: <a href="https://www.facebook.com/mark-profile-link" target="_blank">Mark</a></p>
+                    <p><i class="fab fa-github"></i>Github: <a href="https://github.com/mark-github" target="_blank">Mark</a></p>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
