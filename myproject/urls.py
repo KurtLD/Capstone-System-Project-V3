@@ -134,13 +134,15 @@ from users.views import (
     mark_all_notifications_as_read,
 
     accept_adviser_and_mark_read,
-    decline_adviser_and_mark_read
+    decline_adviser_and_mark_read,
+    developer_profile
 )
 
 urlpatterns = [
     # Users related URL patterns
     path('admin/', admin.site.urls),
     path('faqs/', include('A_FAQs.urls')),
+    path('developer-profile/', developer_profile, name='developer_profile'),
     path('', login_view, name='login'),
     path('signup/', signup_view, name='signup'),  
     path('logout/', logout_view, name='logout'),
@@ -377,4 +379,6 @@ urlpatterns = [
 
     path('accept-adviser/<int:adviser_id>/mark-read/<int:notif_id>/', accept_adviser_and_mark_read, name='accept_adviser_and_mark_read'),
     path('decline-adviser/<int:adviser_id>/mark-read/<int:notif_id>/', decline_adviser_and_mark_read, name='decline_adviser_and_mark_read'),
+
+    
 ]

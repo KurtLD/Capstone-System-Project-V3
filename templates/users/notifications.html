@@ -21,7 +21,12 @@
  
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
     {% if user.is_superuser %}
@@ -83,63 +88,64 @@
         </div>
     </div>
     {% else %}
-    <body>
-        <div class="flex h-screen flex-col">
-            <!-- Navbar -->
-            <div class="no-print">
-                {% include 'navbar.html' %}
-            </div>
-            <div class="flex flex-1 overflow-hidden">
-                <!-- Sidebar -->
-                {% include 'faculty/faculty_sidebar.html' %}
-                <!-- Main Content Wrapper -->
-                <div class="flex flex-col flex-1">
-                    <!-- Content -->
-                    <main class="main-content p-6">
-                        <div class="content-wrapper">
-                            <div class="container-fluid mt-4">
-                                <div class="row justify-content-center">
-                                    <div class="col-12 full-height">
-                                        <div class="card">
-                                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                                        <h3 class="card-title">Notifications</h3>
-                                                        {% comment %} <a href="javascript:history.back()" class="btn btn-secondary">Back</a> {% endcomment %}
-                                                    </div>
-                                                    <!-- Search Bar -->
-                                                    <div class="parent-container mb-3">
-                                                        <input type="text" id="search-input" class="form-control search-bar" placeholder="Search for notification..">
-                                                    </div>
-
-                                                   <!-- Mark All as Read Button -->
-                                                    <div class="mark-all-read-container">
-                                                        {% if notif_count > 1 %}
-                                                        <button class="mark-all-read btn btn-primary mb-3" id="mark-all-read">Mark All as Read</button>
-                                                        {% endif %}
-                                                    </div>
-                                                    
-                                                    <!-- Notifications List -->
-                                                    {% if notifications %}
-                                                    <div id="notification-list">
-                                                        {% include 'users/partials_notification_list.html' %}
-                                                    </div>
-                                                    {% else %}
-                                                    <div class="no-notifications alert alert-info">
-                                                        <p>No new notifications.</p>
-                                                    </div>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
+    <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            {% include 'faculty/faculty_sidebar.html' %}
+            <!-- Main Content Wrapper -->
+            <div class="flex flex-col flex-1">
+                <!-- Content -->
+                <main class="flex-1 overflow-auto p-2 main-content">
+                    <div class="content-wrapper">
+                        <div class="container-fluid mt-4">
+                            <div class="row justify-content-center">
+                                <div class="col-12 full-height">
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h3 class="card-title">Notifications</h3>
+                                            {% comment %} <a href="javascript:history.back()" class="btn btn-secondary">Back</a> {% endcomment %}
                                         </div>
+                                        <!-- Search Bar -->
+                                        <div class="parent-container mb-3">
+                                            <input type="text" id="search-input" class="form-control search-bar" placeholder="Search for notification..">
+                                        </div>
+
+                                       <!-- Mark All as Read Button -->
+                                        <div class="mark-all-read-container">
+                                            {% if notif_count > 1 %}
+                                            <button class="mark-all-read btn btn-primary mb-3" id="mark-all-read">Mark All as Read</button>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Notifications List -->
+                                        {% if notifications %}
+                                        <div id="notification-list">
+                                            {% include 'users/partials_notification_list.html' %}
+                                        </div>
+                                        {% else %}
+                                        <div class="no-notifications alert alert-info">
+                                            <p>No new notifications.</p>
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </main>
+                <!-- Footer -->
+                <div class="footer no-print">
+                    {% include 'footer.html' %}
+                </div>
             </div>
         </div>
     </div>
     {% endif %}
+</body>
 
     <script>
         // AJAX search logic

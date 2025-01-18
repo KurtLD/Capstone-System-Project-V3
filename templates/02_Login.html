@@ -36,6 +36,15 @@
             {% endif %}
             <div class="form-group">
                 <a class="forgot-password" href="{% url 'forgot_password' %}">Forgot password?</a>
+                <!-- Developer Profile Icon -->
+                <div class="developer-profile">
+                    <a href="{% url 'developer_profile' %}" title="Developer Profile">
+                        <span class="fa-stack fa-lg">
+                            <i class="fas fa-circle fa-stack-2x" style="color: white;"></i>
+                            <i class="fas fa-info-circle fa-stack-1x fa-inverse" style="color: black; font-size: 16px;"></i>
+                        </span>
+                    </a>
+                </div>
             </div>
             <button type="submit" id="loginButton" onclick="showLoader()">
                 <i class="fas fa-sign-in-alt" id="loginIcon"></i>
