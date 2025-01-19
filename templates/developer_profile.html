@@ -11,17 +11,23 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
+           
         }
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 90%;
+            background-image: url('{% static "images/background.jpg" %}'); /* Added background image */
+            background-size: cover; /* Ensures the image covers the container */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
         }
         .card-container {
             display: flex;
             width: 100%;
             justify-content: center;
+            overflow: hidden; /* Prevents overflow from affecting the container */
         }
         .card {
             width: 30%;
@@ -31,7 +37,8 @@
             margin: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* Added gradient color */
+            background: linear-gradient(to top right, #ffffff 0%, #000000 100%); /* Changed gradient color to black and white, oriented from bottom left to top right */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Added transition for smooth animation */
         }
         .card-header {
             font-size: 1.5em;
@@ -64,11 +71,13 @@
         }
         .developer p i {
             margin-right: 8px;
+            font-size: 1.25em; /* Custom size for icons */
         }
         .header {
             text-align: center;
             font-size: 2em;
             margin: 20px 0;
+            color: white;
         }
         .back-button {
             position: absolute;
@@ -78,6 +87,32 @@
             text-decoration: none;
             color: #000;
         }
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .card-left {
+            animation: slideInLeft 0.5s ease-out;
+        }
+        .card-right {
+            animation: slideInRight 0.5s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -85,34 +120,35 @@
     <div class="container">
         <div class="header"><strong>Development Team</strong></div>
         <div class="card-container">
+            <div class="card card-left">
+                <img src="{% static 'images/kurt.webp' %}" alt="Kurt's Profile Picture" class="profile-picture">
+                <div class="developer">
+                    <p><i class="fas fa-user" style="font-size: 1.25em;"></i>Name: Kurt L. Dacaymat</p>
+                    <p><i class="fas fa-map-marker-alt" style="font-size: 1.25em;"></i>Address: Samar</p>
+                    <p><i class="fas fa-envelope" style="font-size: 1.25em;"></i>Contact: <a href="mailto:kurt@example.com">kurt@example.com</a></p>
+                    <p><i class="fab fa-facebook" style="font-size: 1.25em;"></i>Facebook: <a href="https://www.facebook.com/kurt-profile-link" target="_blank">Kurt</a></p>
+                    <p><i class="fab fa-github" style="font-size: 1.25em;"></i>Github: <a href="https://github.com/kurt-github" target="_blank">Kurt</a></p>
+                </div>
+            </div>
             <div class="card">
                 <img src="{% static 'images/ivan.jpg' %}" alt="Ivan's Profile Picture" class="profile-picture">
                 <div class="developer">
-                    <p><i class="fas fa-user"></i>Name: Ivan</p>
-                    <p><i class="fas fa-map-marker-alt"></i>Address: Samar</p>
-                    <p><i class="fas fa-envelope"></i>Contact: <a href="mailto:ivan@example.com">ivan@example.com</a></p>
-                    <p><i class="fab fa-facebook"></i>Facebook: <a href="https://www.facebook.com/ivan-profile-link" target="_blank">Ivan</a></p>
-                    <p><i class="fab fa-github"></i>Github: <a href="https://github.com/ivan-github" target="_blank">Ivan</a></p>
+                    <p><i class="fas fa-user" style="font-size: 1.25em;"></i>Name: Ivan P. Agbay</p>
+                    <p><i class="fas fa-map-marker-alt" style="font-size: 1.25em;"></i>Address: Samar</p>
+                    <p><i class="fas fa-envelope" style="font-size: 1.25em;"></i>Contact: <a href="mailto:ivan@example.com">ivan@example.com</a></p>
+                    <p><i class="fab fa-facebook" style="font-size: 1.25em;"></i>Facebook: <a href="https://www.facebook.com/ivan-profile-link" target="_blank">Ivan</a></p>
+                    <p><i class="fab fa-github" style="font-size: 1.25em;"></i>Github: <a href="https://github.com/ivan-github" target="_blank">Ivan</a></p>
                 </div>
             </div>
-            <div class="card">
-                <img src="{% static 'images/kurt.webp' %}" alt="Kurt's Profile Picture" class="profile-picture">
-                <div class="developer">
-                    <p><i class="fas fa-user"></i>Name: Kurt</p>
-                    <p><i class="fas fa-map-marker-alt"></i>Address: Samar</p>
-                    <p><i class="fas fa-envelope"></i>Contact: <a href="mailto:kurt@example.com">kurt@example.com</a></p>
-                    <p><i class="fab fa-facebook"></i>Facebook: <a href="https://www.facebook.com/kurt-profile-link" target="_blank">Kurt</a></p>
-                    <p><i class="fab fa-github"></i>Github: <a href="https://github.com/kurt-github" target="_blank">Kurt</a></p>
-                </div>
-            </div>
-            <div class="card">
+            
+            <div class="card card-right">
                 <img src="{% static 'images/mark.jpg' %}" alt="Mark's Profile Picture" class="profile-picture">
                 <div class="developer">
-                    <p><i class="fas fa-user"></i>Name: Mark</p>
-                    <p><i class="fas fa-map-marker-alt"></i>Address: Leyte</p>
-                    <p><i class="fas fa-envelope"></i>Contact: <a href="mailto:mark@example.com">mark@example.com</a></p>
-                    <p><i class="fab fa-facebook"></i>Facebook: <a href="https://www.facebook.com/mark-profile-link" target="_blank">Mark</a></p>
-                    <p><i class="fab fa-github"></i>Github: <a href="https://github.com/mark-github" target="_blank">Mark</a></p>
+                    <p><i class="fas fa-user" style="font-size: 1.25em;"></i>Name: Mark Anthony M. Aguirre</p>
+                    <p><i class="fas fa-map-marker-alt" style="font-size: 1.25em;"></i>Address: Leyte</p>
+                    <p><i class="fas fa-envelope" style="font-size: 1.25em;"></i>Contact: <a href="mailto:mark@example.com">mark@example.com</a></p>
+                    <p><i class="fab fa-facebook" style="font-size: 1.25em;"></i>Facebook: <a href="https://www.facebook.com/mark-profile-link" target="_blank">Mark</a></p>
+                    <p><i class="fab fa-github" style="font-size: 1.25em;"></i>Github: <a href="https://github.com/mark-github" target="_blank">Mark</a></p>
                 </div>
             </div>
         </div>
