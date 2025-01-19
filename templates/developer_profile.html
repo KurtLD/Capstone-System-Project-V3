@@ -9,10 +9,24 @@
     <link rel="stylesheet" href="{% static '02_loginForm.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-           
+        @import url("https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;500&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background: #202020;
+            font-family: 'Poppins', sans-serif;
+        }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -23,70 +37,165 @@
             background-position: center; /* Centers the image */
             background-repeat: no-repeat; /* Prevents the image from repeating */
         }
+
         .card-container {
             display: flex;
             width: 100%;
             justify-content: center;
             overflow: hidden; /* Prevents overflow from affecting the container */
         }
+
         .card {
-            width: 30%;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 16px;
-            margin: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 16px;
+            width: 250px;
+            height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px 5px rgba(0, 0, 0, 0.2);
+            background: #151515;
+            overflow: hidden;
             text-align: center;
-            background: linear-gradient(to top right, #ffffff 0%, #000000 100%); /* Changed gradient color to black and white, oriented from bottom left to top right */
             transition: transform 0.3s ease, box-shadow 0.3s ease; /* Added transition for smooth animation */
+            position: relative;
         }
-        .card-header {
-            font-size: 1.5em;
-            margin-bottom: 16px;
+
+        .ds-top {
+            position: absolute;
+            margin: auto;
+            top: 0;
+            right: 0;
+            left: 0;
+            width: 300px;
+            height: 80px;
+            background: crimson;
+            animation: dsTop 1.5s;
         }
-        .profile-picture {
-            width: 220px !important;
-            height: 220px !important;
-            border-radius: 50% !important;
-            margin-bottom: 16px;
-            object-fit: cover;
-            border: 1px solid black; /* Added black border */
-            transition: transform 0.3s ease; /* Added transition for smooth zoom effect */
+
+        .avatar-holder {
+            position: absolute;
+            margin: auto;
+            top: 40px;
+            right: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            box-shadow: 0 0 0 5px #151515,
+                        inset 0 0 0 5px #000000,
+                        inset 0 0 0 5px #000000,
+                        inset 0 0 0 5px #000000,
+                        inset 0 0 0 5px #000000;
+            background: white;
+            overflow: hidden;
+            animation: mvTop 1.5s;
         }
-        
-        .profile-picture:hover {
-            transform: scale(0.9); /* Zoom out effect */
-        }
-        .container img {
+
+        .avatar-holder img {
             width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            object-fit: cover; /* Ensures the image covers the container */
+            height: 100%;
+            object-fit: cover;
         }
-        .developer p {
-            margin: 8px 0;
+
+        .name {
+            position: absolute;
+            margin: auto;
+            top: 160px; /* Adjusted to position below the avatar */
+            right: 0;
+            left: 0;
+            width: inherit;
+            height: 40px;
+            text-align: center;
+            animation: fadeIn 2s ease-in;
+            color: crimson; /* Changed color to match ds-top */
+        }
+
+        .name p {
+            color: white; /* Changed color to match ds-top */
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .developer-icons {
+            padding: 0;
+            list-style: none;
+            margin: 1em;
             display: flex;
-            align-items: center;
+            justify-content: center;
+            gap: 16px; /* Space between icons */
+            position: absolute;
+            bottom: 20px; /* Positioned at the bottom */
+            left: 0;
+            right: 0;
         }
-        .developer p i {
-            margin-right: 8px;
-            font-size: 1.25em; /* Custom size for icons */
+
+        .developer-icons li {
+            display: inline-block;
+            margin: 0.15em;
+            position: relative;
+            font-size: 1em;
         }
+
+        .developer-icons i {
+            color: #fff; /* Initial icon color to white */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Center the icon */
+            z-index: 1; /* Ensure icon is above the circle */
+            transition: transform 265ms ease-out, color 265ms ease-out; /* Added transition for transform and color */
+        }
+
+        .developer-icons a {
+            display: inline-block;
+            position: relative;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .developer-icons a:before {
+            transform: scale(1);
+            content: " ";
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: block;
+            background: #000; /* Initial circle color to black */
+            transition: transform 265ms ease-out; /* Added transition for transform */
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0; /* Ensure circle is below the icon */
+        }
+
+        .developer-icons a:hover:before {
+            transform: scale(0);
+            transition: transform 265ms ease-in; /* Added transition for transform */
+        }
+
+        .developer-icons a:hover i {
+            transform: translate(-50%, -50%) scale(2); /* Ensure icon remains centered and scales up */
+            color: crimson; /* Changed hover icon color to match ds-top */
+            transition: transform 265ms ease-in, color 265ms ease-in; /* Added transition for transform and color */
+        }
+
         .header {
             text-align: center;
             font-size: 2em;
             margin: 20px 0;
             color: white;
         }
+
         .back-button {
             position: absolute;
             top: 20px;
             left: 20px;
             font-size: 1.5em;
             text-decoration: none;
-            color: #000;
+            color: white;
         }
+
         @keyframes slideInLeft {
             from {
                 transform: translateX(-100%);
@@ -97,6 +206,7 @@
                 opacity: 1;
             }
         }
+
         @keyframes slideInRight {
             from {
                 transform: translateX(100%);
@@ -107,11 +217,38 @@
                 opacity: 1;
             }
         }
+
+        @keyframes mvTop {
+            0% {top: -150px;}
+            100% {top: 40px;}
+        }
+
+        @keyframes dsTop {
+            0% {top: -150px;}
+            100% {top: 0;}
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .card-left {
             animation: slideInLeft 0.5s ease-out;
         }
+
         .card-right {
             animation: slideInRight 0.5s ease-out;
+        }
+
+        .card-center .developer-icons {
+            animation: slideInUp 1s ease-in-out; /* Added slide in animation for center card icons */
         }
     </style>
 </head>
@@ -121,34 +258,48 @@
         <div class="header"><strong>Development Team</strong></div>
         <div class="card-container">
             <div class="card card-left">
-                <img src="{% static 'images/kurt.webp' %}" alt="Kurt's Profile Picture" class="profile-picture">
-                <div class="developer">
-                    <p><i class="fas fa-user" style="font-size: 1.25em;"></i>Name: Kurt L. Dacaymat</p>
-                    <p><i class="fas fa-map-marker-alt" style="font-size: 1.25em;"></i>Address: Samar</p>
-                    <p><i class="fas fa-envelope" style="font-size: 1.25em;"></i>Contact: <a href="mailto:kurt@example.com">kurt@example.com</a></p>
-                    <p><i class="fab fa-facebook" style="font-size: 1.25em;"></i>Facebook: <a href="https://www.facebook.com/kurt-profile-link" target="_blank">Kurt</a></p>
-                    <p><i class="fab fa-github" style="font-size: 1.25em;"></i>Github: <a href="https://github.com/kurt-github" target="_blank">Kurt</a></p>
+                <div class="ds-top"></div>
+                <div class="avatar-holder">
+                    <img src="{% static 'images/kurt.webp' %}" alt="Kurt's Profile Picture" class="profile-picture">
+                </div>
+                <div class="name">
+                    <p>Kurt L. Dacaymat</p>
+                </div>
+                <div class="developer-icons">
+                    <a href="mailto:kurt@example.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://www.facebook.com/kurt-profile-link" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://github.com/kurt-github" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://t.me/kurt-telegram" target="_blank"><i class="fab fa-telegram"></i></a> <!-- Added Telegram icon -->
                 </div>
             </div>
-            <div class="card">
-                <img src="{% static 'images/ivan.jpg' %}" alt="Ivan's Profile Picture" class="profile-picture">
-                <div class="developer">
-                    <p><i class="fas fa-user" style="font-size: 1.25em;"></i>Name: Ivan P. Agbay</p>
-                    <p><i class="fas fa-map-marker-alt" style="font-size: 1.25em;"></i>Address: Samar</p>
-                    <p><i class="fas fa-envelope" style="font-size: 1.25em;"></i>Contact: <a href="mailto:ivan@example.com">ivan@example.com</a></p>
-                    <p><i class="fab fa-facebook" style="font-size: 1.25em;"></i>Facebook: <a href="https://www.facebook.com/ivan-profile-link" target="_blank">Ivan</a></p>
-                    <p><i class="fab fa-github" style="font-size: 1.25em;"></i>Github: <a href="https://github.com/ivan-github" target="_blank">Ivan</a></p>
+            <div class="card card-center">
+                <div class="ds-top"></div>
+                <div class="avatar-holder">
+                    <img src="{% static 'images/ivan.jpg' %}" alt="Ivan's Profile Picture" class="profile-picture">
+                </div>
+                <div class="name">
+                    <p>Ivan P. Agbay</p>
+                </div>
+                <div class="developer-icons">
+                    <a href="mailto:ivan@example.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://www.facebook.com/ivan-profile-link" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://github.com/ivan-github" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://t.me/ivan-telegram" target="_blank"><i class="fab fa-telegram"></i></a> <!-- Added Telegram icon -->
                 </div>
             </div>
-            
             <div class="card card-right">
-                <img src="{% static 'images/mark.jpg' %}" alt="Mark's Profile Picture" class="profile-picture">
-                <div class="developer">
-                    <p><i class="fas fa-user" style="font-size: 1.25em;"></i>Name: Mark Anthony M. Aguirre</p>
-                    <p><i class="fas fa-map-marker-alt" style="font-size: 1.25em;"></i>Address: Leyte</p>
-                    <p><i class="fas fa-envelope" style="font-size: 1.25em;"></i>Contact: <a href="mailto:mark@example.com">mark@example.com</a></p>
-                    <p><i class="fab fa-facebook" style="font-size: 1.25em;"></i>Facebook: <a href="https://www.facebook.com/mark-profile-link" target="_blank">Mark</a></p>
-                    <p><i class="fab fa-github" style="font-size: 1.25em;"></i>Github: <a href="https://github.com/mark-github" target="_blank">Mark</a></p>
+                <div class="ds-top"></div>
+                <div class="avatar-holder">
+                    <img src="{% static 'images/mark.jpg' %}" alt="Mark's Profile Picture" class="profile-picture">
+                </div>
+                <div class="name">
+                    <p>Mark Anthony M. Aguirre</p>
+                </div>
+                <div class="developer-icons">
+                    <a href="mailto:mark@example.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://www.facebook.com/mark-profile-link" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://github.com/mark-github" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://t.me/mark-telegram" target="_blank"><i class="fab fa-telegram"></i></a> <!-- Added Telegram icon -->
                 </div>
             </div>
         </div>
