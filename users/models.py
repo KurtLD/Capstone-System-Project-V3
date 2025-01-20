@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import date, datetime
 import json
 from reco_app.models import Faculty
+from decimal import Decimal
 
 class CustomUser(AbstractUser):
     email = models.EmailField(max_length=254, unique=True)
@@ -188,6 +189,21 @@ class Verdict(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2)  # Equivalent percentage for the verdict
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, default=None, null=True, blank=True)
 
+    def get_range_display(self):
+        """Returns the percentage range for this verdict"""
+        # Get the next higher percentage from database
+        next_higher = Verdict.objects.filter(
+            school_year=self.school_year,
+            percentage__gt=self.percentage
+        ).order_by('percentage').first()
+            
+        if next_higher:
+            # If there's a higher percentage, use it as the upper bound
+            return f"{self.percentage:.0f}-{(next_higher.percentage - Decimal('1')):.0f}"
+        else:
+            # If this is the highest percentage, assume it goes up to 100
+            return f"{self.percentage:.0f}-100"
+    
     def __str__(self):
         return f"{self.name} ({self.percentage}%)"
 
@@ -268,6 +284,21 @@ class Mock_Verdict(models.Model):
     percentage = models.DecimalField(max_digits=5, decimal_places=2)  # Equivalent percentage for the verdict
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, default=None, null=True, blank=True)
 
+    def get_range_display(self):
+        """Returns the percentage range for this verdict"""
+        # Get the next higher percentage from database
+        next_higher = Mock_Verdict.objects.filter(
+            school_year=self.school_year,
+            percentage__gt=self.percentage
+        ).order_by('percentage').first()
+            
+        if next_higher:
+            # If there's a higher percentage, use it as the upper bound
+            return f"{self.percentage:.0f}-{(next_higher.percentage - Decimal('1')):.0f}"
+        else:
+            # If this is the highest percentage, assume it goes up to 100
+            return f"{self.percentage:.0f}-100"
+
     def __str__(self):
         return f"{self.name} ({self.percentage}%)"
 
@@ -347,6 +378,21 @@ class Final_Verdict(models.Model):
     name = models.CharField(max_length=255)
     percentage = models.DecimalField(max_digits=5, decimal_places=2)  # Equivalent percentage for the verdict
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE, default=None, null=True, blank=True)
+
+    def get_range_display(self):
+        """Returns the percentage range for this verdict"""
+        # Get the next higher percentage from database
+        next_higher = Final_Verdict.objects.filter(
+            school_year=self.school_year,
+            percentage__gt=self.percentage
+        ).order_by('percentage').first()
+            
+        if next_higher:
+            # If there's a higher percentage, use it as the upper bound
+            return f"{self.percentage:.0f}-{(next_higher.percentage - Decimal('1')):.0f}"
+        else:
+            # If this is the highest percentage, assume it goes up to 100
+            return f"{self.percentage:.0f}-100"
 
     def __str__(self):
         return f"{self.name} ({self.percentage}%)"

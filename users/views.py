@@ -2416,7 +2416,8 @@ def evaluate_capstone(request, schedule_id):
                     selected_verdict = f"{verdict.name} ({verdict.percentage}%)"
                     break
 
-        print(f"verdict: {selected_verdict}")
+        # print(f"verdict: {selected_verdict}")
+        
 
         # Only update the verdict if there are exactly 3 records
         if records >= 3:
@@ -2593,13 +2594,14 @@ def update_evaluate_capstone(request, schedule_id):
         for verdict in verdicts:
             if total_earned_points >= verdict.percentage:
                 selected_verdict = f"{verdict.name} ({verdict.percentage}%)"
+                print("selected_verdict: ", selected_verdict)
                 verdict_name = verdict.name
                 if selected_verdict:
                     checkboxes = Checkbox.objects.filter(verdict=verdict, school_year=selected_school_year)
                     print(checkboxes)
                 break
                 
-    print(f"verdict: {selected_verdict}") # for debugging purposes
+    # print(f"verdict: {selected_verdict}") # for debugging purposes
     
     previous_verdict = None
     if grade_entries.exists():
@@ -2856,6 +2858,7 @@ def update_evaluate_capstone(request, schedule_id):
 
         # applies only to the lead panel since he/she is the one who will choose the specific category based on the verdict selected 
         if is_lead_panel:
+            print("selected_verdict: ", selected_verdict)
             # check if the selected verdict is not the default value which is equal to < 3 panels who graded the project
             if selected_verdict != "Verdict is not available since not all of the panels submit the evaluation!":
                 # check if the selected verdict has checkboxes associated to it
@@ -4019,6 +4022,7 @@ def mock_evaluate_capstone(request, schedule_id):
     sections = Mock_EvaluationSection.objects.filter(school_year=selected_school_year).prefetch_related('mcriteria')
     group_members = [schedule.group.member1, schedule.group.member2, schedule.group.member3]
     verdicts = Mock_Verdict.objects.filter(school_year=selected_school_year).order_by('-percentage')
+    selected_verdict = 'None'
 
     if request.method == 'POST':
         grades_data = {}
@@ -4150,6 +4154,7 @@ def mock_evaluate_capstone(request, schedule_id):
 # function to reirect to the preoral evaluation form and save the updated data
 @login_required
 def mock_update_evaluate_capstone(request, schedule_id):
+    selected_verdict = 'None'
     school_years = SchoolYear.objects.all().order_by('start_year')
     # Get the last school year added to the db
     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
@@ -4303,19 +4308,21 @@ def mock_update_evaluate_capstone(request, schedule_id):
     records = grades.count()
     verdict_name = ''
     checkboxes = []
+    # selected_verdict = 'None'
     if records < 3:
         selected_verdict = "Verdict is not available since not all of the panels submit the evaluation!"
     else:
         for verdict in verdicts:
             if total_earned_points >= verdict.percentage:
                 selected_verdict = f"{verdict.name} ({verdict.percentage}%)"
+                print("selected_verdict: ", selected_verdict)
                 verdict_name = verdict.name
                 if selected_verdict:
                     checkboxes = Mock_Checkbox.objects.filter(verdict=verdict, school_year=selected_school_year)
                     print(checkboxes)
                 break
                 
-    print(f"verdict: {selected_verdict}") # for debugging purposes
+    # print(f"verdict: {selected_verdict}") # for debugging purposes
     
     # Initialize grade_entry and previous_verdict to None in case no records are found
     # grade_entry = None

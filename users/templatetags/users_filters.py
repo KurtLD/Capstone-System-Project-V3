@@ -30,4 +30,9 @@ def sum_existing_grades(criteria_list, existing_grades_data, member_index=None):
 
     return round(total, 2)
 
-    
+@register.filter
+def get_item_v2(list, index):
+    try:
+        return list[index]
+    except IndexError:
+        return None
