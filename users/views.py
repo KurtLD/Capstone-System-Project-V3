@@ -93,6 +93,10 @@ from django.db.models import Count, Case, When, Value, IntegerField, Subquery, O
 from django.db import transaction
 from datetime import datetime
 
+
+def developer_profile(request):
+    return render(request, 'developer_profile.html')
+
 # Custom decorator to check if the user is a superuser
 # apply it to the views that accessible only to the superuser/admin
 def superuser_required(view_func):
@@ -211,12 +215,6 @@ def signup_view(request):
                         faculty.expertise.add(expertise)
 
                     faculty.save()
-
-                    Notif.objects.create(
-                        created_by=user,
-                        notif=f"A new user has registered, check it.",
-                        category="User",
-                    )
 
                     login(request, user)
                     return redirect('login')
@@ -2363,7 +2361,7 @@ def evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Submitted evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: '{request.user}', Submitted evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
         )
 
         # Retrieve all PreOral_Grade objects with the given project title
@@ -2795,7 +2793,7 @@ def update_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Updated evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: '{request.user}', Updated evaluation in Pre-Oral Defense Schedule for project title '{schedule.title}'",
         )
 
 
@@ -4083,7 +4081,7 @@ def mock_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Submitted evaluation in Mock Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: '{request.user}', Submitted evaluation in Mock Defense Schedule for project title '{schedule.title}'",
         )
 
         # Retrieve all PreOral_Grade objects with the given project title
@@ -4514,7 +4512,7 @@ def mock_update_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Updated evaluation in Mock Defense Schedule for project title '{schedule.title}'",
+            notif=f"Updated evaluation in Mock Defense Schedule for project title '{schedule.title}'",
         )
 
 
@@ -5705,7 +5703,7 @@ def final_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Submitted evaluation in Final Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: '{request.user}', Submitted evaluation in Final Defense Schedule for project title '{schedule.title}'",
         )
 
 
@@ -6130,7 +6128,7 @@ def final_update_evaluate_capstone(request, schedule_id):
         # creating a notif
         Notif.objects.create(
             created_by=request.user,
-            notif=f"Faculty: {request.user.first_name} {request.user.last_name}, Updated evaluation in Final Defense Schedule for project title '{schedule.title}'",
+            notif=f"Faculty: '{request.user}', Updated evaluation in Final Defense Schedule for project title '{schedule.title}'",
         )
 
         # Process the checkboxes
@@ -7269,8 +7267,6 @@ def notification_list(request):
     else:
         # Retrieve the selected school year based on the session
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
-    
-    
 
     user = request.user
     query = request.GET.get('search', '')
@@ -7338,44 +7334,16 @@ def mark_notification_as_read(request, notif_id):
     notif.read_by.add(request.user)  # Mark the notification as read for this user
     return redirect('notifications')  # Redirect back to the notifications list
 
-# @login_required
-# def mark_all_notifications_as_read(request):
-#     user = request.user
-#     if user.is_superuser:
-#         notifications = Notif.objects.filter(created_by__is_superuser=False)
-#     else:
-#         notifications = Notif.objects.filter(created_by__is_superuser=True)
-#     for notification in notifications:
-#         notification.read_by.add(user)
-#     return JsonResponse({'status': 'success'})
-
 @login_required
 def mark_all_notifications_as_read(request):
     user = request.user
-
-    # Determine the notifications to be marked as read based on user's role
     if user.is_superuser:
         notifications = Notif.objects.filter(created_by__is_superuser=False)
     else:
         notifications = Notif.objects.filter(created_by__is_superuser=True)
-
-    # Mark all notifications as read for the user
     for notification in notifications:
-        # Add the user to the read_by field in the Notif model
         notification.read_by.add(user)
-
-        # Update or create an entry in the UserNotif model
-        user_notif, created = UserNotif.objects.get_or_create(
-            user=user,
-            notif=notification,
-            defaults={'read': True}  # Set read to True if created
-        )
-        if not created:
-            user_notif.read = True  # Update the read status if it already exists
-            user_notif.save()
-
     return JsonResponse({'status': 'success'})
-
 
 @login_required
 def accept_adviser_and_mark_read(request, adviser_id, notif_id):
@@ -7395,7 +7363,7 @@ def accept_adviser_and_mark_read(request, adviser_id, notif_id):
     # Create a notification (optional, based on your logic)
     Notif.objects.create(
         created_by=request.user,
-        notif=f"{adviser.faculty} has accepted the request for an adviser with title:<br> {adviser.approved_title}",
+        notif=f"{adviser.faculty} has accepted the request for an adviser with title: {adviser.approved_title}",
     )
 
     # Fetch the notification

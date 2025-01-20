@@ -502,8 +502,11 @@ table {
 
 .form-control {
     font-size: 12px;
+    
 }
-
+.form-control::placeholder {
+    font-weight: 500;
+}
 /* Make modal labels bold */
 .modal-content label {
     font-weight: 600;

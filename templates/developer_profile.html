@@ -1,0 +1,422 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static '02_loginForm.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;500&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background: #202020;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            background-image: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); /* New background image */
+            background-size: cover; /* Ensures the image covers the container */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat; /* Prevents the image from repeating */
+        }
+
+        .card-container {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            overflow: hidden; /* Prevents overflow from affecting the container */
+            flex-wrap: wrap; /* Allows cards to wrap on smaller screens */
+        }
+
+        .card {
+            margin: 16px;
+            width: 300px;
+            height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px 5px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Added transition for smooth animation */
+            position: relative;
+        }
+
+        .card-left {
+            background: url('https://www.upplanderalprotein.com/wp-content/uploads/2023/04/bg.webp') no-repeat center center; /* Black style wallpaper */
+            background-size: cover; /* Ensures the image covers the card */
+        }
+
+        .card-center {
+            background: url('https://assets-global.website-files.com/65847f16e2a70f46f6e5e3d0/658c6b1251d5da0bce5c1880_broker_next.webp') no-repeat center center; /* Different black style wallpaper */
+            background-size: cover; /* Ensures the image covers the card */
+        }
+
+        .card-right {
+            background: url('https://static.vecteezy.com/system/resources/previews/002/175/795/original/abstract-black-and-gray-square-shape-layered-on-dark-background-vector.jpg') no-repeat center center; /* Another different black style wallpaper */
+            background-size: cover; /* Ensures the image covers the card */
+        }
+
+        .ds-top {
+            position: absolute;
+            margin: auto;
+            top: 0;
+            right: 0;
+            left: 0;
+            width: 300px;
+            height: 80px;
+            background: crimson;
+            animation: dsTop 1.5s;
+        }
+
+        .avatar-holder {
+            position: absolute;
+            margin: auto;
+            top: 40px;
+            right: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            box-shadow: 0 0 0 5px #151515,
+                        inset 0 0 0 5px #000000,
+                        inset 0 0 0 5px #000000,
+                        inset 0 0 0 5px #000000,
+                        inset 0 0 0 5px #000000;
+            background: white;
+            overflow: hidden;
+            animation: mvTop 1.5s;
+        }
+
+        .avatar-holder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .name {
+            position: absolute;
+            margin: auto;
+            top: 160px; /* Adjusted to position below the avatar */
+            right: 0;
+            left: 0;
+            width: inherit;
+            height: 40px;
+            text-align: center;
+            animation: fadeIn 2s ease-in;
+            color: crimson; /* Changed color to match ds-top */
+        }
+
+        .name p {
+            color: white; /* Changed color to match ds-top */
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 10px; /* Reduced margin to decrease space */
+        }
+
+        .description {
+            position: absolute;
+            margin: auto;
+            top: 200px; /* Positioned below the name */
+            right: 0;
+            left: 0;
+            width: 80%;
+            color: white;
+            font-size: 14px;
+            text-align: center;
+            animation: fadeIn 2s ease-in;
+        }
+
+        .developer-icons {
+            padding: 0;
+            list-style: none;
+            margin: 0.5em 0; /* Reduced margin to decrease space */
+            display: flex;
+            justify-content: center;
+            gap: 16px; /* Space between icons */
+            position: absolute;
+            bottom: 20px; /* Positioned at the bottom */
+            left: 0;
+            right: 0;
+        }
+
+        .developer-icons li {
+            display: inline-block;
+            margin: 0.15em;
+            position: relative;
+            font-size: 1em;
+        }
+
+        .developer-icons i {
+            color: #000; /* Initial icon color to white */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Center the icon */
+            z-index: 1; /* Ensure icon is above the circle */
+            transition: transform 265ms ease-out, color 265ms ease-out; /* Added transition for transform and color */
+        }
+
+        .developer-icons a {
+            display: inline-block;
+            position: relative;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .developer-icons a:before {
+            transform: scale(1);
+            content: " ";
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: block;
+            background: crimson; /* Gradient from black to #333 to crimson */
+            transition: transform 265ms ease-out; /* Added transition for transform */
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0; /* Ensure circle is below the icon */
+        }
+
+        .developer-icons a:hover:before {
+            transform: scale(0);
+            transition: transform 265ms ease-in; /* Added transition for transform */
+        }
+
+        .developer-icons a:hover i {
+            transform: translate(-50%, -50%) scale(2); /* Ensure icon remains centered and scales up */
+            background: #fff;
+            -webkit-background-clip: text;
+            color: transparent; /* Makes the text color transparent to show the gradient */
+            transition: transform 265ms ease-in, background 265ms ease-in; /* Added transition for transform and background */
+        }
+
+        .header {
+            text-align: center;
+            font-size: 2em;
+            margin: 20px 0;
+            color: crimson; /* Initial color */
+            overflow: hidden; /* Ensures the text doesn't overflow */
+            white-space: nowrap; /* Prevents the text from wrapping */
+            border-right: 0.15em solid crimson; /* Adds a cursor effect */
+            animation: typing 3.5s steps(40, end) 0s infinite alternate, typing-reverse 3.5s steps(40, end) 3.5s infinite alternate, blink-caret 0.75s step-end infinite, color-change 7s infinite; /* Typewriter effect with color change */
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 25%; }
+        }
+
+        @keyframes typing-reverse {
+            from { width: 25%; }
+            to { width: 0; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: crimson; }
+        }
+
+        @keyframes color-change {
+            0%, 49.99% { color: crimson; border-color: crimson; }
+            50%, 100% { color: #000; border-color: #000; }
+        }
+        
+
+       
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5em;
+            text-decoration: none;
+            color: white;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes mvTop {
+            0% {top: -150px;}
+            100% {top: 40px;}
+        }
+
+        @keyframes dsTop {
+            0% {top: -150px;}
+            100% {top: 0;}
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .card-left {
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .card-right {
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .card-center .developer-icons {
+            animation: slideInUp 1s ease-in-out; /* Added slide in animation for center card icons */
+        }
+
+       @media (max-width: 480px) {
+            .card-container {
+                flex-direction: column; /* Stack cards vertically on smaller screens */
+                align-items: center;
+            }
+
+            .card {
+                width: 90%; /* Adjust card width for smaller screens */
+                height: auto; /* Allow card height to adjust based on content */
+                margin: 10px 0; /* Adjust margin for smaller screens */
+            }
+
+            .ds-top {
+                width: 90%; /* Adjust top section width for smaller screens */
+            }
+
+            .avatar-holder {
+                width: 80px; /* Adjust avatar size for smaller screens */
+                height: 80px; /* Adjust avatar size for smaller screens */
+            }
+
+            .name {
+                top: 120px; /* Adjust name position for smaller screens */
+            }
+
+            .description {
+                top: 160px; /* Adjust description position for smaller screens */
+                width: 90%; /* Adjust description width for smaller screens */
+            }
+
+            .developer-icons {
+                bottom: 10px; /* Adjust icon position for smaller screens */
+            }
+
+            .card-left, .card-center, .card-right {
+                display: block; /* Ensure all cards are displayed */
+            }
+
+            .header {
+                font-size: 1.5em; /* Adjust header font size for smaller screens */
+                margin: 10px 0; /* Adjust header margin for smaller screens */
+                width: 90%; /* Adjust header width for smaller screens */
+                white-space: normal; /* Allow header text to wrap */
+                border-right: none; /* Remove cursor effect on smaller screens */
+                animation: none; /* Remove typewriter effect on smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'login' %}" class="back-button"><i class="fas fa-arrow-left"></i></a>
+    <div class="container">
+        <div class="header"><strong>Development Team</strong></div>
+        <div class="card-container">
+            <div class="card card-left">
+                <div class="ds-top"></div>
+                <div class="avatar-holder">
+                    <img src="{% static 'images/kurt.webp' %}" alt="Kurt's Profile Picture" class="profile-picture">
+                </div>
+                <div class="name">
+                    <p>Kurt L. Dacaymat</p>
+                </div>
+                <div class="description">
+                    <p>Code is like humor. When you have to explain it, it’s bad</p>
+                </div>
+                <div class="developer-icons">
+                    <a href="mailto:kurt@example.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://www.facebook.com/kurt-profile-link" target="_blank"><i class="fas fa-user"></i></a>
+                    <a href="https://github.com/kurt-github" target="_blank"><i class="fas fa-code"></i></a>
+                    <a href="https://t.me/kurt-telegram" target="_blank"><i class="fas fa-paper-plane"></i></a> <!-- Added Telegram icon -->
+                </div>
+            </div>
+            <div class="card card-center">
+                <div class="ds-top"></div>
+                <div class="avatar-holder">
+                    <img src="{% static 'images/ivan.jpg' %}" alt="Ivan's Profile Picture" class="profile-picture">
+                </div>
+                <div class="name">
+                    <p>Ivan P. Agbay</p>
+                </div>
+                <div class="description">
+                    <p>Simplicity is the soul of efficiency</p>
+                </div>
+                <div class="developer-icons">
+                    <a href="mailto:ivan@example.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://www.facebook.com/ivan-profile-link" target="_blank"><i class="fas fa-user"></i></a>
+                    <a href="https://github.com/ivan-github" target="_blank"><i class="fas fa-code"></i></a>
+                    <a href="https://t.me/ivan-telegram" target="_blank"><i class="fas fa-paper-plane"></i></a> <!-- Added Telegram icon -->
+                </div>
+            </div>
+            <div class="card card-right">
+                <div class="ds-top"></div>
+                <div class="avatar-holder">
+                    <img src="{% static 'images/mark.jpg' %}" alt="Mark's Profile Picture" class="profile-picture">
+                </div>
+                <div class="name">
+                    <p>Mark Anthony M. Aguirre</p>
+                </div>
+                <div class="description">
+                    <p>Design is not just what it looks like and feels like. Design is how it works</p>
+                </div>
+                <div class="developer-icons">
+                    <a href="mailto:markanthonyaguirre1234@gmail.com"><i class="fas fa-envelope"></i></a> <!-- Email icon -->
+                    <a href="https://www.facebook.com/share/15cGDWZY2m/" target="_blank"><i class="fas fa-user"></i></a>
+                    <a href="https://github.com/Maarrrkkkkk" target="_blank"><i class="fas fa-code"></i></a>
+                    <a href="https://t.me/mark-telegram" target="_blank"><i class="fas fa-paper-plane"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

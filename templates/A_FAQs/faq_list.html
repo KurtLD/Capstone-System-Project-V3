@@ -20,6 +20,15 @@
             padding: 20px;
         }
 
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
         h1 {
             color: var(--highlighted-color);
             border-bottom: 2px solid var(--border-color);
@@ -97,6 +106,34 @@
             cursor: pointer;
             color: var(--highlighted-color);
             text-decoration: underline;
+        }
+
+        .review-item button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: var(--highlighted-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .review-item button:hover {
+            background-color: var(--border-color);
+        }
+
+        #showMore, #showLess {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: var(--highlighted-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #showMore:hover, #showLess:hover {
+            background-color: var(--border-color);
         }
     </style>
     <script>
@@ -179,85 +216,81 @@
     
 </head>
 <body>
-    <h1>Frequently Asked Questions</h1>
-    <ul>
-        {% for category in categories %}
-            <li><a href="{% url 'faq_category' category.id %}">{{ category.name }}</a></li>
-        {% endfor %}
-    </ul>
-
-    <!-- Feedback Section -->
-     <br>
-    <div class="review-section">
-        {% if user.is_authenticated and not user.is_superuser %}
-            <span class="toggle-btn" onclick="toggleReviewForm()">Write a Review</span>
-            <form method="post" action="{% url 'add_review' %}" class="review-form">
-                {% csrf_token %}
-                {{ review_form.as_p }}
-                <textarea name="text" rows="3" style="width: 100%; padding: 10px;" placeholder="Write your review here..."></textarea>
-                <button type="submit" style="margin-top: 10px; padding: 10px 20px; background-color: var(--highlighted-color); color: var(--text-light); border: none; border-radius: 5px; cursor: pointer;">
-                    Submit
-                </button>
-            </form> 
-        {% endif %}       
-        <!-- <form method="post" action="{% url 'add_review' %}" class="card p-3">
-            {% csrf_token %}
-            {{ comment_form.as_p }}
-            <button type="submit" class="btn btn-primary mt-2">Submit</button>
-        </form> -->
-
-        <h3>Reviews</h3>
-        <div class="review-list">
-            {% for review in reviews %}
-                <div class="review-item">
-                    <strong>{{ review.user }}</strong>
-                    <small>({{ review.created_at|timesince }} ago.)</small> |
-                    <small>Posted on: {{ review.created_at|date:"F j, Y, g:i a" }}</small>
-                    <br>
-                    {{ review.text }}
-                    <br>
-
-                    <!-- Helpful vote count -->
-                    <br>
-                    {% if review.helpful_count != 0 %}
-                        <p>{{ review.helpful_count }} people found this helpful</p>
-                    {% endif %}
-
-                    <!-- Vote form -->
-                    {% if review.user == faculty_member %}
-                        <p>You wrote this review.</p>
-                    {% else %}
-                        {% if user.is_authenticated and not user.is_superuser %}
-                            <form method="post" action="{% url 'review_helpful_vote' review.id %}">
-                                {% csrf_token %}
-                                <label>Was this review helpful?</label><br>
-                                <button name="vote" value="yes">Yes</button>
-                                <button name="vote" value="no">No</button>
-                            </form>
-                        {% endif %}
-                    {% endif %}
-
-                </div>
-            {% empty %}
-                {% if user.is_superuser %}
-                    <p>No reviews yet.</p>
-                {% else %}
-                    <p>No reviews yet. Be the first to write one!</p>
-                {% endif %}
+    <div class="container">
+        <h1>Frequently Asked Questions</h1>
+        <ul>
+            {% for category in categories %}
+                <li><a href="{% url 'faq_category' category.id %}">{{ category.name }}</a></li>
             {% endfor %}
+        </ul>
+
+        <!-- Feedback Section -->
+        <br>
+        <div class="review-section">
+            {% if user.is_authenticated and not user.is_superuser %}
+                <span class="toggle-btn" onclick="toggleReviewForm()">Write a Review</span>
+                <form method="post" action="{% url 'add_review' %}" class="review-form">
+                    {% csrf_token %}
+                    {{ review_form.as_p }}
+                    <textarea name="text" rows="3" style="width: 100%; padding: 10px;" placeholder="Write your review here..."></textarea>
+                    <button type="submit" style="margin-top: 10px; padding: 10px 20px; background-color: var(--highlighted-color); color: var(--text-light); border: none; border-radius: 5px; cursor: pointer;">
+                        Submit
+                    </button>
+                </form> 
+            {% endif %}       
+
+            <h3>Reviews</h3>
+            <div class="review-list">
+                {% for review in reviews %}
+                    <div class="review-item">
+                        <strong>{{ review.user }}</strong>
+                        <small>({{ review.created_at|timesince }} ago.)</small> |
+                        <small>Posted on: {{ review.created_at|date:"F j, Y, g:i a" }}</small>
+                        <br>
+                        {{ review.text }}
+                        <br>
+
+                        <!-- Helpful vote count -->
+                        <br>
+                        {% if review.helpful_count != 0 %}
+                            <p>{{ review.helpful_count }} people found this helpful</p>
+                        {% endif %}
+
+                        <!-- Vote form -->
+                        {% if review.user == faculty_member %}
+                            <p>You wrote this review.</p>
+                        {% else %}
+                            {% if user.is_authenticated and not user.is_superuser %}
+                                <form method="post" action="{% url 'review_helpful_vote' review.id %}">
+                                    {% csrf_token %}
+                                    <label>Was this review helpful?</label><br>
+                                    <button name="vote" value="yes">Yes</button>
+                                    <button name="vote" value="no">No</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+
+                    </div>
+                {% empty %}
+                    {% if user.is_superuser %}
+                        <p>No reviews yet.</p>
+                    {% else %}
+                        <p>No reviews yet. Be the first to write one!</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <button id="showMore">Show More</button>
+            <button id="showLess">Show Less</button>
         </div>
 
-        <button id="showMore">Show More</button>
-        <button id="showLess">Show Less</button>
+        {% if user.is_authenticated %}
+            <a href="{% if user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'faculty_dashboard' %}{% endif %}" class="back-button">
+                Go to Dashboard
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="back-button">Back to Login</a>
+        {% endif %}
     </div>
-
-    {% if user.is_authenticated %}
-        <a href="{% if user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'faculty_dashboard' %}{% endif %}" class="back-button">
-            Go to Dashboard
-        </a>
-    {% else %}
-        <a href="{% url 'login' %}" class="back-button">Back to Login</a>
-    {% endif %}
-
 </body>
 </html>

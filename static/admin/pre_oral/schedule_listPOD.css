@@ -496,10 +496,11 @@ table {
     font-size: 12px;
 }
 
-
-
 .form-control {
     font-size: 12px;
+}
+.form-control::placeholder {
+    font-weight: 500;
 }
 
 

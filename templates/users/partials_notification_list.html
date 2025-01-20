@@ -96,7 +96,7 @@
             {% if request.user not in notification.read_by.all %}
                 <a class="mark-read" href="{% url 'mark_notification_as_read' notification.id %}">Mark as Read</a>
             {% else %}
-                <span class="read-label">Already Read</span>
+                <span class="read-label">Read</span>
             {% endif %}
         </li>
         {% endfor %}
