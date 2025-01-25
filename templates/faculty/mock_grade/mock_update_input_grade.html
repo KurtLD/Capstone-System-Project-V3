@@ -83,7 +83,16 @@
                             <div class="card-body">
                                 {% if verdict_message %}
                                     <div class="messages">
-                                        <h3 style="color: red;">*{{ verdict_message }}</h3>
+                                        <!-- <h3 style="color: red;">*{{ verdict_message }}</h3> -->
+                                        {% if selected_verdict == "Verdict is not available since not all of the panels submit the evaluation!" %}
+                                            <script>
+                                                alert("Verdict: {{ selected_verdict }}");
+                                            </script>
+                                        {% else %}
+                                            <script>
+                                                alert("Verdict: {{ selected_verdict }}\n\nYou need to select the appropriate checkbox for that selected verdict...");
+                                            </script>
+                                        {% endif %}
                                     </div>
                                 {% endif %}
 
@@ -181,9 +190,18 @@
                                                 {% endif %}
                                                 <label for="checkbox_{{ checkbox.id }}">{{ checkbox.label }}</label>
                                                 {% if 'other' in checkbox.label|lower or 'specify' in checkbox.label|lower %}
-                                                <textarea type="text" id="other_input_{{ checkbox.id }}" name="other_input_{{ checkbox.id }}" 
+                                                <!-- <textarea type="text" id="other_input_{{ checkbox.id }}" name="other_input_{{ checkbox.id }}" 
                                                 style="display: none;" placeholder="Please specify..." 
-                                                required>{{ grade_entry.othervalue }}</textarea>
+                                                required>{{ grade_entry.othervalue }}</textarea> -->
+                                                <textarea type="text" 
+                                                            id="other_input_{{ checkbox.id }}" 
+                                                            name="other_input_{{ checkbox.id }}" 
+                                                            style="display: none;" 
+                                                            placeholder="Please specify..."
+                                                            {% if existing_checkbox_data and existing_checkbox_data|get_item:checkbox.id %}
+                                                            required
+                                                            {% endif %}
+                                                            >{{ grade_entry.othervalue }}</textarea>
                                                 {% endif %}
                                             </div>
                                             {% endif %}
@@ -360,8 +378,58 @@
     </div>
 
     <script>
+        // function toggleOtherInput(checkboxId, labelText) {
+        //     const checkbox = document.getElementById(`checkbox_${checkboxId}`);
+        //     const otherInput = document.getElementById(`other_input_${checkboxId}`);
+            
+        //     // Check if the label text includes 'other', 'others', or 'specify'
+        //     const isOtherCheckbox = labelText.toLowerCase().includes('other') || labelText.toLowerCase().includes('specify');
+            
+        //     if (isOtherCheckbox) {
+        //         // Show the input field if the checkbox is checked
+        //         if (checkbox.checked) {
+        //             otherInput.style.display = 'inline-block';
+        //         } else {
+        //             otherInput.style.display = 'none';
+        //             otherInput.value = ''; // Clear the value if unchecked
+        //         }
+        //     }
+        // }
+
+        function toggleOtherInput(checkboxId, labelText) {
+            const checkbox = document.getElementById(`checkbox_${checkboxId}`);
+            const otherInput = document.getElementById(`other_input_${checkboxId}`);
+            
+            // Check if the label text includes 'other', 'others', or 'specify'
+            const isOtherCheckbox = labelText.toLowerCase().includes('other') || labelText.toLowerCase().includes('specify');
+            
+            if (isOtherCheckbox) {
+                // Show the input field if the checkbox is checked
+                if (checkbox.checked) {
+                    otherInput.style.display = 'inline-block';
+                    otherInput.required = true;  // Make required when shown
+                } else {
+                    otherInput.style.display = 'none';
+                    otherInput.required = false; // Remove required when hidden
+                    otherInput.value = ''; // Clear the value if unchecked
+                }
+            }
+        }
+    
+        // Run on page load to check the initial state
+        window.addEventListener("load", function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((checkbox) => {
+                const label = checkbox.nextElementSibling.textContent;
+                const checkboxId = checkbox.id.split('_')[1]; // Get the checkbox ID
+                toggleOtherInput(checkboxId, label);
+            });
+        });
+    </script>
+
+    <script>
         function showSuccessMessage() {
-            alert('Evaluation Updated Successfully!')
+            // alert('Evaluation Updated Successfully!')
             return true;
         }
         document

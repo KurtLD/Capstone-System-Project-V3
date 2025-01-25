@@ -15,6 +15,17 @@
     <link rel="stylesheet" href="{% static 'faculty/pre_oral.css' %}" />
 </head>
 <body>
+    {% if verdict_message %}
+        {% if selected_verdict == "Verdict is not available since not all of the panels submit the evaluation!" %}
+            <script>
+                alert("Verdict: {{ verdict_message }}");
+            </script>
+        {% else %}
+            <script>
+                alert("Evaluation Updated Successfully!\n\n{{ verdict_message }}");
+            </script>
+        {% endif %}
+    {% endif %}
     <div class="flex h-screen flex-col">
         <!-- Navbar -->
         <div class="no-print">

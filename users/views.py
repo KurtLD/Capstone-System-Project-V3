@@ -976,6 +976,9 @@ def pre_oral_defense_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    verdict_message = request.GET.get('verdict_message')
+    selected_verdict = request.GET.get('selected_verdict')
+
     context = {
         'page_obj': page_obj,
         # 'current_school_year': current_school_year,
@@ -983,7 +986,9 @@ def pre_oral_defense_view(request):
         'last_school_year': last_school_year,
         'school_years': school_years,
         'adviser_records': adviser_records,
-        'adviser_records2': adviser_records2
+        'adviser_records2': adviser_records2,
+        'verdict_message': verdict_message,
+        'selected_verdict': selected_verdict
     }
 
     return render(request, 'faculty/view_section/pre_oral_defense.html', context)
@@ -1069,6 +1074,9 @@ def mock_defense_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    verdict_message = request.GET.get('verdict_message')
+    selected_verdict = request.GET.get('selected_verdict')
+
     context = {
         'page_obj': page_obj,
         # 'current_school_year': current_school_year,
@@ -1076,7 +1084,9 @@ def mock_defense_view(request):
         'last_school_year': last_school_year,
         'school_years': school_years,
         'adviser_records': adviser_records,
-        'adviser_records2': adviser_records2
+        'adviser_records2': adviser_records2,
+        'verdict_message': verdict_message,
+        'selected_verdict': selected_verdict
     }
 
     return render(request, 'faculty/view_section/mock_defense.html', context)
@@ -1162,6 +1172,9 @@ def final_defense_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    verdict_message = request.GET.get('verdict_message')
+    selected_verdict = request.GET.get('selected_verdict')
+
     context = {
         'page_obj': page_obj,
         # 'current_school_year': current_school_year,
@@ -1169,7 +1182,9 @@ def final_defense_view(request):
         'last_school_year': last_school_year,
         'school_years': school_years,
         'adviser_records': adviser_records,
-        'adviser_records2': adviser_records2
+        'adviser_records2': adviser_records2,
+        'verdict_message': verdict_message,
+        'selected_verdict': selected_verdict
     }
 
     return render(request, 'faculty/view_section/final_defense.html', context)
@@ -2423,12 +2438,21 @@ def evaluate_capstone(request, schedule_id):
                 grade.verdict = selected_verdict if selected_verdict else None
                 grade.save()
         if is_lead_panel:
-            verdict_message = "Please check the verdict and submit it again!"
-            url = reverse('update_evaluate_capstone', kwargs={'schedule_id': schedule_id})
-            query_string = urlencode({'verdict_has_changed': True, 'verdict_message': verdict_message})
+            if selected_verdict == "Verdict is not available since not all of the panels submit the evaluation!":
+                verdict_message = selected_verdict
+                url = reverse('pre_oral_defense')
+                query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+            else:
+                verdict_message = "Please check the verdict and submit it again!"
+                url = reverse('update_evaluate_capstone', kwargs={'schedule_id': schedule_id})
+                query_string = urlencode({'verdict_has_changed': True, 'verdict_message': verdict_message})
             return redirect(f'{url}?{query_string}')
         else:
-            return redirect("pre_oral_defense")
+            # return redirect("pre_oral_defense")
+            verdict_message = selected_verdict
+            url = reverse('pre_oral_defense')
+            query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+            return redirect(f'{url}?{query_string}')
 
 # function to reirect to the preoral evaluation form and save the updated data
 @login_required
@@ -2598,6 +2622,8 @@ def update_evaluate_capstone(request, schedule_id):
                     checkboxes = Checkbox.objects.filter(verdict=verdict, school_year=selected_school_year)
                     print(checkboxes)
                 break
+            else:
+               selected_verdict = "Cannot assign verdict since the final grade did not match to any criteria." 
                 
     # print(f"verdict: {selected_verdict}") # for debugging purposes
     
@@ -2869,7 +2895,11 @@ def update_evaluate_capstone(request, schedule_id):
                         print('value: ', any_checkbox_checked)
                         # if the value has True meaning there is a checkbox selected
                         if any_checkbox_checked:
-                            return redirect('pre_oral_defense')
+                            # return redirect('pre_oral_defense')
+                            verdict_message = f"Verdict: {selected_verdict}"
+                            url = reverse('pre_oral_defense')
+                            query_string = urlencode({'verdict_message': verdict_message})
+                            return redirect(f'{url}?{query_string}')
                         else:
                             print('success saving')
                             verdict_message = "Please confirm the verdict and submit it again!"
@@ -2877,13 +2907,25 @@ def update_evaluate_capstone(request, schedule_id):
                             query_string = urlencode({'verdict_has_changed': verdict_has_changed, 'verdict_message': verdict_message})
                             return redirect(f'{url}?{query_string}')
                 else:
-                    return redirect('pre_oral_defense')
+                    # return redirect('pre_oral_defense')
+                    verdict_message = f"Verdict: {selected_verdict}"
+                    url = reverse('pre_oral_defense')
+                    query_string = urlencode({'verdict_message': verdict_message})
+                    return redirect(f'{url}?{query_string}')
             else:
                 # Redirect to the faculty dashboard if verdict is not available
                 # messages.success(request, "Evaluation successfully submitted!")
-                return redirect('pre_oral_defense')
+                # return redirect('pre_oral_defense')
+                verdict_message = f"Verdict: {selected_verdict}"
+                url = reverse('pre_oral_defense')
+                query_string = urlencode({'verdict_message': verdict_message})
+                return redirect(f'{url}?{query_string}')
         else:
-            return redirect('pre_oral_defense')
+            # return redirect('pre_oral_defense')
+            verdict_message = f"Verdict: {selected_verdict}"
+            url = reverse('pre_oral_defense')
+            query_string = urlencode({'verdict_message': verdict_message})
+            return redirect(f'{url}?{query_string}')
     
     # use to get the pass verdict_has_changed variable from redirect
     verdict_has_changed_str = request.GET.get('verdict_has_changed') #variable to hold the value of the verdict_has_changed
@@ -4054,8 +4096,8 @@ def mock_evaluate_capstone(request, schedule_id):
         print(f'member2: {member2_avg}')
         print(f'member3: {member3_avg}')
 
-        # Save the data to the PreOral_Grade model
-        selected_verdict = 'None'
+        # Save the data to the mock_grade model
+        # selected_verdict = 'None'
         grades_json = json.dumps(grades_data)
 
         
@@ -4142,12 +4184,22 @@ def mock_evaluate_capstone(request, schedule_id):
                 grade.verdict = selected_verdict if selected_verdict else None
                 grade.save()
         if is_lead_panel:
-            verdict_message = "Please check the verdict and submit it again!"
-            url = reverse('mock_update_evaluate_capstone', kwargs={'schedule_id': schedule_id})
-            query_string = urlencode({'verdict_has_changed': True, 'verdict_message': verdict_message})
+            if selected_verdict == "Verdict is not available since not all of the panels submit the evaluation!":
+                verdict_message = selected_verdict
+                url = reverse('mock_defense')
+                query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+                return redirect(f'{url}?{query_string}')
+            else:
+                verdict_message = "Please check the verdict and submit it again!"
+                url = reverse('mock_update_evaluate_capstone', kwargs={'schedule_id': schedule_id})
+                query_string = urlencode({'verdict_has_changed': True, 'verdict_message': verdict_message})
             return redirect(f'{url}?{query_string}')
         else:
-            return redirect("mock_defense")
+            # return redirect("mock_defense")
+            verdict_message = selected_verdict
+            url = reverse('mock_defense')
+            query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+            return redirect(f'{url}?{query_string}')
 
 # function to reirect to the preoral evaluation form and save the updated data
 @login_required
@@ -4319,6 +4371,8 @@ def mock_update_evaluate_capstone(request, schedule_id):
                     checkboxes = Mock_Checkbox.objects.filter(verdict=verdict, school_year=selected_school_year)
                     print(checkboxes)
                 break
+            else:
+               selected_verdict = "Cannot assign verdict since the final grade did not match to any criteria." 
                 
     # print(f"verdict: {selected_verdict}") # for debugging purposes
     
@@ -4585,7 +4639,11 @@ def mock_update_evaluate_capstone(request, schedule_id):
                         print('value: ', any_checkbox_checked)
                         # if the value has True meaning there is a checkbox selected
                         if any_checkbox_checked:
-                            return redirect('mock_defense')
+                            # return redirect('mock_defense')
+                            verdict_message = f"Verdict: {selected_verdict}"
+                            url = reverse('mock_defense')
+                            query_string = urlencode({'verdict_message': verdict_message})
+                            return redirect(f'{url}?{query_string}')
                         else:
                             print('success saving')
                             verdict_message = "Please confirm the verdict and submit it again!"
@@ -4593,13 +4651,25 @@ def mock_update_evaluate_capstone(request, schedule_id):
                             query_string = urlencode({'verdict_has_changed': verdict_has_changed, 'verdict_message': verdict_message})
                             return redirect(f'{url}?{query_string}')
                 else:
-                    return redirect('mock_defense')
+                    # return redirect('mock_defense')
+                    verdict_message = f"Verdict: {selected_verdict}"
+                    url = reverse('mock_defense')
+                    query_string = urlencode({'verdict_message': verdict_message})
+                    return redirect(f'{url}?{query_string}')
             else:
                 # Redirect to the faculty dashboard if verdict is not available
                 # messages.success(request, "Evaluation successfully submitted!")
-                return redirect('mock_defense')
+                # return redirect('mock_defense')
+                verdict_message = f"Verdict: {selected_verdict}"
+                url = reverse('mock_defense')
+                query_string = urlencode({'verdict_message': verdict_message})
+                return redirect(f'{url}?{query_string}')
         else:
-            return redirect('mock_defense')
+            # return redirect('mock_defense')
+            verdict_message = f"Verdict: {selected_verdict}"
+            url = reverse('mock_defense')
+            query_string = urlencode({'verdict_message': verdict_message})
+            return redirect(f'{url}?{query_string}')
     
     # use to get the pass verdict_has_changed variable from redirect
     verdict_has_changed_str = request.GET.get('verdict_has_changed') #variable to hold the value of the verdict_has_changed
@@ -5765,9 +5835,15 @@ def final_evaluate_capstone(request, schedule_id):
                 grade.verdict = selected_verdict if selected_verdict else None
                 grade.save()
         if is_lead_panel:
-            verdict_message = "Please check the verdict and submit it again!"
-            url = reverse('final_update_evaluate_capstone', kwargs={'schedule_id': schedule_id})
-            query_string = urlencode({'verdict_has_changed': True, 'verdict_message': verdict_message})
+            if selected_verdict == "Verdict is not available since not all of the panels submit the evaluation!":
+                verdict_message = selected_verdict
+                url = reverse('final_defense')
+                query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+                return redirect(f'{url}?{query_string}')
+            else:
+                verdict_message = "Please check the verdict and submit it again!"
+                url = reverse('final_update_evaluate_capstone', kwargs={'schedule_id': schedule_id})
+                query_string = urlencode({'verdict_has_changed': True, 'verdict_message': verdict_message})
             return redirect(f'{url}?{query_string}')
         else:
             return redirect("final_defense")
@@ -5926,6 +6002,7 @@ def final_update_evaluate_capstone(request, schedule_id):
     records = grades.count()
     verdict_name = ''
     checkboxes = []
+    selected_verdict = None
     if records < 3:
         selected_verdict = "Verdict is not available since not all of the panels submit the evaluation!"
     else:
@@ -5937,6 +6014,8 @@ def final_update_evaluate_capstone(request, schedule_id):
                     checkboxes = Final_Checkbox.objects.filter(verdict=verdict, school_year=selected_school_year)
                     print(checkboxes)
                 break
+            else:
+               selected_verdict = "Cannot assign verdict since the final grade did not match to any criteria." 
                 
     print(f"verdict: {selected_verdict}") # for debugging purposes
     
@@ -6200,7 +6279,11 @@ def final_update_evaluate_capstone(request, schedule_id):
                         print('value: ', any_checkbox_checked)
                         # if the value has True meaning there is a checkbox selected
                         if any_checkbox_checked:
-                            return redirect('final_defense')
+                            # return redirect('final_defense')
+                            verdict_message = selected_verdict
+                            url = reverse('final_defense')
+                            query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+                            return redirect(f'{url}?{query_string}')
                         else:
                             print('success saving')
                             verdict_message = "Please confirm the verdict and submit it again!"
@@ -6208,13 +6291,25 @@ def final_update_evaluate_capstone(request, schedule_id):
                             query_string = urlencode({'verdict_has_changed': verdict_has_changed, 'verdict_message': verdict_message})
                             return redirect(f'{url}?{query_string}')
                 else:
-                    return redirect('final_defense')
+                    # return redirect('final_defense')
+                    verdict_message = selected_verdict
+                    url = reverse('final_defense')
+                    query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+                    return redirect(f'{url}?{query_string}')
             else:
                 # Redirect to the faculty dashboard if verdict is not available
                 # messages.success(request, "Evaluation successfully submitted!")
-                return redirect('final_defense')
+                # return redirect('final_defense')
+                verdict_message = selected_verdict
+                url = reverse('final_defense')
+                query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+                return redirect(f'{url}?{query_string}')
         else:
-            return redirect('final_defense')
+            # return redirect('final_defense')
+            verdict_message = selected_verdict
+            url = reverse('final_defense')
+            query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+            return redirect(f'{url}?{query_string}')
     
     # use to get the pass verdict_has_changed variable from redirect
     verdict_has_changed_str = request.GET.get('verdict_has_changed') #variable to hold the value of the verdict_has_changed

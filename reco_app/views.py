@@ -1351,7 +1351,7 @@ def save_adviser(request):
         # creating a notif
         notif = Notif.objects.create(
             created_by=request.user,
-            notif=f"You have been recommended as an adviser for the capstone project titled: <br>'{approved_title}'<br> for group:<br> {group_info_name}",
+            notif=f"You have been recommended as an adviser for the capstone project titled: <br>'{approved_title}'",
             personal_notif=True,
             category="Recommender"
         )
