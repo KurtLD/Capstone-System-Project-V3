@@ -217,7 +217,7 @@
                                         <legend>Verdict {{ forloop.counter }}</legend>
                                         <li>
                                             <div class="flex justify-between items-center">
-                                                <span class="text-gray-800">{{ verdict.name }} - {{ verdict.percentage|floatformat:0 }}%</span>
+                                                <span class="text-gray-800">{{ verdict.name }} ({{ verdict.get_range_display }}%)</span>
                                                 {% if selected_school_year == last_school_year %}
                                                     <div class="button-group">
                                                         <a href="#" class="edit-verdict btn btn-primary" data-id="{{ verdict.id }}" onclick="openEditVerdictModal(event, '{{ verdict.id }}' )">
