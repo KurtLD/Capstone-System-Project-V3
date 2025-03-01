@@ -1269,7 +1269,7 @@ def mock_adviser_records_view(request):
     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
 
     # Fetch records from the Adviser model where the faculty is an adviser
-    adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
+    adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True, declined=False)
     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
 
     paginator = Paginator(adviser_records, 5)  # Show 5 records per page
@@ -1319,7 +1319,7 @@ def final_adviser_records_view(request):
     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
 
     # Fetch records from the Adviser model where the faculty is an adviser
-    adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
+    adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True, declined=False)
     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
 
     paginator = Paginator(adviser_records, 5)  # Show 5 records per page
@@ -2908,7 +2908,7 @@ def update_evaluate_capstone(request, schedule_id):
                             return redirect(f'{url}?{query_string}')
                 else:
                     # return redirect('pre_oral_defense')
-                    verdict_message = f"Verdict: {selected_verdict}"
+                    verdict_message = f"Verdict: {selected_verdict2}"
                     url = reverse('pre_oral_defense')
                     query_string = urlencode({'verdict_message': verdict_message})
                     return redirect(f'{url}?{query_string}')
@@ -4652,7 +4652,7 @@ def mock_update_evaluate_capstone(request, schedule_id):
                             return redirect(f'{url}?{query_string}')
                 else:
                     # return redirect('mock_defense')
-                    verdict_message = f"Verdict: {selected_verdict}"
+                    verdict_message = f"Verdict: {selected_verdict2}"
                     url = reverse('mock_defense')
                     query_string = urlencode({'verdict_message': verdict_message})
                     return redirect(f'{url}?{query_string}')
@@ -6292,9 +6292,9 @@ def final_update_evaluate_capstone(request, schedule_id):
                             return redirect(f'{url}?{query_string}')
                 else:
                     # return redirect('final_defense')
-                    verdict_message = selected_verdict
+                    verdict_message = f"Verdict: {selected_verdict2}"
                     url = reverse('final_defense')
-                    query_string = urlencode({'verdict_message': verdict_message, 'selected_verdict': selected_verdict})
+                    query_string = urlencode({'verdict_message': verdict_message})
                     return redirect(f'{url}?{query_string}')
             else:
                 # Redirect to the faculty dashboard if verdict is not available

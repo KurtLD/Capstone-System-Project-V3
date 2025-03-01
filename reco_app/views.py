@@ -1333,7 +1333,7 @@ def save_adviser(request):
             adviser_from_db = Adviser.objects.filter(
                 Q(approved_title=approved_title, declined=True) |
                 Q(faculty=faculty, approved_title=approved_title, declined=True, has_been_replaced=True)
-            ).first()  # Use first() instead of get() to avoid MultipleObjectsReturned error
+            ).last()  # Use first() instead of get() to avoid MultipleObjectsReturned error
 
             if adviser_from_db:
                 adviser_from_db.has_been_replaced = True

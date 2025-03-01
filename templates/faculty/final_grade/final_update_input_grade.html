@@ -164,7 +164,7 @@
                                             value="{{ verdict.name }}"
                                             style="cursor: not-allowed; color: #999;"
                                             {% if selected_verdict and verdict_name == verdict.name %}checked{% endif %} disabled/>
-                                            <label for="verdict_{{ forloop.counter }}">{{ verdict.name }} - {{ verdict.percentage }}%</label>
+                                            <label for="verdict_{{ forloop.counter }}">{{ verdict.name }} ({{ verdict.get_range_display }}%)</label>
                                         </div>
                                         {% if verdict_name == verdict.name %}
                                         <div id="checkboxes-container" tabindex="0">

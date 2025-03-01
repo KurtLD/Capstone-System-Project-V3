@@ -141,7 +141,7 @@
                                             value="{{ verdict.name }}"
                                             style="cursor: not-allowed; color: #999; "
                                             {% if selected_verdict and selected_verdict.name == verdict.name %}checked{% endif %} disabled/>
-                                            <label for="verdict_{{ forloop.counter }}">{{ verdict.name }} - {{ verdict.percentage }}%</label>
+                                            <label for="verdict_{{ forloop.counter }}">{{ verdict.name }} ({{ verdict.get_range_display }}%)</label>
                                         </div>
                                         {% endfor %}
                                     </fieldset>
