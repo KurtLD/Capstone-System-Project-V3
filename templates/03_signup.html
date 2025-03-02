@@ -410,6 +410,63 @@
         });
 
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const textarea = document.getElementById("expertiseInput");
+    
+            textarea.addEventListener("input", function () {
+                let lines = textarea.value.split("\n");
+    
+                for (let i = 0; i < lines.length; i++) {
+                    let trimmedLine = lines[i].trim();
+    
+                    // Prevent empty or special character-only lines
+                    if (trimmedLine === "" || /^[^a-zA-Z0-9]+$/.test(trimmedLine)) {
+                        lines.splice(i, 1); // Remove invalid line
+                        i--; // Adjust index
+                        continue;
+                    }
+    
+                    // Add bullet to valid lines that don't have one
+                    if (!trimmedLine.startsWith("•")) {
+                        lines[i] = "• " + trimmedLine;
+                    }
+                }
+    
+                // Preserve cursor position
+                let cursorPos = textarea.selectionStart;
+                textarea.value = lines.join("\n");
+                textarea.selectionStart = textarea.selectionEnd = cursorPos;
+            });
+    
+            // Add a bullet when the user first clicks inside
+            textarea.addEventListener("focus", function () {
+                if (textarea.value.trim() === "") {
+                    textarea.value = "• ";
+                }
+            });
+    
+            // Ensure bullet is added when pressing Enter, but prevent invalid lines
+            textarea.addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Prevent default newline
+                    let cursorPos = textarea.selectionStart;
+                    let textBeforeCursor = textarea.value.substring(0, cursorPos).trim();
+                    let textAfterCursor = textarea.value.substring(cursorPos);
+    
+                    // Prevent adding a new bullet if the last line is empty or invalid
+                    if (textBeforeCursor === "" || /^[^a-zA-Z0-9]+$/.test(textBeforeCursor)) {
+                        return;
+                    }
+    
+                    // Insert a new bullet point
+                    textarea.value = textBeforeCursor + "\n• " + textAfterCursor;
+                    textarea.selectionStart = textarea.selectionEnd = cursorPos + 3; // Move cursor after bullet
+                }
+            });
+        });
+    </script>
+    
     
 </body>
 </html>

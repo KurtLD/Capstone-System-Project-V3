@@ -48,13 +48,15 @@ class CustomUserCreationForm(UserCreationForm):
     )
 
     new_expertise = forms.CharField(
-        max_length=100,
+        max_length=1000,
         required=False,
         label="",
-        widget=forms.TextInput(attrs={
-            'placeholder': "Please specify your other expertise",
+        widget=forms.Textarea(attrs={
+            'placeholder': "Please specify your other expertise (one per line)",
             'class': 'form-control',
-            'aria-label': 'Other Expertise'
+            'aria-label': 'Other Expertise',
+            'rows': 3,
+            'id': 'expertiseInput'  # Add an ID to target it with JS
         })
     )
 
@@ -148,12 +150,26 @@ class AccountSettingsForm(forms.ModelForm):
         label="Select your highest degrees"
     )
 
+    # new_expertise = forms.CharField(
+    #     max_length=100,
+    #     required=False,
+    #     label="New Expertise",
+    #     widget=forms.TextInput(attrs={'placeholder': "Please specify"})
+    # )
+
     new_expertise = forms.CharField(
-        max_length=100,
+        max_length=1000,
         required=False,
-        label="New Expertise",
-        widget=forms.TextInput(attrs={'placeholder': "Please specify"})
+        label="",
+        widget=forms.Textarea(attrs={
+            'placeholder': "Please specify your other expertise (one per line)",
+            'class': 'form-control',
+            'aria-label': 'Other Expertise',
+            'rows': 3,
+            'id': 'expertiseInput'  # Add an ID to target it with JS
+        })
     )
+
 
     expertise = forms.ModelMultipleChoiceField(
         queryset=Expertise.objects.all(),
@@ -222,15 +238,18 @@ class AccountSettingsForm(forms.ModelForm):
                 faculty.highest_degree = ','.join(highest_degrees)
                 faculty.save()
 
-                # Save expertise
+                # Save expertise (checkbox selections)
                 expertise_list = self.cleaned_data.get('expertise', [])
                 faculty.expertise.set(expertise_list)
 
-                # Handle custom expertise
-                custom_expertise = self.cleaned_data.get('new_expertise')
+                # Handle custom expertise (split by new lines and remove bullets)
+                custom_expertise = self.cleaned_data.get('new_expertise', "")
                 if custom_expertise:
-                    expertise, created = Expertise.objects.get_or_create(name=custom_expertise)
-                    faculty.expertise.add(expertise)
+                    for expertise_name in custom_expertise.split('\n'):
+                        expertise_name = expertise_name.strip().replace("•", "").strip()  # Remove bullet and trim spaces
+                        if expertise_name:  # Skip empty lines
+                            expertise, created = Expertise.objects.get_or_create(name=expertise_name)
+                            faculty.expertise.add(expertise)
 
                 faculty.save()
 

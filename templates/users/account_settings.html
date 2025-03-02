@@ -97,7 +97,7 @@
                       {% endfor %}
                     </div>
                   </div>
-                  <div class="form-group mb-4">
+                  <div class="form-group mb-4" style="padding-left: 5px;">
                     {{ form.new_expertise.label_tag }} {{ form.new_expertise }}
                   </div>
                   <div class="form-group mb-4">
@@ -349,5 +349,15 @@
         {% endif %}
       });
     </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const newExpertiseField = document.getElementById('{{ form.new_expertise.id_for_label }}');
+          
+          newExpertiseField.addEventListener('input', function() {
+              this.style.height = 'auto';  // Reset height to auto to recalculate
+              this.style.height = (this.scrollHeight) + 'px';  // Set height to scrollHeight
+          });
+      });
+  </script>
   </body>
 </html>

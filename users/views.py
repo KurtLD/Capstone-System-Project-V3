@@ -209,12 +209,29 @@ def signup_view(request):
                     expertise_list = Expertise.objects.filter(id__in=expertise_ids)
                     faculty.expertise.set(expertise_list)
 
-                    custom_expertise = request.session.get('new_expertise')
+                    # custom_expertise = request.session.get('new_expertise')
+                    # if custom_expertise:
+                    #     # Split the input by new lines and create Expertise objects
+                    #     for expertise_name in custom_expertise.split('\n'):
+                    #         expertise_name = expertise_name.strip()
+                    #         if expertise_name:  # Ensure the line is not empty
+                    #             expertise, created = Expertise.objects.get_or_create(name=expertise_name)
+                    #             faculty.expertise.add(expertise)
+                    custom_expertise = request.session.get('new_expertise', '').strip()
                     if custom_expertise:
-                        expertise, created = Expertise.objects.get_or_create(name=custom_expertise)
-                        faculty.expertise.add(expertise)
+                        expertise_names = [name.strip() for name in custom_expertise.split('\n') if name.strip()]
+                        for expertise_name in expertise_names:
+                            expertise, _ = Expertise.objects.get_or_create(name=expertise_name)
+                            faculty.expertise.add(expertise)
+
 
                     faculty.save()
+
+                    # Notif.objects.create(
+                    #     created_by=request.user,
+                    #     notif=f"A new user has registered, check it.",
+                    #     category="User",
+                    # )
 
                     login(request, user)
                     return redirect('login')
@@ -238,7 +255,7 @@ def signup_view(request):
                 request.session['user_data'] = user_data
                 request.session['highest_degrees'] = list(form.cleaned_data.get('highest_degrees', []))
                 request.session['expertise'] = list(form.cleaned_data.get('expertise', []).values_list('id', flat=True))
-                request.session['new_expertise'] = form.cleaned_data.get('new_expertise')
+                request.session['new_expertise'] = form.cleaned_data.get('new_expertise', '')
 
                 otp = generate_otp()
                 request.session['otp'] = otp
@@ -247,9 +264,6 @@ def signup_view(request):
     else:
         form = CustomUserCreationForm()
     return render(request, '03_signup.html', {'form': form})
-
-
- # FOR ADDING USER WITHOUT OTP VERIFICATION
 
 # def signup_view(request):
 #     if request.method == 'POST':
@@ -496,28 +510,15 @@ def select_school_year(request):
 @login_required
 def account_settings(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
-    # get the last school year added to the db
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-    # get the current school year
-    # current_school_year = SchoolYear.get_active_school_year()
-    selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-
-    # Get the selected school year from session or fallback to the active school year
-    selected_school_year = ''
-    if not selected_school_year_id:
-        selected_school_year = last_school_year
-        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
-    else:
-        # Retrieve the selected school year based on the session
-        selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    selected_school_year = SchoolYear.objects.get(id=selected_school_year_id) if selected_school_year_id else last_school_year
 
     if request.method == 'POST':
         form = AccountSettingsForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            
+
             # Log the action in AuditTrail
             full_name = request.user.get_full_name()
             if not full_name.strip():
@@ -527,27 +528,20 @@ def account_settings(request):
                 action=f"Updated account settings",
                 ip_address=request.META.get('REMOTE_ADDR')
             )
-            
+
             return JsonResponse({'status': 'success'})
         else:
             return JsonResponse({'status': 'error', 'errors': form.errors.as_json()})
     else:
         form = AccountSettingsForm(instance=request.user)
-    
-    if request.user.is_superuser:
-        template_name = 'users/account_settings.html'
-    else:
-        template_name = 'faculty/faculty_account_settings.html'
-    
-    return render(request, template_name, 
-    {'form': form,
-    # 'current_school_year': current_school_year,
-    'selected_school_year': selected_school_year,
-    'last_school_year': last_school_year,
-    'school_years': school_years
+
+    template_name = 'users/account_settings.html' if request.user.is_superuser else 'faculty/faculty_account_settings.html'
+    return render(request, template_name, {
+        'form': form,
+        'selected_school_year': selected_school_year,
+        'last_school_year': last_school_year,
+        'school_years': school_years
     })
-
-
 
 
 
