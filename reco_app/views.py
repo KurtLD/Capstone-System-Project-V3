@@ -21,6 +21,9 @@ from django.urls import reverse
 from .my_dictionary import IMPORTANT_TERMS, EXPERTISE_SYNONYMS, EXPERTISE_DICTIONARY
 from django.db.models.functions import Lower
 from urllib.parse import urlencode
+import spacy
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 # Load the spaCy model
@@ -115,89 +118,61 @@ logger = logging.getLogger(__name__)
 def extract_keywords(title):
     doc = nlp(title)
     keywords = set()
-    skip_next = False
-
-    # Loop through tokens in the document
+    
+    # Extract entities and noun chunks
+    for ent in doc.ents:
+        if ent.label_ in ["ORG", "PRODUCT", "TECH"]:
+            keywords.add(ent.text.lower())
+    
+    for chunk in doc.noun_chunks:
+        keywords.add(chunk.text.lower())
+    
+    # Add single-word tokens that are not stop words
     for token in doc:
-        if skip_next:
-            skip_next = False
-            continue
-
-        # Handle multi-word terms explicitly
-        if token.i + 1 < len(doc):  # Check if the next token exists
-            # Multi-word term matching
-            if token.text.lower() == 'machine' and token.nbor(1).text.lower() == 'learning':
-                keywords.add('machine learning')
-                skip_next = True
-            elif token.text.lower() == 'artificial' and token.nbor(1).text.lower() == 'intelligence':
-                keywords.add('artificial intelligence')
-                skip_next = True
-            elif token.text.lower() == 'deep' and token.nbor(1).text.lower() == 'learning':
-                keywords.add('deep learning')
-                skip_next = True
-            elif token.text.lower() == 'neural' and token.nbor(1).text.lower() == 'networks':
-                keywords.add('neural networks')
-                skip_next = True
-            elif token.text.lower() == 'natural' and token.nbor(1).text.lower() == 'language' and token.nbor(2).text.lower() == 'processing':
-                keywords.add('natural language processing')
-                skip_next = True
-            elif token.text.lower() == 'support' and token.nbor(1).text.lower() == 'vector' and token.nbor(2).text.lower() == 'machines':
-                keywords.add('support vector machines')
-                skip_next = True
-            elif token.text.lower() == 'reinforcement' and token.nbor(1).text.lower() == 'learning':
-                keywords.add('reinforcement learning')
-                skip_next = True
-            elif token.text.lower() == 'computer' and token.nbor(1).text.lower() == 'vision':
-                keywords.add('computer vision')
-                skip_next = True
-            elif token.text.lower() == 'predictive' and token.nbor(1).text.lower() == 'analytics':
-                keywords.add('predictive analytics')
-                skip_next = True
-            elif token.text.lower() == 'data' and token.nbor(1).text.lower() == 'science':
-                keywords.add('data science')
-                skip_next = True
-            elif token.text.lower() == 'big' and token.nbor(1).text.lower() == 'data':
-                keywords.add('big data')
-                skip_next = True
-            elif token.text.lower() == 'convolutional' and token.nbor(1).text.lower() == 'neural' and token.nbor(2).text.lower() == 'network':
-                keywords.add('convolutional neural network')
-                skip_next = True
-
-        # Always include single-word tokens that are not stop words or single letters
         if token.pos_ in ['NOUN', 'PROPN', 'ADJ', 'VERB']:
             if token.text.lower() not in STOP_WORDS and len(token.text) > 1:
                 keywords.add(token.lemma_.lower())
-
-        # Add any important terms (case-sensitive from the list)
-        if token.text.upper() in IMPORTANT_TERMS:
-            keywords.add(token.text.upper())
-
-    # Handle synonyms by checking against the EXPERTISE_SYNONYMS
-    for keyword in list(keywords):
-        for expertise, synonyms in EXPERTISE_SYNONYMS.items():
-            if keyword in synonyms:
-                keywords.add(expertise)
-
-    # Debugging prints
-    print("Extracted keywords:", keywords)
-
+    
     return keywords
-
 
 # Match keywords to dictionary expertise and database expertise
 def match_expertise_from_dictionary(keywords):
     matched_expertise = set()
-    extended_keywords = set(keywords)  # Start with the original keywords
-
+    extended_keywords = set(keywords)
+    
     for expertise, related_keywords in EXPERTISE_DICTIONARY.items():
         for keyword in keywords:
             if keyword in related_keywords:
                 matched_expertise.add(expertise)
-                # Add all related keywords to the extended list
                 extended_keywords.update(related_keywords)
-
+    
     return matched_expertise, extended_keywords
 
+def calculate_semantic_similarity(title, expertise_areas):
+    vectorizer = TfidfVectorizer()
+    tfidf_matrix = vectorizer.fit_transform([title] + expertise_areas)
+    cosine_similarities = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:])
+    
+    # Apply weights based on relevance
+    weights = [1.0] * len(expertise_areas)  # Default weight
+    for i, expertise in enumerate(expertise_areas):
+        if "ai" in title.lower() and "blockchain" in expertise.lower():
+            weights[i] = 0.1  # Lower weight for blockchain in AI titles
+    cosine_similarities = cosine_similarities * weights
+    
+    return cosine_similarities[0]
+
+def filter_relevant_expertise(keywords, matched_expertise):
+    relevant_expertise = set()
+    for expertise in matched_expertise:
+        # Example: Exclude "blockchain" if the title contains "AI"
+        if "ai" in keywords and "blockchain" in expertise.lower():
+            continue  # Skip blockchain for AI titles
+        relevant_expertise.add(expertise)
+    return relevant_expertise
+
+def filter_by_similarity_threshold(ranked_expertise, threshold=0.2):
+    return [(expertise, score) for expertise, score in ranked_expertise if score >= threshold]
 
 def filter_and_rank_faculty(request, keywords):
 
@@ -383,6 +358,18 @@ def filter_and_rank_faculty(request, keywords):
 
 #     return ranked_faculty, list(selected_expertise), adviser_limit_per_faculty
 
+def recommend_expertise(title):
+    keywords = extract_keywords(title)
+    matched_expertise, extended_keywords = match_expertise_from_dictionary(keywords)
+    
+    # Calculate semantic similarity for each expertise area
+    expertise_areas = list(EXPERTISE_DICTIONARY.keys())
+    similarities = calculate_semantic_similarity(title, expertise_areas)
+    
+    # Rank expertise areas by similarity
+    ranked_expertise = sorted(zip(expertise_areas, similarities), key=lambda x: x[1], reverse=True)
+    
+    return ranked_expertise
 
 @login_required
 def recommend_faculty(request):

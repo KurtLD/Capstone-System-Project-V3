@@ -15,12 +15,43 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         @media print {
+            .no-print {
+                display: none !important;
+            }
+
             .page-break {
                 page-break-before: always;
             }
             .table {
                 page-break-before: always;
             }
+        }
+
+        /* Export button styling */
+        .dropdown-menu {
+            min-width: 120px;
+        }
+
+        .dropdown-item {
+            padding: 0.25rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        /* Make sure buttons align properly */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .container1 {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
         }
     </style>
 </head>
@@ -78,6 +109,16 @@
                                                 {% endfor %}
                                             </ul>
                                         </div>
+                                        <!-- for exporting the data excel or pdf -->
+                                        <div class="dropdown">
+                                            <button class="no-print same-size-button dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Export
+                                            </button>
+                                            <ul class="dropdown-menu small-text" aria-labelledby="exportDropdown">
+                                                <li><a class="dropdown-item" href="{% url 'export_schedules_excel' %}">Export to Excel</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'export_schedules_pdf' %}">Export to PDF</a></li>
+                                            </ul>
+                                        </div>
                                     {% endif %}
                                     {% if selected_school_year == last_school_year %}
                                         {% if not grouped_schedules %}
@@ -89,6 +130,8 @@
                                             <button class="no-print same-size-button btn btn-secondary" data-toggle="modal" data-target="#confirmationModal">
                                                 Reset
                                             </button>
+
+                                            
                                         {% endif %}
                                     {% endif %}
                                 </div>
@@ -468,7 +511,7 @@
             dateInput.setAttribute('min', today);
 
             // Disable Saturdays and Sundays
-            dateInput.addEventListener('input', function () {
+            dateInput.addEventListener('change', function () {
                 const selectedDate = new Date(this.value);
 
                 // Get the day of the week (0 for Sunday, 6 for Saturday)

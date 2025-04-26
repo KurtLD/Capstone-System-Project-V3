@@ -138,11 +138,15 @@
                                                                     <select class="form-control" id="status{{ room.id }}" name="status">
                                                                         {% for key, value in form.fields.status.choices %}
                                                                             <option value="{{ key }}"
-                                                                                {% if room.status|stringformat:"d" == key or key|add:"0"|is_in:taken_statuses %}
+                                                                                {% if key|add:"0" == room.status %}
+                                                                                    selected
+                                                                                {% elif key|add:"0"|is_in:taken_statuses and key|add:"0" != room.status %}
                                                                                     class="disabled-option" disabled
                                                                                 {% endif %}>
-                                                                                {% if room.status|stringformat:"d" == key or key|add:"0"|is_in:taken_statuses %}
-                                                                                    {{ value }} <i>(Not Available)</i>
+                                                                                {% if key|add:"0" == room.status %}
+                                                                                    {{ value }} (Current)
+                                                                                {% elif key|add:"0"|is_in:taken_statuses and key|add:"0" != room.status %}
+                                                                                    {{ value }} (Not Available)
                                                                                 {% else %}
                                                                                     {{ value }}
                                                                                 {% endif %}

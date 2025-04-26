@@ -209,6 +209,9 @@ urlpatterns = [
     path('reassign/<int:schedule_id>/', scheduler_views.reassign, name='reassign'),
     path('faculty-tally/', scheduler_views.faculty_tally_view, name='faculty_tally'),
     path('reset-schedule/', scheduler_views.reset_schedule, name='reset_schedule'),
+    # for exporting
+    path('export/excel/', scheduler_views.export_schedules_excel, name='export_schedules_excel'),
+    path('export/pdf/', scheduler_views.export_schedules_pdf, name='export_schedules_pdf'),
     
     # Pre-oral defense schedule related URL patterns
     path('checker2/', scheduler_views.checker2, name='checker2'),

@@ -68,6 +68,31 @@ logger = logging.getLogger(__name__)
 
 from django.db.models import Count, Case, When, Value, IntegerField, Subquery, OuterRef, Exists, BooleanField
 
+# for exporting schedule
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, Border, Side
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib import colors
+import io
+from openpyxl.utils import get_column_letter
+
+# for the exporting of the pdf
+from collections import defaultdict
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak, Image
+from reportlab.lib.units import inch
+from django.http import HttpResponse
+import os
+import io
+from reportlab.lib.enums import TA_CENTER
+from reportlab.pdfgen import canvas
+from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame
+
+
 def room_list(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
@@ -121,27 +146,22 @@ def room_edit(request, pk):
     if request.method == 'POST':
         form = RoomForm(request.POST, instance=room)
         if form.is_valid():
-            room = form.save(commit=False)
-            if room.status == 'None':
-                room.status = 0  # Set status to 0 when 'None' is selected
-            room.save()
+            room = form.save()  # No need for commit=False unless you have other processing
             AuditTrail.objects.create(
                 user=request.user,
                 action=f"Edited room {room.name} with status {room.status}",
                 ip_address=request.META.get('REMOTE_ADDR')
             )
             return redirect('room_list')
-        else:
-            print("Unsuccess")
     else:
         form = RoomForm(instance=room)
     
     return render(request, 'admin/rooms/room_management.html', {
         'rooms': Room.objects.all(),
         'form': form,
-        'taken_statuses': Room.objects.values_list('status', flat=True).distinct()
+        'taken_statuses': Room.objects.exclude(id=room.id).values_list('status', flat=True).distinct()
     })
-
+    
 # Handle room deletion
 def room_delete(request, pk):
     room = get_object_or_404(Room, pk=pk)
@@ -656,6 +676,254 @@ def schedule_list(request):
         'new_group': new_group,
         'new_schedule': new_schedule
         })
+
+def export_schedules_excel(request):
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+    
+    # Fetch all schedules
+    schedules = Schedule.objects.filter(school_year=selected_school_year).order_by('date', 'room')
+    
+    # Create workbook and worksheet
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Title Hearing Schedules"
+    
+    # Add headers with merged cells for title
+    ws.merge_cells('A1:K1')
+    title_cell = ws['A1']
+    title_cell.value = "Title Hearing Schedules"
+    title_cell.font = Font(bold=True, size=14)
+    title_cell.alignment = Alignment(horizontal='center')
+    
+    # Add school year information
+    ws.merge_cells('A2:K2')
+    school_year_cell = ws['A2']
+    school_year_cell.value = f"School Year: {selected_school_year}"
+    school_year_cell.font = Font(bold=True)
+    school_year_cell.alignment = Alignment(horizontal='center')
+    
+    # Add column headers starting from row 3
+    headers = ['Date', 'Day', 'Room', 'Time Slot', 'Section', 'Member 1', 'Member 2', 'Member 3', 
+               'Panelist 1', 'Panelist 2', 'Panelist 3']
+    ws.append(headers)
+    
+    # Style headers
+    bold_font = Font(bold=True)
+    for cell in ws[3]:  # Changed from ws[1] to ws[3] because we added title rows
+        cell.font = bold_font
+        cell.alignment = Alignment(horizontal='center')
+    
+    # Add data
+    for schedule in schedules:
+        ws.append([
+            schedule.date,
+            schedule.day,
+            schedule.room,
+            schedule.slot,
+            schedule.group.section if schedule.group else "N/A",
+            schedule.group.member1 if schedule.group else "N/A",
+            schedule.group.member2 if schedule.group else "N/A",
+            schedule.group.member3 if schedule.group else "N/A",
+            schedule.faculty1.name if schedule.faculty1 else "N/A",
+            schedule.faculty2.name if schedule.faculty2 else "N/A",
+            schedule.faculty3.name if schedule.faculty3 else "N/A",
+        ])
+    
+    # Adjust column widths
+    column_widths = [15, 10, 10, 15, 10, 25, 25, 25, 25, 25, 25]
+    for i, width in enumerate(column_widths, 1):
+        ws.column_dimensions[get_column_letter(i)].width = width
+    
+    # Freeze header row
+    ws.freeze_panes = 'A4'
+    
+    # Create response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="title_hearing_schedules.xlsx"'
+    wb.save(response)
+    
+    return response
+
+def export_schedules_pdf(request):
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+    
+    schedules = Schedule.objects.filter(school_year=selected_school_year).order_by('date', 'room')
+    
+    buffer = io.BytesIO()
+
+    # Define margins
+    left_margin = inch
+    right_margin = inch
+    top_margin = 2 * inch  # Leave space for header
+    bottom_margin = inch
+
+    doc = BaseDocTemplate(
+        buffer,
+        pagesize=letter,
+        leftMargin=left_margin,
+        rightMargin=right_margin,
+        topMargin=top_margin,
+        bottomMargin=bottom_margin
+    )
+
+    frame = Frame(
+        doc.leftMargin,
+        doc.bottomMargin,
+        doc.width,
+        doc.height,
+        id='normal'
+    )
+
+    def draw_header(canvas, doc):
+        canvas.saveState()
+
+        # Load the images
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+        evsu_logo_path = os.path.join(BASE_DIR, 'media', 'EVSU_logo.png')
+        intel_logo_path = os.path.join(BASE_DIR, 'media', 'intel.jpg')
+
+        # Draw EVSU logo on the left
+        if os.path.exists(evsu_logo_path):
+            canvas.drawImage(evsu_logo_path, doc.leftMargin, letter[1] - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
+
+        # Draw Intel logo on the right
+        if os.path.exists(intel_logo_path):
+            canvas.drawImage(intel_logo_path, letter[0] - doc.rightMargin - 1*inch, letter[1] - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
+
+        # Draw centered text
+        header_text = [
+            "Republic of the Philippines",
+            "EASTERN VISAYAS STATE UNIVERSITY",
+            "Tacloban City"
+        ]
+        canvas.setFont("Helvetica", 10)
+        canvas.drawCentredString(letter[0] / 2.0, letter[1] - 0.75 * inch, header_text[0])
+        canvas.setFont("Helvetica-Bold", 12)
+        canvas.drawCentredString(letter[0] / 2.0, letter[1] - 1.0 * inch, header_text[1])
+        canvas.setFont("Helvetica", 10)
+        canvas.drawCentredString(letter[0] / 2.0, letter[1] - 1.25 * inch, header_text[2])
+
+        # Draw line below header
+        canvas.setLineWidth(1)
+        canvas.line(doc.leftMargin, letter[1] - 1.5 * inch, letter[0] - doc.rightMargin, letter[1] - 1.5 * inch)
+
+        # --- Add Footer ---
+        footer_text = f"IT Department  ({selected_school_year})"
+        canvas.setFont("Helvetica-Oblique", 9)
+        canvas.drawRightString(letter[0] - doc.rightMargin, 0.75 * inch, footer_text)
+
+        canvas.restoreState()
+
+    doc.addPageTemplates([PageTemplate(id='header_template', frames=frame, onPage=draw_header)])
+
+    styles = getSampleStyleSheet()
+    normal_style = styles['Normal']
+
+    elements = []
+
+    # Group schedules by day
+    day_groups = defaultdict(list)
+    for schedule in schedules:
+        day_groups[(schedule.day, schedule.date, schedule.room)].append(schedule)
+
+    for idx, ((day, date, room), day_schedules) in enumerate(day_groups.items()):
+        elements.append(Spacer(1, 20))
+
+        # Title Heading
+        elements.append(Paragraph("<b>Title Hearing Schedules</b>", styles['Title']))
+        elements.append(Spacer(1, 6))
+        elements.append(Paragraph(f"<b>{day}</b>", normal_style))
+        elements.append(Paragraph(f"<b>Date: {date}</b>", normal_style))
+        elements.append(Paragraph(f"<b>Room: {room}</b>", normal_style))
+        elements.append(Spacer(1, 12))
+
+        # Table header
+        data = [['TIME', 'SECTION', 'MEMBERS', 'PANELISTS']]
+
+        for schedule in day_schedules:
+            members = "\n".join(filter(None, [
+                getattr(schedule.group, 'member1', 'N/A'),
+                getattr(schedule.group, 'member2', 'N/A'),
+                getattr(schedule.group, 'member3', 'N/A'),
+            ]))
+
+            panelists = "\n".join(filter(None, [
+                getattr(schedule.faculty1, 'name', 'N/A'),
+                getattr(schedule.faculty2, 'name', 'N/A'),
+                getattr(schedule.faculty3, 'name', 'N/A'),
+            ]))
+
+            data.append([
+                schedule.slot,
+                getattr(schedule.group, 'section', 'N/A'),
+                members,
+                panelists
+            ])
+
+            # Add lunch break after 11AM-12PM slot
+            if schedule.slot == "11AM-12PM":
+                data.append([
+                    "12PM-1PM\nLUNCH BREAK",  # Combined time and label
+                    "",  # Empty for section
+                    "",  # Empty for members
+                    ""   # Empty for panelists
+                ])
+
+        # Calculate available width for table (page width - margins)
+        available_width = letter[0] - left_margin - right_margin
+        
+        # Create Table with dynamic column widths
+        table = Table(data, repeatRows=1, hAlign='LEFT', 
+                    colWidths=[
+                        available_width * 0.15,  # Time column (15%)
+                        available_width * 0.15,  # Section column (15%)
+                        available_width * 0.35,  # Members column (35%)
+                        available_width * 0.35   # Panelists column (35%)
+                    ])
+        
+        # Table style with word wrapping
+        # Table style with word wrapping
+        table_style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4472C4')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#D9E1F2')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('WORDWRAP', (0, 0), (-1, -1), True),
+        ])
+        
+        # Find all lunch break rows (they'll have "LUNCH BREAK" in the first column)
+        for i, row in enumerate(data):
+            if "LUNCH BREAK" in str(row[0]):
+                # Merge all columns for this row
+                table_style.add('SPAN', (0, i), (-1, i))
+                # Apply special styling
+                table_style.add('BACKGROUND', (0, i), (-1, i), colors.HexColor('#FFC000'))
+                table_style.add('FONTNAME', (0, i), (-1, i), 'Helvetica-Bold')
+                # Center the text in the merged cell
+                table_style.add('ALIGN', (0, i), (-1, i), 'CENTER')
+        
+        table.setStyle(table_style)
+        
+        
+
+        elements.append(table)
+
+        # Page break after each day's schedule except the last
+        if idx < len(day_groups) - 1:
+            elements.append(PageBreak())
+
+    doc.build(elements)
+
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type='application/pdf', headers={'Content-Disposition': 'attachment; filename="title_hearing_schedules.pdf"'})
 
 def reschedule(request, schedule_id):
     # Get the last added school year in the database

@@ -12,20 +12,18 @@ class RoomForm(forms.ModelForm):
         instance = kwargs.get('instance')
         super(RoomForm, self).__init__(*args, **kwargs)
 
-        # Get the count of rooms
         room_count = Room.objects.count()
-
-        # Start with the 'None' option
-        # status_choices = [(0, 'None')]
         status_choices = []
 
-        # Generate status options based on room count
-        for i in range(1, room_count + 2):  # room_count + 1 to include the next ordinal
+        for i in range(1, room_count + 2):
             status_label = self.get_ordinal(i)
             status_choices.append((i, status_label))
 
-        # Update the status choices
         self.fields['status'].choices = status_choices
+
+        # If editing, set initial status to the instance's status
+        if instance:
+            self.initial['status'] = instance.status
 
     def get_ordinal(self, n):
         """Return ordinal representation of a number, e.g., 1 -> '1st', 2 -> '2nd', etc."""
@@ -87,14 +85,17 @@ class GroupInfoTHForm(forms.ModelForm):
     # Repeat for member3
     member3_last_name = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'required': 'required'})
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
     )
     member3_first_name = forms.CharField(
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name', 'required': 'required'})
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
     )
     member3_middle_initial = forms.CharField(
         max_length=1,
+        required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
     )
 
@@ -150,14 +151,17 @@ class GroupInfoPODForm(forms.ModelForm):
     
     member3_last_name = forms.CharField(
         max_length=100,
+        required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'})
     )
     member3_first_name = forms.CharField(
         max_length=100,
+        required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'})
     )
     member3_middle_initial = forms.CharField(
         max_length=1,
+        required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'MI'})
     )
 
