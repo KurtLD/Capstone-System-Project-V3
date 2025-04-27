@@ -92,7 +92,7 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.pdfgen import canvas
 from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame
 from reportlab.pdfbase.pdfmetrics import stringWidth
-
+from reportlab.platypus import KeepTogether
 
 def room_list(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
@@ -683,7 +683,7 @@ def export_schedules_excel(request):
     selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
     
     # Fetch all schedules
-    schedules = Schedule.objects.filter(school_year=selected_school_year).order_by('date', 'room')
+    schedules = Schedule.objects.filter(school_year=selected_school_year, has_been_rescheduled=False).order_by('date', 'room')
     
     # Create workbook and worksheet
     wb = Workbook()
@@ -833,18 +833,38 @@ def export_schedules_pdf(request):
     for idx, ((day, date, room), day_schedules) in enumerate(day_groups.items()):
         elements.append(Spacer(1, 20))
 
-        # Title Heading
-        elements.append(Paragraph("<b>Title Hearing Schedules</b>", styles['Title']))
-        elements.append(Spacer(1, 6))
-        elements.append(Paragraph(f"<b>{day}</b>", normal_style))
-        elements.append(Paragraph(f"<b>Date: {date}</b>", normal_style))
-        elements.append(Paragraph(f"<b>Room: {room}</b>", normal_style))
-        elements.append(Spacer(1, 12))
+        # Wrap the header and table in a KeepTogether block
+        header_and_table = []
+
+        # Add the header elements
+        header_and_table.append(Paragraph("<b>Title Hearing Schedules</b>", styles['Title']))
+        header_and_table.append(Spacer(1, 6))
+        header_and_table.append(Paragraph(f"<b>{day}</b>", normal_style))
+        header_and_table.append(Paragraph(f"<b>Date: {date}</b>", normal_style))
+        header_and_table.append(Paragraph(f"<b>Room: {room}</b>", normal_style))
+        header_and_table.append(Spacer(1, 12))
 
         # Table header
         data = [['TIME', 'SECTION', 'MEMBERS', 'PANELISTS']]
 
+        row_idx = 1  # Start after header row (header is at index 0)
+
+        special_rows = []  # For rescheduled rows
+        new_sched_rows = []  # For new schedule maroon highlight
+
         for schedule in day_schedules:
+            if schedule.has_been_rescheduled:
+                members = "\n".join(filter(None, [
+                getattr(schedule.group, 'member1', 'N/A'),
+                getattr(schedule.group, 'member2', 'N/A'),
+                getattr(schedule.group, 'member3', 'N/A'),
+                ]))
+
+                data.append([schedule.slot, "Has Been Rescheduled", "", ""])  # Fill 6 columns
+                special_rows.append(row_idx)
+                row_idx += 1
+                continue  # Skip normal display if rescheduled
+
             members = "\n".join(filter(None, [
                 getattr(schedule.group, 'member1', 'N/A'),
                 getattr(schedule.group, 'member2', 'N/A'),
@@ -864,6 +884,10 @@ def export_schedules_pdf(request):
                 panelists
             ])
 
+            # Track new schedules for maroon color
+            if schedule.new_sched and not schedule.has_been_rescheduled:
+                new_sched_rows.append(row_idx)
+
             # Add lunch break after 11AM-12PM slot
             if schedule.slot == "11AM-12PM":
                 data.append([
@@ -872,6 +896,8 @@ def export_schedules_pdf(request):
                     "",  # Empty for members
                     ""   # Empty for panelists
                 ])
+                row_idx += 1
+            row_idx += 1
 
         # Calculate available width for table (page width - margins)
         available_width = letter[0] - left_margin - right_margin
@@ -911,11 +937,28 @@ def export_schedules_pdf(request):
                 # Center the text in the merged cell
                 table_style.add('ALIGN', (0, i), (-1, i), 'CENTER')
         
+        # Style rescheduled rows
+        for idx in special_rows:
+            table_style.add('SPAN', (1, idx), (-1, idx))  # Merge all columns
+            table_style.add('BACKGROUND', (0, idx), (-1, idx), colors.HexColor('#800000'))  # Maroon
+            table_style.add('FONTNAME', (0, idx), (-1, idx), 'Helvetica-Bold')
+            table_style.add('TEXTCOLOR', (0, idx), (-1, idx), colors.whitesmoke)
+            table_style.add('ALIGN', (0, idx), (-1, idx), 'CENTER')
+
+        # Style new schedules (maroon)
+        for idx in new_sched_rows:
+            table_style.add('BACKGROUND', (0, idx), (-1, idx), colors.HexColor('#7ef865'))  # light green
+            # table_style.add('TEXTCOLOR', (0, idx), (-1, idx), colors.whitesmoke)  # White text
+
         table.setStyle(table_style)
         
-        
 
-        elements.append(table)
+        # Add the table
+        header_and_table.append(table)
+
+        # Wrap the header and table in KeepTogether
+        elements.append(KeepTogether(header_and_table))
+
 
         # Page break after each day's schedule except the last
         if idx < len(day_groups) - 1:
@@ -2633,13 +2676,15 @@ def export_schedules_pdf_pod(request):
     for idx, ((day, date, room), day_schedules) in enumerate(day_groups.items()):
         elements.append(Spacer(1, 20))
 
-        # Title Heading
-        elements.append(Paragraph("<b>Pre-Oral Schedules</b>", styles['Title']))
-        elements.append(Spacer(1, 6))
-        elements.append(Paragraph(f"<b>{day}</b>", normal_style))
-        elements.append(Paragraph(f"<b>Date: {date}</b>", normal_style))
-        elements.append(Paragraph(f"<b>Room: {room}</b>", normal_style))
-        elements.append(Spacer(1, 12))
+        header_and_table = []
+
+        # Add the header elements
+        header_and_table.append(Paragraph("<b>Pre-Oral Schedules</b>", styles['Title']))
+        header_and_table.append(Spacer(1, 6))
+        header_and_table.append(Paragraph(f"<b>{day}</b>", normal_style))
+        header_and_table.append(Paragraph(f"<b>Date: {date}</b>", normal_style))
+        header_and_table.append(Paragraph(f"<b>Room: {room}</b>", normal_style))
+        header_and_table.append(Spacer(1, 12))
 
         # Table header
         data = [['TIME', 'MEMBERS', 'TITLE', 'SECTION', 'ADVISER', 'PANELISTS']]
@@ -2768,10 +2813,12 @@ def export_schedules_pdf_pod(request):
         
         table.setStyle(table_style)
         
-        
-        
+        # Add the table
+        header_and_table.append(table)
 
-        elements.append(table)
+        # Wrap the header and table in KeepTogether
+        elements.append(KeepTogether(header_and_table))
+
 
         # Page break after each day's schedule except the last
         if idx < len(day_groups) - 1:
