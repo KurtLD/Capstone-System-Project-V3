@@ -860,7 +860,7 @@ def export_schedules_pdf(request):
                 getattr(schedule.group, 'member3', 'N/A'),
                 ]))
 
-                data.append([schedule.slot, "Has Been Rescheduled", "", ""])  # Fill 6 columns
+                data.append([f"{schedule.slot}\nHas Been Rescheduled", "", "", ""])  # Fill 6 columns
                 special_rows.append(row_idx)
                 row_idx += 1
                 continue  # Skip normal display if rescheduled
@@ -939,7 +939,7 @@ def export_schedules_pdf(request):
         
         # Style rescheduled rows
         for idx in special_rows:
-            table_style.add('SPAN', (1, idx), (-1, idx))  # Merge all columns
+            table_style.add('SPAN', (0, idx), (-1, idx))  # Merge all columns
             table_style.add('BACKGROUND', (0, idx), (-1, idx), colors.HexColor('#800000'))  # Maroon
             table_style.add('FONTNAME', (0, idx), (-1, idx), 'Helvetica-Bold')
             table_style.add('TEXTCOLOR', (0, idx), (-1, idx), colors.whitesmoke)
