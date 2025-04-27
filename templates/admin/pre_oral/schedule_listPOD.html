@@ -72,7 +72,7 @@
                                 {% endif %}
                                 <div class="button-group no-print">
                                     {% if grouped_schedulesPOD %}
-                                        <div class="dropdown">
+                                        <!-- <div class="dropdown">
                                             <button class="no-print same-size-button dropdown-toggle" type="button" id="printDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Print
                                             </button>
@@ -80,6 +80,16 @@
                                                 {% for day in grouped_schedulesPOD|unique_days %}
                                                     <li><a class="dropdown-item" href="#" onclick="printPage('{{ day }}')">{{ day }}</a></li>
                                                 {% endfor %}
+                                            </ul>
+                                        </div> -->
+                                        <!-- for exporting the data excel or pdf -->
+                                        <div class="dropdown">
+                                            <button class="no-print same-size-button dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Export
+                                            </button>
+                                            <ul class="dropdown-menu small-text" aria-labelledby="exportDropdown">
+                                                <li><a class="dropdown-item" href="{% url 'export_schedules_excel_pod' %}">Export to Excel</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'export_schedules_pdf_pod' %}">Export to PDF</a></li>
                                             </ul>
                                         </div>
                                     {% endif %}

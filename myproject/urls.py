@@ -222,6 +222,9 @@ urlpatterns = [
     path('reassignPOD/<int:schedule_id>/', scheduler_views.reassignPOD, name='reassignPOD'),
     path('faculty-tally-pre-oral/', scheduler_views.faculty_tally_viewPOD, name='faculty_tallyPOD'),
     path('reset-schedulePOD/', scheduler_views.reset_schedulePOD, name='reset_schedulePOD'),
+    # for exporting
+    path('export/excel/pod', scheduler_views.export_schedules_excel_pod, name='export_schedules_excel_pod'),
+    path('export/pdf/pod', scheduler_views.export_schedules_pdf_pod, name='export_schedules_pdf_pod'),
 
     path('group/list/', scheduler_views.group_infoPOD, name='group_listPOD'),
     path('group/update/<int:group_id>/', scheduler_views.update_groupPOD, name='update_groupPOD'),

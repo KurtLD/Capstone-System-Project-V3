@@ -99,7 +99,7 @@
                                 {% endif %}
                                 <div class="button-group no-print">
                                     {% if grouped_schedules %}
-                                        <div class="dropdown">
+                                        <!-- <div class="dropdown">
                                             <button class="no-print same-size-button dropdown-toggle" type="button" id="printDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Print
                                             </button>
@@ -108,7 +108,7 @@
                                                     <li><a class="dropdown-item" href="#" onclick="printPage('{{ day }}')">{{ day }}</a></li>
                                                 {% endfor %}
                                             </ul>
-                                        </div>
+                                        </div> -->
                                         <!-- for exporting the data excel or pdf -->
                                         <div class="dropdown">
                                             <button class="no-print same-size-button dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -339,7 +339,7 @@
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
-                float: right; !important/* Align the button to the left */
+                float: right !important/* Align the button to the left */
             }
         </style>
 
