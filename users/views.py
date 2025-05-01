@@ -3329,6 +3329,7 @@ def adviser_record_detail(request, adviser_id):
     criteria_list = PreOral_EvaluationSection.objects.filter(school_year=selected_school_year).annotate(total_criteria_percentage=Sum('criteria__percentage'))
     criteria_percentage = PreOral_Criteria.objects.filter(school_year=selected_school_year)
     total_points = sum(criteria.percentage for criteria in criteria_percentage)
+    total_points = int(total_points)  # Convert to integer if needed
     
     print("group_members: ", group_members)
     if not grades.exists():
@@ -3388,9 +3389,10 @@ def adviser_record_detail(request, adviser_id):
         print('the grade is 0')
     print('member grade3', average_grade3)
 
-    member1 = groups.first().member1 if groups.exists() else None
-    member2 = groups.first().member2 if groups.exists() else None
-    member3 = groups.first().member3 if groups.exists() else None
+    # member1 = groups.first().member1 if groups.exists() else None
+    # print('member1: ', member1)
+    # member2 = groups.first().member2 if groups.exists() else None
+    # member3 = groups.first().member3 if groups.exists() else None
 
     # Aggregate data
     summary_totals = {}

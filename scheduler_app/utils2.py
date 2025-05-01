@@ -322,157 +322,323 @@ def validate_lead_faculty(panel):
     return sorted_panel
 
 
+# def generate_schedulePOD(request, start_date):
+#     try:
+#         logger.info("Starting schedule generation...")
+
+#         # current_school_year = SchoolYear.get_active_school_year()
+#         selected_school_year_id = request.session.get('selected_school_year_id')
+#         # get the last school year added to the db
+#         last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#         # Get the selected school year from session or fallback to the active school year
+#         selected_school_year = ''
+#         if not selected_school_year_id:
+#             selected_school_year = last_school_year
+#             request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#         else:
+#             # Retrieve the selected school year based on the session
+#             selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#         # Clear existing schedules
+#         SchedulePOD.objects.filter(school_year=selected_school_year).delete()
+#         logger.debug("Existing schedules cleared.")
+
+#         groups = list(GroupInfoPOD.objects.filter(school_year=selected_school_year))
+#         random.shuffle(groups)
+#         logger.debug(f"Fetched {len(groups)} groups for scheduling.")
+        
+#         faculties = list(Faculty.objects.filter(is_active=True))
+#         logger.debug(f"Loaded {len(faculties)} active faculties.")
+
+#         # Initialize assignment tracking
+#         faculty_loads = defaultdict(int)  # Track total assignments per faculty
+#         daily_loads = defaultdict(lambda: defaultdict(int))  # Track daily loads to balance within each day
+#         time_slots = ['8AM-9:30AM', '9:30AM-11AM', '12PM-01:30PM', '1:30PM-3PM', '3PM-4:30PM', '4:30PM-5PM', '5PM-6:30PM']
+#         rooms = Room.objects.all().order_by("status")
+
+#         assignments = []
+#         faculty_bookings = defaultdict(lambda: defaultdict(set))  # faculty_id -> day -> slot
+#         conflict_groups = deque(groups)
+
+#         day_offset = 0
+#         actual_day_counter = 0  # Track actual scheduling days
+
+#         while conflict_groups:
+#             # Calculate the current date
+#             current_date = start_date + timedelta(days=day_offset)
+
+#             # Skip weekends
+#             if current_date.weekday() in (5, 6):  # Skip Saturday and Sunday
+#                 day_offset += 1
+#                 continue
+
+#             # Adjust for Monday's first time slot skip
+#             slots_to_schedule = time_slots if current_date.weekday() != 0 else time_slots[1:]
+
+#             assigned_today = False
+
+#             for slot in slots_to_schedule:
+#                 for room in rooms:
+#                     for _ in range(len(conflict_groups)):
+#                         group = conflict_groups.popleft()
+#                         excluded_faculty1 = {group.capstone_teacher}
+#                         excluded_faculty2 = {group.adviser}
+#                         members_pod = group.get_members()
+
+#                         assigned_faculty = remove_faculties(
+#                             excluded_faculty1, excluded_faculty2, members_pod, 
+#                             faculty_bookings, current_date.strftime('%B %d, %Y'), slot, faculty_loads
+#                         )
+
+#                         # print("assigned_faculty: ", assigned_faculty)
+
+#                         # Ensure at least one faculty has a master's degree
+#                         if not any(faculty.has_master_degree for faculty in assigned_faculty):
+#                             logger.warning(f"Group {group} cannot be assigned due to lack of master's degree.")
+#                             conflict_groups.append(group)
+#                             continue
+
+#                         # Check for duplicate faculty assignments
+#                         if len(set(f.id for f in assigned_faculty)) < 3:
+#                             logger.warning(f"Group {group} cannot be assigned due to duplicate faculty assignments.")
+#                             conflict_groups.append(group)
+#                             continue
+
+#                         # Check for double booking conflicts
+#                         if any(slot in faculty_bookings[faculty.id][current_date.strftime('%B %d, %Y')] for faculty in assigned_faculty) or \
+#                             slot in faculty_bookings[group.adviser.id][current_date.strftime('%B %d, %Y')] or \
+#                             slot in faculty_bookings[group.capstone_teacher.id][current_date.strftime('%B %d, %Y')]:
+#                             conflict_groups.append(group)
+#                             continue
+
+#                         # Assign the group if no conflicts
+#                         for faculty in assigned_faculty:
+#                             faculty_bookings[faculty.id][current_date.strftime('%B %d, %Y')].add(slot)
+#                             faculty_loads[faculty.id] += 1  # Track total assignments
+#                             daily_loads[current_date][faculty.id] += 1  # Track daily assignments
+#                         faculty_bookings[group.adviser.id][current_date.strftime('%B %d, %Y')].add(slot)
+#                         faculty_bookings[group.capstone_teacher.id][current_date.strftime('%B %d, %Y')].add(slot)
+
+#                         assignments.append({
+#                             'group': group,
+#                             'title': group.title,
+#                             'faculties': assigned_faculty,
+#                             'slot': slot,
+#                             'date': current_date.strftime('%B %d, %Y'),
+#                             'room': room,
+#                             'day_label': f"Day {actual_day_counter + 1}"  # Track actual day
+#                         })
+
+#                         logger.debug(f"Assignment created for group {group}: {assignments[-1]}")
+#                         assigned_today = True
+#                         break  # Move to the next room after successful assignment
+
+#                 if len(assignments) >= len(groups):
+#                     break  # Break outer loop if all groups are assigned
+
+#             # Only increment the actual day counter if there were assignments
+#             if assigned_today:
+#                 actual_day_counter += 1
+
+#             # If still conflict groups exist, we need to move to the next day
+#             if conflict_groups:
+#                 day_offset += 1
+#             else:
+#                 break  # Break if all groups are successfully scheduled
+
+#         # Save assignments to the database in a transaction
+#         with transaction.atomic():
+#             logger.info("Starting transaction to save schedules.")
+#             SchedulePOD.objects.bulk_create([
+#                 SchedulePOD(
+#                     group=assignment['group'],
+#                     title=assignment['title'],
+#                     faculty1=assignment['faculties'][0],
+#                     faculty2=assignment['faculties'][1],
+#                     faculty3=assignment['faculties'][2],
+#                     slot=assignment['slot'],
+#                     date=assignment['date'],
+#                     room=assignment['room'],
+#                     adviser=assignment['group'].adviser,
+#                     capstone_teacher=assignment['group'].capstone_teacher,
+#                     day=assignment['day_label'],
+#                     school_year=selected_school_year
+#                 )
+#                 for assignment in assignments
+#             ])
+#             logger.info("Transaction completed successfully.")
+#             # print("Scheduling completed successfully.")
+
+#     except Exception as e:
+#         logger.error(f"An error occurred: {e}")
+#         print(f"An error occurred: {e}")
+
 def generate_schedulePOD(request, start_date):
     try:
-        logger.info("Starting schedule generation...")
+        logger.info("Starting schedule generation with panel/adviser constraints...")
 
-        # current_school_year = SchoolYear.get_active_school_year()
-        selected_school_year_id = request.session.get('selected_school_year_id')
-        # get the last school year added to the db
-        last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+        # Get selected school year or fallback
+        selected_school_year = None
+        if 'selected_school_year_id' in request.session:
+            try:
+                selected_school_year = SchoolYear.objects.get(id=request.session['selected_school_year_id'])
+            except SchoolYear.DoesNotExist:
+                pass
 
-        # Get the selected school year from session or fallback to the active school year
-        selected_school_year = ''
-        if not selected_school_year_id:
-            selected_school_year = last_school_year
-            request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
-        else:
-            # Retrieve the selected school year based on the session
-            selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+        if not selected_school_year:
+            selected_school_year = SchoolYear.get_active_school_year()
+            if selected_school_year:
+                request.session['selected_school_year_id'] = selected_school_year.id
 
-        # Clear existing schedules
+        if not selected_school_year:
+            raise ValueError("No active school year found")
+
+        # Clear previous schedules
         SchedulePOD.objects.filter(school_year=selected_school_year).delete()
-        logger.debug("Existing schedules cleared.")
 
         groups = list(GroupInfoPOD.objects.filter(school_year=selected_school_year))
+        if not groups:
+            raise ValueError("No groups found to schedule")
+
         random.shuffle(groups)
-        logger.debug(f"Fetched {len(groups)} groups for scheduling.")
-        
         faculties = list(Faculty.objects.filter(is_active=True))
-        logger.debug(f"Loaded {len(faculties)} active faculties.")
-
-        # Initialize assignment tracking
-        faculty_loads = defaultdict(int)  # Track total assignments per faculty
-        daily_loads = defaultdict(lambda: defaultdict(int))  # Track daily loads to balance within each day
+        rooms = list(Room.objects.all().order_by("status"))
         time_slots = ['8AM-9:30AM', '9:30AM-11AM', '12PM-01:30PM', '1:30PM-3PM', '3PM-4:30PM', '4:30PM-5PM', '5PM-6:30PM']
-        rooms = Room.objects.all().order_by("status")
 
+        # Tracking
+        faculty_bookings = defaultdict(lambda: defaultdict(set))  # faculty_id -> date -> set of slots
+        faculty_daily_roles = defaultdict(lambda: defaultdict(lambda: {
+            'panel': 0,
+            'adviser': 0,
+            'total': 0
+        }))
+        faculty_loads = defaultdict(int)  # For load balancing
         assignments = []
-        faculty_bookings = defaultdict(lambda: defaultdict(set))  # faculty_id -> day -> slot
         conflict_groups = deque(groups)
 
         day_offset = 0
-        actual_day_counter = 0  # Track actual scheduling days
+        actual_day_counter = 0
 
-        while conflict_groups:
-            # Calculate the current date
+        def is_faculty_eligible(faculty, date_str, slot, role):
+            day_data = faculty_daily_roles[faculty.id][date_str]
+            if day_data['total'] >= 3:
+                return False
+            if role == 'panel' and day_data['panel'] >= 3:
+                return False
+            if slot in faculty_bookings[faculty.id][date_str]:
+                return False
+            return True
+
+        def is_morning_slot(slot):
+            return any(am in slot for am in ['8AM', '9:30AM', '11AM'])
+
+        while conflict_groups and day_offset < 30:
             current_date = start_date + timedelta(days=day_offset)
-
-            # Skip weekends
-            if current_date.weekday() in (5, 6):  # Skip Saturday and Sunday
+            if current_date.weekday() in (5, 6):  # Skip weekends
                 day_offset += 1
                 continue
 
-            # Adjust for Monday's first time slot skip
-            slots_to_schedule = time_slots if current_date.weekday() != 0 else time_slots[1:]
-
+            date_str = current_date.strftime('%B %d, %Y')
+            slots_today = time_slots[1:] if current_date.weekday() == 0 else time_slots
             assigned_today = False
 
-            for slot in slots_to_schedule:
+            for slot in slots_today:
                 for room in rooms:
-                    for _ in range(len(conflict_groups)):
+                    attempts = len(conflict_groups)
+                    while attempts > 0:
+                        attempts -= 1
                         group = conflict_groups.popleft()
-                        excluded_faculty1 = {group.capstone_teacher}
-                        excluded_faculty2 = {group.adviser}
-                        members_pod = group.get_members()
 
-                        assigned_faculty = remove_faculties(
-                            excluded_faculty1, excluded_faculty2, members_pod, 
-                            faculty_bookings, current_date.strftime('%B %d, %Y'), slot, faculty_loads
-                        )
-
-                        # print("assigned_faculty: ", assigned_faculty)
-
-                        # Ensure at least one faculty has a master's degree
-                        if not any(faculty.has_master_degree for faculty in assigned_faculty):
-                            logger.warning(f"Group {group} cannot be assigned due to lack of master's degree.")
+                        # Adviser & Capstone Teacher must be available
+                        if not is_faculty_eligible(group.adviser, date_str, slot, 'adviser') or \
+                           not is_faculty_eligible(group.capstone_teacher, date_str, slot, 'adviser'):
                             conflict_groups.append(group)
                             continue
 
-                        # Check for duplicate faculty assignments
-                        if len(set(f.id for f in assigned_faculty)) < 3:
-                            logger.warning(f"Group {group} cannot be assigned due to duplicate faculty assignments.")
+                        # Exclude advisers and capstone teacher from panel list
+                        excluded_ids = {group.adviser.id, group.capstone_teacher.id}
+                        available_panelists = [
+                            f for f in faculties
+                            if f.id not in excluded_ids and
+                            is_faculty_eligible(f, date_str, slot, 'panel')
+                        ]
+
+                        # Sort to balance faculty loads
+                        available_panelists.sort(key=lambda f: faculty_loads[f.id])
+
+                        # Select 3 eligible panelists, with at least one master's degree holder
+                        selected_panel = []
+                        for f in available_panelists:
+                            if len(selected_panel) < 3:
+                                selected_panel.append(f)
+                            if any(p.has_master_degree for p in selected_panel) and len(selected_panel) == 3:
+                                break
+
+                        if len(selected_panel) < 3 or not any(f.has_master_degree for f in selected_panel):
                             conflict_groups.append(group)
                             continue
 
-                        # Check for double booking conflicts
-                        if any(slot in faculty_bookings[faculty.id][current_date.strftime('%B %d, %Y')] for faculty in assigned_faculty) or \
-                            slot in faculty_bookings[group.adviser.id][current_date.strftime('%B %d, %Y')] or \
-                            slot in faculty_bookings[group.capstone_teacher.id][current_date.strftime('%B %d, %Y')]:
-                            conflict_groups.append(group)
-                            continue
+                        # Update bookings and role tracking
+                        for f in selected_panel:
+                            faculty_bookings[f.id][date_str].add(slot)
+                            faculty_loads[f.id] += 1
+                            faculty_daily_roles[f.id][date_str]['panel'] += 1
+                            faculty_daily_roles[f.id][date_str]['total'] += 1
 
-                        # Assign the group if no conflicts
-                        for faculty in assigned_faculty:
-                            faculty_bookings[faculty.id][current_date.strftime('%B %d, %Y')].add(slot)
-                            faculty_loads[faculty.id] += 1  # Track total assignments
-                            daily_loads[current_date][faculty.id] += 1  # Track daily assignments
-                        faculty_bookings[group.adviser.id][current_date.strftime('%B %d, %Y')].add(slot)
-                        faculty_bookings[group.capstone_teacher.id][current_date.strftime('%B %d, %Y')].add(slot)
+                        for adviser in [group.adviser, group.capstone_teacher]:
+                            faculty_bookings[adviser.id][date_str].add(slot)
+                            faculty_daily_roles[adviser.id][date_str]['adviser'] += 1
+                            faculty_daily_roles[adviser.id][date_str]['total'] += 1
 
                         assignments.append({
                             'group': group,
                             'title': group.title,
-                            'faculties': assigned_faculty,
+                            'faculties': selected_panel,
                             'slot': slot,
-                            'date': current_date.strftime('%B %d, %Y'),
+                            'date': date_str,
                             'room': room,
-                            'day_label': f"Day {actual_day_counter + 1}"  # Track actual day
+                            'day_label': f"Day {actual_day_counter + 1}",
+                            'adviser': group.adviser,
+                            'capstone_teacher': group.capstone_teacher
                         })
 
-                        logger.debug(f"Assignment created for group {group}: {assignments[-1]}")
                         assigned_today = True
-                        break  # Move to the next room after successful assignment
+                        break  # Room is occupied in this slot
 
-                if len(assignments) >= len(groups):
-                    break  # Break outer loop if all groups are assigned
-
-            # Only increment the actual day counter if there were assignments
             if assigned_today:
                 actual_day_counter += 1
+            day_offset += 1
 
-            # If still conflict groups exist, we need to move to the next day
-            if conflict_groups:
-                day_offset += 1
-            else:
-                break  # Break if all groups are successfully scheduled
-
-        # Save assignments to the database in a transaction
-        with transaction.atomic():
-            logger.info("Starting transaction to save schedules.")
-            SchedulePOD.objects.bulk_create([
-                SchedulePOD(
-                    group=assignment['group'],
-                    title=assignment['title'],
-                    faculty1=assignment['faculties'][0],
-                    faculty2=assignment['faculties'][1],
-                    faculty3=assignment['faculties'][2],
-                    slot=assignment['slot'],
-                    date=assignment['date'],
-                    room=assignment['room'],
-                    adviser=assignment['group'].adviser,
-                    capstone_teacher=assignment['group'].capstone_teacher,
-                    day=assignment['day_label'],
-                    school_year=selected_school_year
-                )
-                for assignment in assignments
-            ])
-            logger.info("Transaction completed successfully.")
-            # print("Scheduling completed successfully.")
+        # Save all generated schedules
+        if assignments:
+            with transaction.atomic():
+                SchedulePOD.objects.bulk_create([
+                    SchedulePOD(
+                        group=a['group'],
+                        title=a['title'],
+                        faculty1=a['faculties'][0],
+                        faculty2=a['faculties'][1],
+                        faculty3=a['faculties'][2],
+                        slot=a['slot'],
+                        date=a['date'],
+                        room=a['room'],
+                        adviser=a['adviser'],
+                        capstone_teacher=a['capstone_teacher'],
+                        day=a['day_label'],
+                        school_year=selected_school_year
+                    ) for a in assignments
+                ])
+                logger.info(f"Successfully created {len(assignments)} schedules.")
+                return True
+        else:
+            logger.warning("No schedules were created.")
+            return False
 
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
-        print(f"An error occurred: {e}")
+        logger.error(f"Scheduling failed: {str(e)}", exc_info=True)
+        messages.error(request, f"Scheduling failed: {str(e)}")
+        return False     
 
 def get_faculty_assignmentsPOD():
     """Retrieve a summary of faculty assignments, sorted by teaching experience."""
