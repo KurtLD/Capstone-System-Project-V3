@@ -755,8 +755,8 @@ def export_schedules_pdf(request):
     buffer = io.BytesIO()
 
     # Define margins
-    left_margin = inch
-    right_margin = inch
+    left_margin = 0.5 * inch
+    right_margin = 0.5 * inch
     top_margin = 2 * inch  # Leave space for header
     bottom_margin = inch
 
@@ -906,7 +906,7 @@ def export_schedules_pdf(request):
         table = Table(data, repeatRows=1, hAlign='LEFT', 
                     colWidths=[
                         available_width * 0.15,  # Time column (15%)
-                        available_width * 0.15,  # Section column (15%)
+                        available_width * 0.13,  # Section column (15%)
                         available_width * 0.35,  # Members column (35%)
                         available_width * 0.35   # Panelists column (35%)
                     ])
@@ -2713,11 +2713,27 @@ def export_schedules_pdf_pod(request):
                 wrap_text_every_n_words(getattr(schedule.group, 'member3', 'N/A'), 3),
             ]))
 
-            panelists = "\n".join(filter(None, [
+            # Build panelists list
+            panelist_names = list(filter(None, [
                 wrap_text_every_n_words(getattr(schedule.faculty1, 'name', 'N/A'), 3),
                 wrap_text_every_n_words(getattr(schedule.faculty2, 'name', 'N/A'), 3),
                 wrap_text_every_n_words(getattr(schedule.faculty3, 'name', 'N/A'), 3),
             ]))
+
+            # Apply bold or color to the first panelist
+            if panelist_names:
+                # Highlight first panelist with color (e.g., blue) or bold
+                highlighted_first = f'<b><font color="red">{panelist_names[0]}</font></b>'
+                other_panelists = "<br/>".join(panelist_names[1:])
+                if other_panelists:
+                    panelists = f"{highlighted_first}<br/>{other_panelists}"
+                else:
+                    panelists = highlighted_first
+            else:
+                panelists = "N/A"
+
+            panelists_paragraph = Paragraph(panelists, normal_style)
+
 
             section = getattr(schedule.group, 'section', 'N/A')
             capstone_teacher = getattr(schedule.group, 'capstone_teacher', None)
@@ -2738,7 +2754,7 @@ def export_schedules_pdf_pod(request):
                 wrap_text_every_n_words(schedule.title, 2) if schedule.group else "N/A",
                 section_display,
                 wrap_text_every_n_words(schedule.adviser.name, 2) if schedule.adviser else "N/A",
-                panelists
+                panelists_paragraph
             ])
 
             # Track new schedules for maroon color
@@ -4476,6 +4492,344 @@ def schedule_listMD(request):
         'new_schedule': new_schedule
     })
 
+def export_schedules_excel_md(request):
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+    
+    # Fetch all schedules
+    schedules = ScheduleMD.objects.filter(school_year=selected_school_year, has_been_rescheduled=False).order_by('date', 'room')
+    
+    # Create workbook and worksheet
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Mock Defense Schedules"
+    
+    # Add headers with merged cells for title
+    ws.merge_cells('A1:K1')
+    title_cell = ws['A1']
+    title_cell.value = "Mock Defense Schedules"
+    title_cell.font = Font(bold=True, size=14)
+    title_cell.alignment = Alignment(horizontal='center')
+    
+    # Add school year information
+    ws.merge_cells('A2:M2')
+    school_year_cell = ws['A2']
+    school_year_cell.value = f"School Year: {selected_school_year}"
+    school_year_cell.font = Font(bold=True)
+    school_year_cell.alignment = Alignment(horizontal='center')
+    
+    # Add column headers starting from row 3
+    headers = ['Date', 'Day', 'Room', 'Time Slot', 'Member 1', 'Member 2', 'Member 3', 'Title', 'Section', 
+                'Adviser', 'Panelist 1', 'Panelist 2', 'Panelist 3']
+    ws.append(headers)
+    
+    # Style headers
+    bold_font = Font(bold=True)
+    for cell in ws[3]:  # Changed from ws[1] to ws[3] because we added title rows
+        cell.font = bold_font
+        cell.alignment = Alignment(horizontal='center')
+    
+    # Add data
+    for schedule in schedules:
+        ws.append([
+            schedule.date,
+            schedule.day,
+            schedule.room,
+            schedule.slot,
+            
+            schedule.group.member1 if schedule.group else "N/A",
+            schedule.group.member2 if schedule.group else "N/A",
+            schedule.group.member3 if schedule.group else "N/A",
+
+            schedule.title if schedule.group else "N/A",
+            schedule.group.section if schedule.group else "N/A",
+            schedule.adviser.name if schedule.adviser else "N/A",
+
+            schedule.faculty1.name if schedule.faculty1 else "N/A",
+            schedule.faculty2.name if schedule.faculty2 else "N/A",
+            schedule.faculty3.name if schedule.faculty3 else "N/A",
+        ])
+    
+    # Adjust column widths
+    column_widths = [15, 10, 10, 15, 10, 25, 25, 25, 25, 25, 25]
+    for i, width in enumerate(column_widths, 1):
+        ws.column_dimensions[get_column_letter(i)].width = width
+    
+    # Freeze header row
+    ws.freeze_panes = 'A4'
+    
+    # Create response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="mock_defense_schedules.xlsx"'
+    wb.save(response)
+    
+    return response
+
+def export_schedules_pdf_md(request):
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+    
+    schedules = ScheduleMD.objects.filter(school_year=selected_school_year).order_by('date', 'room')
+    
+    buffer = io.BytesIO()
+
+    # Define margins
+    left_margin = 0.3 * inch
+    right_margin = 0.3 * inch
+    top_margin = 2 * inch  # Leave space for header
+    bottom_margin = inch
+
+    doc = BaseDocTemplate(
+        buffer,
+        pagesize=legal,
+        leftMargin=left_margin,
+        rightMargin=right_margin,
+        topMargin=top_margin,
+        bottomMargin=bottom_margin
+    )
+
+    frame = Frame(
+        doc.leftMargin,
+        doc.bottomMargin,
+        doc.width,
+        doc.height,
+        id='normal'
+    )
+
+    def draw_header(canvas, doc):
+        canvas.saveState()
+        page_width, page_height = doc.pagesize
+
+        # Load the images
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+        evsu_logo_path = os.path.join(BASE_DIR, 'media', 'EVSU_logo.png')
+        intel_logo_path = os.path.join(BASE_DIR, 'media', 'intel.jpg')
+
+        # Draw EVSU logo on the left
+        if os.path.exists(evsu_logo_path):
+            canvas.drawImage(evsu_logo_path, doc.leftMargin, page_height - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
+
+        # Draw Intel logo on the right
+        if os.path.exists(intel_logo_path):
+            canvas.drawImage(intel_logo_path, page_width - doc.rightMargin - 1*inch, page_height - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
+
+        # Draw centered text
+        header_text = [
+            "Republic of the Philippines",
+            "EASTERN VISAYAS STATE UNIVERSITY",
+            "Tacloban City"
+        ]
+        # Centered text
+        canvas.setFont("Helvetica", 10)
+        canvas.drawCentredString(page_width / 2.0, page_height - 0.75 * inch, header_text[0])
+        canvas.setFont("Helvetica-Bold", 12)
+        canvas.drawCentredString(page_width / 2.0, page_height - 1.0 * inch, header_text[1])
+        canvas.setFont("Helvetica", 10)
+        canvas.drawCentredString(page_width / 2.0, page_height - 1.25 * inch, header_text[2])
+
+        # Draw line below header
+        canvas.setLineWidth(1)
+        canvas.line(doc.leftMargin, page_height - 1.5 * inch, page_width - doc.rightMargin, page_height - 1.5 * inch)
+
+        # --- Add Footer ---
+        footer_text = f"IT Department  ({selected_school_year})"
+        canvas.setFont("Helvetica-Oblique", 9)
+        canvas.drawRightString(page_width - doc.rightMargin, 0.75 * inch, footer_text)
+
+        canvas.restoreState()
+    
+    # for spliting the title into multiple lines
+    def wrap_text_every_n_words(text, n):
+        words = text.split()
+        lines = [' '.join(words[i:i+n]) for i in range(0, len(words), n)]
+        return '\n'.join(lines)
+
+    doc.addPageTemplates([PageTemplate(id='header_template', frames=frame, onPage=draw_header)])
+
+    styles = getSampleStyleSheet()
+    normal_style = styles['Normal']
+
+    elements = []
+
+    # Group schedules by day
+    day_groups = defaultdict(list)
+    for schedule in schedules:
+        day_groups[(schedule.day, schedule.date, schedule.room)].append(schedule)
+
+    for idx, ((day, date, room), day_schedules) in enumerate(day_groups.items()):
+        elements.append(Spacer(1, 20))
+
+        header_and_table = []
+
+        # Add the header elements
+        header_and_table.append(Paragraph("<b>Mock Defense Schedules</b>", styles['Title']))
+        header_and_table.append(Spacer(1, 6))
+        header_and_table.append(Paragraph(f"<b>{day}</b>", normal_style))
+        header_and_table.append(Paragraph(f"<b>Date: {date}</b>", normal_style))
+        header_and_table.append(Paragraph(f"<b>Room: {room}</b>", normal_style))
+        header_and_table.append(Spacer(1, 12))
+
+        # Table header
+        data = [['TIME', 'MEMBERS', 'TITLE', 'SECTION', 'ADVISER', 'PANELISTS']]
+
+        row_idx = 1  # Start after header row (header is at index 0)
+
+        special_rows = []  # For rescheduled rows
+        new_sched_rows = []  # For new schedule maroon highlight
+
+        for schedule in day_schedules:
+            if schedule.has_been_rescheduled:
+                members = "\n".join(filter(None, [
+                wrap_text_every_n_words(getattr(schedule.group, 'member1', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.group, 'member2', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.group, 'member3', 'N/A'), 3),
+                ]))
+
+                data.append([schedule.slot, members, "Has Been Rescheduled", "", "", ""])  # Fill 6 columns
+                special_rows.append(row_idx)
+                row_idx += 1
+                continue  # Skip normal display if rescheduled
+
+            members = "\n".join(filter(None, [
+                wrap_text_every_n_words(getattr(schedule.group, 'member1', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.group, 'member2', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.group, 'member3', 'N/A'), 3),
+            ]))
+
+            # Build panelists list
+            panelist_names = list(filter(None, [
+                wrap_text_every_n_words(getattr(schedule.faculty1, 'name', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.faculty2, 'name', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.faculty3, 'name', 'N/A'), 3),
+            ]))
+
+            # Apply bold or color to the first panelist
+            if panelist_names:
+                # Highlight first panelist with color (e.g., blue) or bold
+                highlighted_first = f'<b><font color="red">{panelist_names[0]}</font></b>'
+                other_panelists = "<br/>".join(panelist_names[1:])
+                if other_panelists:
+                    panelists = f"{highlighted_first}<br/>{other_panelists}"
+                else:
+                    panelists = highlighted_first
+            else:
+                panelists = "N/A"
+
+            panelists_paragraph = Paragraph(panelists, normal_style)
+
+
+            section = getattr(schedule.group, 'section', 'N/A')
+            capstone_teacher = getattr(schedule.group, 'capstone_teacher', None)
+
+            if capstone_teacher:
+                names = capstone_teacher.name.strip().split()
+                if len(names) >= 2:
+                    short_name = f"{names[0][0]}. {names[-1]}"
+                else:
+                    short_name = names[0]
+                section_display = f"{section}\n({short_name})"
+            else:
+                section_display = section
+
+            data.append([
+                schedule.slot,
+                members,
+                wrap_text_every_n_words(schedule.title, 2) if schedule.group else "N/A",
+                section_display,
+                wrap_text_every_n_words(schedule.adviser.name, 2) if schedule.adviser else "N/A",
+                panelists_paragraph
+            ])
+
+            # Track new schedules for maroon color
+            if schedule.new_sched and not schedule.has_been_rescheduled:
+                new_sched_rows.append(row_idx)
+
+            # Add lunch break
+            if schedule.slot == "9:30AM-11AM":
+                data.append([
+                    "11PM-12PM\nLUNCH BREAK", "", "", "", "", ""
+                ])
+                row_idx += 1
+
+            row_idx += 1
+
+        # Calculate available width for table (page width - margins)
+        available_width = letter[0] - left_margin - right_margin
+
+        
+        
+        # Create Table with dynamic column widths
+        table = Table(data, repeatRows=1, hAlign='LEFT', 
+                    colWidths=[
+                        available_width * 0.12,  # TIME
+                        available_width * 0.22,  # MEMBERS
+                        available_width * 0.24,  # TITLE
+                        available_width * 0.10,  # SECTION
+                        available_width * 0.13,  # ADVISER
+                        available_width * 0.17,  # PANELISTS
+                    ])
+        
+        # Table style with word wrapping
+        table_style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4472C4')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#D9E1F2')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('WORDWRAP', (0, 0), (-1, -1), True),
+        ])
+
+        
+
+        
+        # Find all lunch break rows (they'll have "LUNCH BREAK" in the first column)
+        for i, row in enumerate(data):
+            if "LUNCH BREAK" in str(row[0]):
+                # Merge all columns for this row
+                table_style.add('SPAN', (0, i), (-1, i))
+                # Apply special styling
+                table_style.add('BACKGROUND', (0, i), (-1, i), colors.HexColor('#FFC000'))
+                table_style.add('FONTNAME', (0, i), (-1, i), 'Helvetica-Bold')
+                # Center the text in the merged cell
+                table_style.add('ALIGN', (0, i), (-1, i), 'CENTER')
+
+        # Style rescheduled rows
+        for idx in special_rows:
+            table_style.add('SPAN', (2, idx), (-1, idx))  # Merge all columns
+            table_style.add('BACKGROUND', (0, idx), (-1, idx), colors.HexColor('#800000'))  # Maroon
+            table_style.add('FONTNAME', (0, idx), (-1, idx), 'Helvetica-Bold')
+            table_style.add('TEXTCOLOR', (0, idx), (-1, idx), colors.whitesmoke)
+            table_style.add('ALIGN', (0, idx), (-1, idx), 'CENTER')
+
+        # Style new schedules (maroon)
+        for idx in new_sched_rows:
+            table_style.add('BACKGROUND', (0, idx), (-1, idx), colors.HexColor('#7ef865'))  # light green
+            # table_style.add('TEXTCOLOR', (0, idx), (-1, idx), colors.whitesmoke)  # White text
+        
+        table.setStyle(table_style)
+        
+        # Add the table
+        header_and_table.append(table)
+
+        # Wrap the header and table in KeepTogether
+        elements.append(KeepTogether(header_and_table))
+
+
+        # Page break after each day's schedule except the last
+        if idx < len(day_groups) - 1:
+            elements.append(PageBreak())
+
+    doc.build(elements)
+
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type='application/pdf', headers={'Content-Disposition': 'attachment; filename="mock_defense_schedules.pdf"'})
+
+
 # def rescheduleMD(request, scheduleMD_id):
 #     # Get the last added school year in the database
 #     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
@@ -5910,6 +6264,344 @@ def schedule_listFD(request):
         'new_group': new_group,
         'new_schedule': new_schedule
     })
+
+def export_schedules_excel_fd(request):
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+    
+    # Fetch all schedules
+    schedules = ScheduleMD.objects.filter(school_year=selected_school_year, has_been_rescheduled=False).order_by('date', 'room')
+    
+    # Create workbook and worksheet
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Pre-Oral Schedules"
+    
+    # Add headers with merged cells for title
+    ws.merge_cells('A1:K1')
+    title_cell = ws['A1']
+    title_cell.value = "Final Defense Schedules"
+    title_cell.font = Font(bold=True, size=14)
+    title_cell.alignment = Alignment(horizontal='center')
+    
+    # Add school year information
+    ws.merge_cells('A2:M2')
+    school_year_cell = ws['A2']
+    school_year_cell.value = f"School Year: {selected_school_year}"
+    school_year_cell.font = Font(bold=True)
+    school_year_cell.alignment = Alignment(horizontal='center')
+    
+    # Add column headers starting from row 3
+    headers = ['Date', 'Day', 'Room', 'Time Slot', 'Member 1', 'Member 2', 'Member 3', 'Title', 'Section', 
+                'Adviser', 'Panelist 1', 'Panelist 2', 'Panelist 3']
+    ws.append(headers)
+    
+    # Style headers
+    bold_font = Font(bold=True)
+    for cell in ws[3]:  # Changed from ws[1] to ws[3] because we added title rows
+        cell.font = bold_font
+        cell.alignment = Alignment(horizontal='center')
+    
+    # Add data
+    for schedule in schedules:
+        ws.append([
+            schedule.date,
+            schedule.day,
+            schedule.room,
+            schedule.slot,
+            
+            schedule.group.member1 if schedule.group else "N/A",
+            schedule.group.member2 if schedule.group else "N/A",
+            schedule.group.member3 if schedule.group else "N/A",
+
+            schedule.title if schedule.group else "N/A",
+            schedule.group.section if schedule.group else "N/A",
+            schedule.adviser.name if schedule.adviser else "N/A",
+
+            schedule.faculty1.name if schedule.faculty1 else "N/A",
+            schedule.faculty2.name if schedule.faculty2 else "N/A",
+            schedule.faculty3.name if schedule.faculty3 else "N/A",
+        ])
+    
+    # Adjust column widths
+    column_widths = [15, 10, 10, 15, 10, 25, 25, 25, 25, 25, 25]
+    for i, width in enumerate(column_widths, 1):
+        ws.column_dimensions[get_column_letter(i)].width = width
+    
+    # Freeze header row
+    ws.freeze_panes = 'A4'
+    
+    # Create response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="final_defense_schedules.xlsx"'
+    wb.save(response)
+    
+    return response
+
+def export_schedules_pdf_fd(request):
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+    
+    schedules = ScheduleFD.objects.filter(school_year=selected_school_year).order_by('date', 'room')
+    
+    buffer = io.BytesIO()
+
+    # Define margins
+    left_margin = 0.3 * inch
+    right_margin = 0.3 * inch
+    top_margin = 2 * inch  # Leave space for header
+    bottom_margin = 2 * inch
+
+    doc = BaseDocTemplate(
+        buffer,
+        pagesize=legal,
+        leftMargin=left_margin,
+        rightMargin=right_margin,
+        topMargin=top_margin,
+        bottomMargin=bottom_margin
+    )
+
+    frame = Frame(
+        doc.leftMargin,
+        doc.bottomMargin,
+        doc.width,
+        doc.height,
+        id='normal'
+    )
+
+    def draw_header(canvas, doc):
+        canvas.saveState()
+        page_width, page_height = doc.pagesize
+
+        # Load the images
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+        evsu_logo_path = os.path.join(BASE_DIR, 'media', 'EVSU_logo.png')
+        intel_logo_path = os.path.join(BASE_DIR, 'media', 'intel.jpg')
+
+        # Draw EVSU logo on the left
+        if os.path.exists(evsu_logo_path):
+            canvas.drawImage(evsu_logo_path, doc.leftMargin, page_height - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
+
+        # Draw Intel logo on the right
+        if os.path.exists(intel_logo_path):
+            canvas.drawImage(intel_logo_path, page_width - doc.rightMargin - 1*inch, page_height - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
+
+        # Draw centered text
+        header_text = [
+            "Republic of the Philippines",
+            "EASTERN VISAYAS STATE UNIVERSITY",
+            "Tacloban City"
+        ]
+        # Centered text
+        canvas.setFont("Helvetica", 10)
+        canvas.drawCentredString(page_width / 2.0, page_height - 0.75 * inch, header_text[0])
+        canvas.setFont("Helvetica-Bold", 12)
+        canvas.drawCentredString(page_width / 2.0, page_height - 1.0 * inch, header_text[1])
+        canvas.setFont("Helvetica", 10)
+        canvas.drawCentredString(page_width / 2.0, page_height - 1.25 * inch, header_text[2])
+
+        # Draw line below header
+        canvas.setLineWidth(1)
+        canvas.line(doc.leftMargin, page_height - 1.5 * inch, page_width - doc.rightMargin, page_height - 1.5 * inch)
+
+        # --- Add Footer ---
+        footer_text = f"IT Department  ({selected_school_year})"
+        canvas.setFont("Helvetica-Oblique", 9)
+        canvas.drawRightString(page_width - doc.rightMargin, 0.75 * inch, footer_text)
+
+        canvas.restoreState()
+    
+    # for spliting the title into multiple lines
+    def wrap_text_every_n_words(text, n):
+        words = text.split()
+        lines = [' '.join(words[i:i+n]) for i in range(0, len(words), n)]
+        return '\n'.join(lines)
+
+    doc.addPageTemplates([PageTemplate(id='header_template', frames=frame, onPage=draw_header)])
+
+    styles = getSampleStyleSheet()
+    normal_style = styles['Normal']
+
+    elements = []
+
+    # Group schedules by day
+    day_groups = defaultdict(list)
+    for schedule in schedules:
+        day_groups[(schedule.day, schedule.date, schedule.room)].append(schedule)
+
+    for idx, ((day, date, room), day_schedules) in enumerate(day_groups.items()):
+        elements.append(Spacer(1, 20))
+
+        header_and_table = []
+
+        # Add the header elements
+        header_and_table.append(Paragraph("<b>Final Defense Schedules</b>", styles['Title']))
+        header_and_table.append(Spacer(1, 6))
+        header_and_table.append(Paragraph(f"<b>{day}</b>", normal_style))
+        header_and_table.append(Paragraph(f"<b>Date: {date}</b>", normal_style))
+        header_and_table.append(Paragraph(f"<b>Room: {room}</b>", normal_style))
+        header_and_table.append(Spacer(1, 12))
+
+        # Table header
+        data = [['TIME', 'MEMBERS', 'TITLE', 'SECTION', 'ADVISER', 'PANELISTS']]
+
+        row_idx = 1  # Start after header row (header is at index 0)
+
+        special_rows = []  # For rescheduled rows
+        new_sched_rows = []  # For new schedule maroon highlight
+
+        for schedule in day_schedules:
+            if schedule.has_been_rescheduled:
+                members = "\n".join(filter(None, [
+                wrap_text_every_n_words(getattr(schedule.group, 'member1', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.group, 'member2', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.group, 'member3', 'N/A'), 3),
+                ]))
+
+                data.append([schedule.slot, members, "Has Been Rescheduled", "", "", ""])  # Fill 6 columns
+                special_rows.append(row_idx)
+                row_idx += 1
+                continue  # Skip normal display if rescheduled
+
+            members = "\n".join(filter(None, [
+                wrap_text_every_n_words(getattr(schedule.group, 'member1', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.group, 'member2', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.group, 'member3', 'N/A'), 3),
+            ]))
+
+            # Build panelists list
+            panelist_names = list(filter(None, [
+                wrap_text_every_n_words(getattr(schedule.faculty1, 'name', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.faculty2, 'name', 'N/A'), 3),
+                wrap_text_every_n_words(getattr(schedule.faculty3, 'name', 'N/A'), 3),
+            ]))
+
+            # Apply bold or color to the first panelist
+            if panelist_names:
+                # Highlight first panelist with color (e.g., blue) or bold
+                highlighted_first = f'<b><font color="red">{panelist_names[0]}</font></b>'
+                other_panelists = "<br/>".join(panelist_names[1:])
+                if other_panelists:
+                    panelists = f"{highlighted_first}<br/>{other_panelists}"
+                else:
+                    panelists = highlighted_first
+            else:
+                panelists = "N/A"
+
+            panelists_paragraph = Paragraph(panelists, normal_style)
+
+
+            section = getattr(schedule.group, 'section', 'N/A')
+            capstone_teacher = getattr(schedule.group, 'capstone_teacher', None)
+
+            if capstone_teacher:
+                names = capstone_teacher.name.strip().split()
+                if len(names) >= 2:
+                    short_name = f"{names[0][0]}. {names[-1]}"
+                else:
+                    short_name = names[0]
+                section_display = f"{section}\n({short_name})"
+            else:
+                section_display = section
+
+            data.append([
+                schedule.slot,
+                members,
+                wrap_text_every_n_words(schedule.title, 2) if schedule.group else "N/A",
+                section_display,
+                wrap_text_every_n_words(schedule.adviser.name, 2) if schedule.adviser else "N/A",
+                panelists_paragraph
+            ])
+
+            # Track new schedules for maroon color
+            if schedule.new_sched and not schedule.has_been_rescheduled:
+                new_sched_rows.append(row_idx)
+
+            # Add lunch break
+            if schedule.slot == "9:30AM-11AM":
+                data.append([
+                    "11PM-12PM\nLUNCH BREAK", "", "", "", "", ""
+                ])
+                row_idx += 1
+
+            row_idx += 1
+
+        # Calculate available width for table (page width - margins)
+        available_width = letter[0] - left_margin - right_margin
+
+        
+        
+        # Create Table with dynamic column widths
+        table = Table(data, repeatRows=1, hAlign='LEFT', 
+                    colWidths=[
+                        available_width * 0.12,  # TIME
+                        available_width * 0.22,  # MEMBERS
+                        available_width * 0.24,  # TITLE
+                        available_width * 0.10,  # SECTION
+                        available_width * 0.13,  # ADVISER
+                        available_width * 0.17,  # PANELISTS
+                    ])
+        
+        # Table style with word wrapping
+        table_style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4472C4')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#D9E1F2')),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('WORDWRAP', (0, 0), (-1, -1), True),
+        ])
+
+        
+
+        
+        # Find all lunch break rows (they'll have "LUNCH BREAK" in the first column)
+        for i, row in enumerate(data):
+            if "LUNCH BREAK" in str(row[0]):
+                # Merge all columns for this row
+                table_style.add('SPAN', (0, i), (-1, i))
+                # Apply special styling
+                table_style.add('BACKGROUND', (0, i), (-1, i), colors.HexColor('#FFC000'))
+                table_style.add('FONTNAME', (0, i), (-1, i), 'Helvetica-Bold')
+                # Center the text in the merged cell
+                table_style.add('ALIGN', (0, i), (-1, i), 'CENTER')
+
+        # Style rescheduled rows
+        for idx in special_rows:
+            table_style.add('SPAN', (2, idx), (-1, idx))  # Merge all columns
+            table_style.add('BACKGROUND', (0, idx), (-1, idx), colors.HexColor('#800000'))  # Maroon
+            table_style.add('FONTNAME', (0, idx), (-1, idx), 'Helvetica-Bold')
+            table_style.add('TEXTCOLOR', (0, idx), (-1, idx), colors.whitesmoke)
+            table_style.add('ALIGN', (0, idx), (-1, idx), 'CENTER')
+
+        # Style new schedules (maroon)
+        for idx in new_sched_rows:
+            table_style.add('BACKGROUND', (0, idx), (-1, idx), colors.HexColor('#7ef865'))  # light green
+            # table_style.add('TEXTCOLOR', (0, idx), (-1, idx), colors.whitesmoke)  # White text
+        
+        table.setStyle(table_style)
+        
+        # Add the table
+        header_and_table.append(table)
+
+        # Wrap the header and table in KeepTogether
+        elements.append(KeepTogether(header_and_table))
+
+
+        # Page break after each day's schedule except the last
+        if idx < len(day_groups) - 1:
+            elements.append(PageBreak())
+
+    doc.build(elements)
+
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type='application/pdf', headers={'Content-Disposition': 'attachment; filename="final_defense_schedules.pdf"'})
+
 
 # def rescheduleFD(request, scheduleFD_id):
 #     # Get the last added school year in the database

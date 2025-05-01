@@ -71,7 +71,7 @@
                                 {% endif %}
                                 <div class="button-group no-print">
                                     {% if grouped_schedulesFD %}
-                                        <div class="dropdown">
+                                        <!-- <div class="dropdown">
                                             <button class="no-print same-size-button dropdown-toggle" type="button" id="printDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Print
                                             </button>
@@ -79,6 +79,15 @@
                                                 {% for day in grouped_schedulesFD|unique_days %}
                                                     <li><a class="dropdown-item" href="#" onclick="printPage('{{ day }}')">{{ day }}</a></li>
                                                 {% endfor %}
+                                            </ul>
+                                        </div> -->
+                                        <div class="dropdown">
+                                            <button class="no-print same-size-button dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Export
+                                            </button>
+                                            <ul class="dropdown-menu small-text" aria-labelledby="exportDropdown">
+                                                <li><a class="dropdown-item" href="{% url 'export_schedules_excel_fd' %}">Export to Excel</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'export_schedules_pdf_fd' %}">Export to PDF</a></li>
                                             </ul>
                                         </div>
                                     {% endif %}

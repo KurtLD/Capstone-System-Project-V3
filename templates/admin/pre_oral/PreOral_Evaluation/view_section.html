@@ -1552,7 +1552,12 @@ window.addEventListener('load', function() {
                     document.getElementById('modal-body').innerHTML = `
                         <form id="edit-verdict-form" action="${data.submit_url}" method="POST" data-verdict-id="${verdictId}">
                             ${data.form} <!-- The form fields from the server -->
-                            <input type="hidden" name="csrfmiddlewaretoken" value="${data.csrf_token}">
+                            <input style="border:solid 1px black;" type="hidden" name="csrfmiddlewaretoken" value="${data.csrf_token}">
+                            <br>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle" style="color: #1E90FF;"></i> Set the percentage in the minimum value.
+                            </small>
+                            <br><br>
                             <div id="checkbox-container"></div>
                             <button type="button" class="btn btn-secondary" onclick="addCheckbox()">Add Checkbox</button>
                         </form>

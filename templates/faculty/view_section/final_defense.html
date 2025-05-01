@@ -83,7 +83,9 @@
                                                                                 {{ schedule.faculty3.name }} {% if schedule.faculty3 == faculty_member %}<span class="role">(You)</span>{% endif %}
                                                                             </div>
                                                                         </td>
-                                                                        <td data-label="Adviser">{{ schedule.group.adviser.name }}</td>
+                                                                        <td data-label="Adviser">{{ schedule.group.adviser.name }} {% if schedule.group.adviser  == faculty_member %}
+                                                                            <span class="role">(You)</span>{% endif %}
+                                                                        </td>
                                                                         <td data-label="Action">
                                                                             {% if grade_exists %}
                                                                                 <span style="color: gray;">Graded</span><br>

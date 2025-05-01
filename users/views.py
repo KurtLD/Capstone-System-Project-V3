@@ -891,34 +891,125 @@ def title_hearing_view(request):
         'adviser_records2': adviser_records2
     })
 
+# @login_required
+# def pre_oral_defense_view(request):
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+#     # current_school_year = SchoolYear.get_active_school_year()
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     # get the last school year added to the db
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the active school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         # Retrieve the selected school year based on the session
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+#     print('current year: ', selected_school_year)
+#     user_profile = get_object_or_404(CustomUser, id=request.user.id)
+
+#     # Fetch the Faculty object associated with the CustomUser
+#     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
+
+#     # Fetch records from the Adviser model where the faculty is an adviser
+#     adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
+#     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
+
+#     # Fetch schedules where the faculty is involved (as Panelist, Adviser, or Capstone Teacher)
+#     schedules_pod = SchedulePOD.objects.filter(
+#         Q(faculty1=faculty_member) |
+#         Q(faculty2=faculty_member) |
+#         Q(faculty3=faculty_member),
+#         school_year=selected_school_year
+#     )
+
+#     # Add day of the week to each schedule
+#     for schedule in schedules_pod:
+#         schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')  # Adjust format to match 'October 19, 2024'
+#         schedule.day_of_week = schedule_date.strftime('%A')
+
+#     # Construct schedules_pod_status with each schedule and its grade existence status
+#     schedules_pod_status = []
+#     for schedule in schedules_pod:
+#         faculty1_exists = PreOral_Grade.objects.filter(
+#             faculty=schedule.faculty1,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         faculty2_exists = PreOral_Grade.objects.filter(
+#             faculty=schedule.faculty2,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         faculty3_exists = PreOral_Grade.objects.filter(
+#             faculty=schedule.faculty3,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         # Determine if the current faculty member has graded
+#         current_faculty_graded = PreOral_Grade.objects.filter(
+#             faculty=faculty_member,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         recent_recommendation = PreOral_Recos.objects.filter(
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         schedules_pod_status.append((schedule, current_faculty_graded, recent_recommendation))
+
+#     paginator = Paginator(schedules_pod_status, 5)  # Show 5 schedules per page
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     verdict_message = request.GET.get('verdict_message')
+#     selected_verdict = request.GET.get('selected_verdict')
+
+#     context = {
+#         'page_obj': page_obj,
+#         # 'current_school_year': current_school_year,
+#         'selected_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#         'adviser_records': adviser_records,
+#         'adviser_records2': adviser_records2,
+#         'verdict_message': verdict_message,
+#         'selected_verdict': selected_verdict,
+#         'faculty_member': faculty_member
+#     }
+
+#     return render(request, 'faculty/view_section/pre_oral_defense.html', context)
+
 @login_required
 def pre_oral_defense_view(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-    # current_school_year = SchoolYear.get_active_school_year()
-    selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-
-    # Get the selected school year from session or fallback to the active school year
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    
+    # Get the selected school year
     selected_school_year = ''
     if not selected_school_year_id:
         selected_school_year = last_school_year
-        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+        request.session['selected_school_year_id'] = selected_school_year.id
     else:
-        # Retrieve the selected school year based on the session
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
-    print('current year: ', selected_school_year)
-    user_profile = get_object_or_404(CustomUser, id=request.user.id)
 
-    # Fetch the Faculty object associated with the CustomUser
+    user_profile = get_object_or_404(CustomUser, id=request.user.id)
     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
 
-    # Fetch records from the Adviser model where the faculty is an adviser
+    # Get adviser records (both pending and accepted)
     adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
 
-    # Fetch schedules where the faculty is involved (as Panelist, Adviser, or Capstone Teacher)
+    # Get schedules where faculty is panelist
     schedules_pod = SchedulePOD.objects.filter(
         Q(faculty1=faculty_member) |
         Q(faculty2=faculty_member) |
@@ -926,33 +1017,24 @@ def pre_oral_defense_view(request):
         school_year=selected_school_year
     )
 
+    # Get schedules where faculty is adviser
+    adviser_schedules = SchedulePOD.objects.filter(
+        group__adviser=faculty_member,
+        school_year=selected_school_year
+    )
+
+    # Combine both querysets and remove duplicates
+    all_schedules = (schedules_pod | adviser_schedules).distinct().order_by('id')
+
     # Add day of the week to each schedule
-    for schedule in schedules_pod:
-        schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')  # Adjust format to match 'October 19, 2024'
+    for schedule in all_schedules:
+        schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')
         schedule.day_of_week = schedule_date.strftime('%A')
+        print(schedule.date, schedule.slot, schedule.room)
 
-    # Construct schedules_pod_status with each schedule and its grade existence status
-    schedules_pod_status = []
-    for schedule in schedules_pod:
-        faculty1_exists = PreOral_Grade.objects.filter(
-            faculty=schedule.faculty1,
-            project_title=schedule.title,
-            school_year=selected_school_year
-        ).exists()
-
-        faculty2_exists = PreOral_Grade.objects.filter(
-            faculty=schedule.faculty2,
-            project_title=schedule.title,
-            school_year=selected_school_year
-        ).exists()
-
-        faculty3_exists = PreOral_Grade.objects.filter(
-            faculty=schedule.faculty3,
-            project_title=schedule.title,
-            school_year=selected_school_year
-        ).exists()
-
-        # Determine if the current faculty member has graded
+    # Construct schedules with status
+    schedules_with_status = []
+    for schedule in all_schedules:
         current_faculty_graded = PreOral_Grade.objects.filter(
             faculty=faculty_member,
             project_title=schedule.title,
@@ -964,93 +1046,168 @@ def pre_oral_defense_view(request):
             school_year=selected_school_year
         ).exists()
 
-        schedules_pod_status.append((schedule, current_faculty_graded, recent_recommendation))
+        schedules_with_status.append((schedule, current_faculty_graded, recent_recommendation))
 
-    paginator = Paginator(schedules_pod_status, 5)  # Show 5 schedules per page
+    paginator = Paginator(schedules_with_status, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    verdict_message = request.GET.get('verdict_message')
-    selected_verdict = request.GET.get('selected_verdict')
-
     context = {
         'page_obj': page_obj,
-        # 'current_school_year': current_school_year,
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
+        'faculty_member': faculty_member,
+        'verdict_message': request.GET.get('verdict_message'),
+        'selected_verdict': request.GET.get('selected_verdict'),
         'adviser_records': adviser_records,
-        'adviser_records2': adviser_records2,
-        'verdict_message': verdict_message,
-        'selected_verdict': selected_verdict
+        'adviser_records2': adviser_records2
     }
 
     return render(request, 'faculty/view_section/pre_oral_defense.html', context)
 
+# @login_required
+# def mock_defense_view(request):
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+#     # current_school_year = SchoolYear.get_active_school_year()
+#     # print('current year: ', current_school_year)
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     # get the last school year added to the db
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the active school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         # Retrieve the selected school year based on the session
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     # Fetch the CustomUser object associated with the logged-in user
+#     user_profile = get_object_or_404(CustomUser, id=request.user.id)
+
+#     # Fetch the Faculty object associated with the CustomUser
+#     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
+
+#     # Fetch records from the Adviser model where the faculty is an adviser
+#     adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
+#     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
+
+#     # Fetch schedules where the faculty is involved (as Panelist, Adviser, or Capstone Teacher)
+#     schedules_md = ScheduleMD.objects.filter(
+#         Q(faculty1=faculty_member) |
+#         Q(faculty2=faculty_member) |
+#         Q(faculty3=faculty_member),
+#         school_year=selected_school_year
+#     )
+
+#     # Add day of the week to each schedule
+#     for schedule in schedules_md:
+#         schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')  # Adjust format to match 'October 19, 2024'
+#         schedule.day_of_week = schedule_date.strftime('%A')
+
+#     # Construct schedules_md_status with each schedule and its grade existence status
+#     schedules_md_status = []
+#     for schedule in schedules_md:
+#         faculty1_exists = Mock_Grade.objects.filter(
+#             faculty=schedule.faculty1,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         faculty2_exists = Mock_Grade.objects.filter(
+#             faculty=schedule.faculty2,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         faculty3_exists = Mock_Grade.objects.filter(
+#             faculty=schedule.faculty3,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         # Determine if the current faculty member has graded
+#         current_faculty_graded = Mock_Grade.objects.filter(
+#             faculty=faculty_member,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         recent_recommendation = Mock_Recos.objects.filter(
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         schedules_md_status.append((schedule, current_faculty_graded, recent_recommendation))
+
+#     paginator = Paginator(schedules_md_status, 5)  # Show 5 schedules per page
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     verdict_message = request.GET.get('verdict_message')
+#     selected_verdict = request.GET.get('selected_verdict')
+
+#     context = {
+#         'page_obj': page_obj,
+#         # 'current_school_year': current_school_year,
+#         'selected_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#         'adviser_records': adviser_records,
+#         'adviser_records2': adviser_records2,
+#         'verdict_message': verdict_message,
+#         'selected_verdict': selected_verdict,
+#         'faculty_member': faculty_member
+#     }
+
+#     return render(request, 'faculty/view_section/mock_defense.html', context)
+
 @login_required
 def mock_defense_view(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-    # current_school_year = SchoolYear.get_active_school_year()
-    # print('current year: ', current_school_year)
-    selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-
-    # Get the selected school year from session or fallback to the active school year
-    selected_school_year = ''
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    
+    # Get the selected school year
+    selected_school_year = last_school_year if not selected_school_year_id else SchoolYear.objects.get(id=selected_school_year_id)
     if not selected_school_year_id:
-        selected_school_year = last_school_year
-        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
-    else:
-        # Retrieve the selected school year based on the session
-        selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+        request.session['selected_school_year_id'] = selected_school_year.id
 
-    # Fetch the CustomUser object associated with the logged-in user
     user_profile = get_object_or_404(CustomUser, id=request.user.id)
-
-    # Fetch the Faculty object associated with the CustomUser
     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
 
-    # Fetch records from the Adviser model where the faculty is an adviser
+    # Get adviser records
     adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
 
-    # Fetch schedules where the faculty is involved (as Panelist, Adviser, or Capstone Teacher)
-    schedules_md = ScheduleMD.objects.filter(
+    # Get schedules where faculty is panelist
+    panelist_schedules = ScheduleMD.objects.filter(
         Q(faculty1=faculty_member) |
         Q(faculty2=faculty_member) |
         Q(faculty3=faculty_member),
         school_year=selected_school_year
     )
 
+    # Get schedules where faculty is adviser
+    adviser_schedules = ScheduleMD.objects.filter(
+        group__adviser=faculty_member,
+        school_year=selected_school_year
+    )
+
+    # Combine both querysets and remove duplicates
+    all_schedules = (panelist_schedules | adviser_schedules).distinct().order_by('id')
+
     # Add day of the week to each schedule
-    for schedule in schedules_md:
-        schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')  # Adjust format to match 'October 19, 2024'
+    for schedule in all_schedules:
+        schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')
         schedule.day_of_week = schedule_date.strftime('%A')
 
-    # Construct schedules_md_status with each schedule and its grade existence status
-    schedules_md_status = []
-    for schedule in schedules_md:
-        faculty1_exists = Mock_Grade.objects.filter(
-            faculty=schedule.faculty1,
-            project_title=schedule.title,
-            school_year=selected_school_year
-        ).exists()
-
-        faculty2_exists = Mock_Grade.objects.filter(
-            faculty=schedule.faculty2,
-            project_title=schedule.title,
-            school_year=selected_school_year
-        ).exists()
-
-        faculty3_exists = Mock_Grade.objects.filter(
-            faculty=schedule.faculty3,
-            project_title=schedule.title,
-            school_year=selected_school_year
-        ).exists()
-
-        # Determine if the current faculty member has graded
+    # Construct schedules with status
+    schedules_with_status = []
+    for schedule in all_schedules:
         current_faculty_graded = Mock_Grade.objects.filter(
             faculty=faculty_member,
             project_title=schedule.title,
@@ -1062,93 +1219,168 @@ def mock_defense_view(request):
             school_year=selected_school_year
         ).exists()
 
-        schedules_md_status.append((schedule, current_faculty_graded, recent_recommendation))
+        schedules_with_status.append((schedule, current_faculty_graded, recent_recommendation))
 
-    paginator = Paginator(schedules_md_status, 5)  # Show 5 schedules per page
+    paginator = Paginator(schedules_with_status, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    verdict_message = request.GET.get('verdict_message')
-    selected_verdict = request.GET.get('selected_verdict')
-
     context = {
         'page_obj': page_obj,
-        # 'current_school_year': current_school_year,
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
+        'faculty_member': faculty_member,
+        'verdict_message': request.GET.get('verdict_message'),
+        'selected_verdict': request.GET.get('selected_verdict'),
         'adviser_records': adviser_records,
-        'adviser_records2': adviser_records2,
-        'verdict_message': verdict_message,
-        'selected_verdict': selected_verdict
+        'adviser_records2': adviser_records2
     }
 
     return render(request, 'faculty/view_section/mock_defense.html', context)
 
+# @login_required
+# def final_defense_view(request):
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+#     # current_school_year = SchoolYear.get_active_school_year()
+#     # print('current year: ', current_school_year)
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     # get the last school year added to the db
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the active school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         # Retrieve the selected school year based on the session
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     # Fetch the CustomUser object associated with the logged-in user
+#     user_profile = get_object_or_404(CustomUser, id=request.user.id)
+
+#     # Fetch the Faculty object associated with the CustomUser
+#     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
+
+#     # Fetch records from the Adviser model where the faculty is an adviser
+#     adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
+#     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
+
+#     # Fetch schedules where the faculty is involved (as Panelist, Adviser, or Capstone Teacher)
+#     schedules_fd = ScheduleFD.objects.filter(
+#         Q(faculty1=faculty_member) |
+#         Q(faculty2=faculty_member) |
+#         Q(faculty3=faculty_member),
+#         school_year=selected_school_year
+#     )
+
+#     # Add day of the week to each schedule
+#     for schedule in schedules_fd:
+#         schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')  # Adjust format to match 'October 19, 2024'
+#         schedule.day_of_week = schedule_date.strftime('%A')
+
+#     # Construct schedules_fd_status with each schedule and its grade existence status
+#     schedules_fd_status = []
+#     for schedule in schedules_fd:
+#         faculty1_exists = Final_Grade.objects.filter(
+#             faculty=schedule.faculty1,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         faculty2_exists = Final_Grade.objects.filter(
+#             faculty=schedule.faculty2,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         faculty3_exists = Final_Grade.objects.filter(
+#             faculty=schedule.faculty3,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         # Determine if the current faculty member has graded
+#         current_faculty_graded = Final_Grade.objects.filter(
+#             faculty=faculty_member,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         recent_recommendation = Final_Recos.objects.filter(
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         schedules_fd_status.append((schedule, current_faculty_graded, recent_recommendation))
+
+#     paginator = Paginator(schedules_fd_status, 5)  # Show 5 schedules per page
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     verdict_message = request.GET.get('verdict_message')
+#     selected_verdict = request.GET.get('selected_verdict')
+
+#     context = {
+#         'page_obj': page_obj,
+#         # 'current_school_year': current_school_year,
+#         'selected_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#         'adviser_records': adviser_records,
+#         'adviser_records2': adviser_records2,
+#         'verdict_message': verdict_message,
+#         'selected_verdict': selected_verdict,
+#         'faculty_member': faculty_member
+#     }
+
+#     return render(request, 'faculty/view_section/final_defense.html', context)
+
 @login_required
 def final_defense_view(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-    # current_school_year = SchoolYear.get_active_school_year()
-    # print('current year: ', current_school_year)
-    selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-
-    # Get the selected school year from session or fallback to the active school year
-    selected_school_year = ''
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    
+    # Get the selected school year
+    selected_school_year = last_school_year if not selected_school_year_id else SchoolYear.objects.get(id=selected_school_year_id)
     if not selected_school_year_id:
-        selected_school_year = last_school_year
-        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
-    else:
-        # Retrieve the selected school year based on the session
-        selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+        request.session['selected_school_year_id'] = selected_school_year.id
 
-    # Fetch the CustomUser object associated with the logged-in user
     user_profile = get_object_or_404(CustomUser, id=request.user.id)
-
-    # Fetch the Faculty object associated with the CustomUser
     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
 
-    # Fetch records from the Adviser model where the faculty is an adviser
+    # Get adviser records
     adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
 
-    # Fetch schedules where the faculty is involved (as Panelist, Adviser, or Capstone Teacher)
-    schedules_fd = ScheduleFD.objects.filter(
+    # Get schedules where faculty is panelist
+    panelist_schedules = ScheduleFD.objects.filter(
         Q(faculty1=faculty_member) |
         Q(faculty2=faculty_member) |
         Q(faculty3=faculty_member),
         school_year=selected_school_year
     )
 
+    # Get schedules where faculty is adviser
+    adviser_schedules = ScheduleFD.objects.filter(
+        group__adviser=faculty_member,
+        school_year=selected_school_year
+    )
+
+    # Combine both querysets and remove duplicates
+    all_schedules = (panelist_schedules | adviser_schedules).distinct().order_by('id')
+
     # Add day of the week to each schedule
-    for schedule in schedules_fd:
-        schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')  # Adjust format to match 'October 19, 2024'
+    for schedule in all_schedules:
+        schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')
         schedule.day_of_week = schedule_date.strftime('%A')
 
-    # Construct schedules_fd_status with each schedule and its grade existence status
-    schedules_fd_status = []
-    for schedule in schedules_fd:
-        faculty1_exists = Final_Grade.objects.filter(
-            faculty=schedule.faculty1,
-            project_title=schedule.title,
-            school_year=selected_school_year
-        ).exists()
-
-        faculty2_exists = Final_Grade.objects.filter(
-            faculty=schedule.faculty2,
-            project_title=schedule.title,
-            school_year=selected_school_year
-        ).exists()
-
-        faculty3_exists = Final_Grade.objects.filter(
-            faculty=schedule.faculty3,
-            project_title=schedule.title,
-            school_year=selected_school_year
-        ).exists()
-
-        # Determine if the current faculty member has graded
+    # Construct schedules with status
+    schedules_with_status = []
+    for schedule in all_schedules:
         current_faculty_graded = Final_Grade.objects.filter(
             faculty=faculty_member,
             project_title=schedule.title,
@@ -1160,25 +1392,22 @@ def final_defense_view(request):
             school_year=selected_school_year
         ).exists()
 
-        schedules_fd_status.append((schedule, current_faculty_graded, recent_recommendation))
+        schedules_with_status.append((schedule, current_faculty_graded, recent_recommendation))
 
-    paginator = Paginator(schedules_fd_status, 5)  # Show 5 schedules per page
+    paginator = Paginator(schedules_with_status, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    verdict_message = request.GET.get('verdict_message')
-    selected_verdict = request.GET.get('selected_verdict')
-
     context = {
         'page_obj': page_obj,
-        # 'current_school_year': current_school_year,
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
+        'faculty_member': faculty_member,
+        'verdict_message': request.GET.get('verdict_message'),
+        'selected_verdict': request.GET.get('selected_verdict'),
         'adviser_records': adviser_records,
-        'adviser_records2': adviser_records2,
-        'verdict_message': verdict_message,
-        'selected_verdict': selected_verdict
+        'adviser_records2': adviser_records2
     }
 
     return render(request, 'faculty/view_section/final_defense.html', context)

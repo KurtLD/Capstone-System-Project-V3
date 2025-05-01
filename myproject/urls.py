@@ -242,6 +242,10 @@ urlpatterns = [
     path('faculty-tally-mock/', scheduler_views.faculty_tally_viewMD, name='faculty_tallyMD'),
     path('reset-scheduleMD/', scheduler_views.reset_scheduleMD, name='reset_scheduleMD'),
 
+    # for exporting
+    path('export/excel/md', scheduler_views.export_schedules_excel_md, name='export_schedules_excel_md'),
+    path('export/pdf/md', scheduler_views.export_schedules_pdf_md, name='export_schedules_pdf_md'),
+
     # Final defense schedule related URL patterns
     path('checker4/', scheduler_views.checker4, name='checker4'),
     path('fgroup/update/<int:fgroup_id>/', scheduler_views.update_groupFD, name='update_groupFD'),
@@ -251,6 +255,10 @@ urlpatterns = [
     path('reassignFD/<int:schedule_id>/', scheduler_views.reassignFD, name='reassignFD'),
     path('faculty-tally-final/', scheduler_views.faculty_tally_viewFD, name='faculty_tallyFD'),
     path('reset-scheduleFD/', scheduler_views.reset_scheduleFD, name='reset_scheduleFD'),
+
+    # for exporting
+    path('export/excel/fd', scheduler_views.export_schedules_excel_fd, name='export_schedules_excel_fd'),
+    path('export/pdf/fd', scheduler_views.export_schedules_pdf_fd, name='export_schedules_pdf_fd'),
 
     # Faculty related URL patterns
     # path('input_grade/<int:schedule_id>/', input_grade, name='input_grade'),
