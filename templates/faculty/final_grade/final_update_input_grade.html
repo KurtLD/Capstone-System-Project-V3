@@ -95,18 +95,36 @@
 
                                 <table class="table table-bordered table-striped">
                                     <tr>
-                                        <td colspan="2">CAPSTONE PROJECT TITLE: <strong style="color: #FFFFFF; background-color: #7C0404; padding: 5px;">{{ schedule.title }}</strong></td>
+                                        <td colspan="2">
+                                            <strong>Capstone Project Title:</strong>
+                                            <span style="color: #FFFFFF; background-color: #7C0404; padding: 5px; border-radius: 4px;">
+                                                {{ schedule.title }}
+                                            </span>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="2">GROUP MEMBERS</td>
+                                        <td><strong>Group Members:</strong></td>
+                                        <td>
+                                            <ul class="mb-0">
+                                                {% if schedule.group.member1 %}<li>{{ schedule.group.member1 }}</li>{% endif %}
+                                                {% if schedule.group.member2 %}<li>{{ schedule.group.member2 }}</li>{% endif %}
+                                                {% if schedule.group.member3 %}<li>{{ schedule.group.member3 }}</li>{% endif %}
+                                            </ul>
+                                        </td>
                                     </tr>
-                                    <tr><td>Member 1:</td><td>{{ schedule.group.member1 }}</td></tr>
-                                    <tr><td>Member 2:</td><td>{{ schedule.group.member2 }}</td></tr>
-                                    <tr><td>Member 3:</td><td>{{ schedule.group.member3 }}</td></tr>
-                                    <tr><td>DATE OF DEFENSE:</td><td>{{ schedule.date }}</td></tr>
-                                    <tr><td>TIME OF DEFENSE:</td><td>{{ schedule.slot }}</td></tr>
-                                    <tr><td>FACULTY PANEL:</td><td>{{ faculty_member.name }}</td></tr>
-                                </table>
+                                    <tr>
+                                        <td><strong>Date of Defense:</strong></td>
+                                        <td>{{ schedule.date }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Time of Defense:</strong></td>
+                                        <td>{{ schedule.slot }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Faculty Panel:</strong></td>
+                                        <td>{{ faculty_member.name }}</td>
+                                    </tr>
+                                </table> 
                             </div>
                         </div>
 

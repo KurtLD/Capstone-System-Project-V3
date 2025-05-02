@@ -13,53 +13,134 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="{% static 'faculty/input_grade.css' %}" />
   <title>Recommendations</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    .capstone-title {
+      background-color: #7C0404;
+      color: white;
+      padding: 8px;
+      font-weight: bold;
+      display: inline-block;
+    }
+    .evaluation-form {
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .recommendations-section {
+      margin-top: 20px;
+    }
+    .recommendation-item {
+      padding: 10px;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .recommendation-item:last-child {
+      border-bottom: none;
+    }
+    .capstone-header {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .download-btn {
+      background-color: #7C0404;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .download-btn:hover {
+      background-color: #5a0303;
+    }
+  </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <div class="no-print">
-        {% include 'navbar.html' %}
-    </div>
-
     <div class="flex h-screen flex-col">
+        <!-- Navbar -->
+        <div class="no-print">
+            {% include 'navbar.html' %}
+        </div>
         <div class="flex flex-1 overflow-hidden">
             <!-- Sidebar -->
             {% include 'faculty/faculty_sidebar.html' %}
-
             <!-- Main Content Wrapper -->
             <div class="flex flex-col flex-1">
                 <!-- Content -->
                 <main class="main-content p-4">
                     <div class="container">
+                        <div class="mb-4">
+                            <button class="download-btn" onclick="downloadPDF()">Download as PDF</button>
+                        </div>
                         <div class="card mb-4">
-                            <div class="card-body">
-                                <div>
-                                    <table class="table table-bordered table-striped mb-4">
+                            <div class="card-body evaluation-form">
+                                <div class="capstone-header">
+                                    <h3>CAPSTONE PROJECT AND RESEARCH 2</h3>
+                                    <h4> PRE-ORAL DEFENSE EVALUATION FORM</h4>
+                                </div>
+                                
+                                <div class="info-section">
+                                    <table class="table table-bordered">
                                         <tr>
-                                            <td colspan="2">CAPSTONE PROJECT TITLE: <strong style="color: #FFFFFF; background-color: #7C0404; padding: 5px;">{{ schedule.title }}</strong></td>
+                                            <td colspan="2"><strong>CAPSTONE PROJECT TITLE</strong></td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2">GROUP MEMBERS</td>
+                                            <td colspan="2" class="text-center">
+                                                <div class="capstone-title">{{ schedule.title }}</div>
+                                            </td>
                                         </tr>
-                                        <tr><td>Member 1:</td><td>{{ schedule.group.member1 }}</td></tr>
-                                        <tr><td>Member 2:</td><td>{{ schedule.group.member2 }}</td></tr>
-                                        <tr><td>Member 3:</td><td>{{ schedule.group.member3 }}</td></tr>
-                                        <tr><td>DATE OF DEFENSE:</td><td>{{ schedule.date }}</td></tr>
-                                        <tr><td>TIME OF DEFENSE:</td><td>{{ schedule.slot }}</td></tr>
-                                        <tr><td>Panel 1 (Lead Panel)</td><td>{{ schedule.faculty1 }}</td></tr>
-                                        <tr><td>Panel 2</td><td>{{ schedule.faculty2 }}</td></tr>
-                                        <tr><td>Panel 3</td><td>{{ schedule.faculty3 }}</td></tr>
-                                        <tr><td>Adviser</td><td>{{ schedule.adviser }}</td></tr>
+                                        <tr>
+                                            <td><strong>GROUP MEMBERS</strong></td>
+                                            <td><strong>SIGNATURE</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>1. {{ schedule.group.member1 }}</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2. {{ schedule.group.member2 }}</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>3. {{ schedule.group.member3 }}</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>DATE OF DEFENSE:</strong> {{ schedule.date }}</td>
+                                            <td><strong>TIME OF DEFENSE:</strong> {{ schedule.slot }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>LEAD PANELIST</strong><br>{{ schedule.faculty1 }}</td>
+                                            <td><strong>SIGNATURE</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>PANELIST</strong><br>{{ schedule.faculty2 }}</td>
+                                            <td><strong>SIGNATURE</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>PANELIST</strong><br>{{ schedule.faculty3 }}</td>
+                                            <td><strong>SIGNATURE</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>ADVISER</strong><br>{{ schedule.adviser }}</td>
+                                            <td><strong>SIGNATURE</strong></td>
+                                        </tr>
                                     </table>
                                 </div>
-                                <div class="mt-4">
-                                    <table class="table table-bordered table-striped">
-                                        <tr><td><h2>Recommendations</h2></td></tr>
-                                        <tr>
+                                
+                                <div class="recommendations-section">
+                                    <h4>The following revisions need to be complied with by the Capstone Project group:</h4>
+                                    <div class="mt-3">
+                                        <ol class="list-group">
                                             {% for reco in recos %}
-                                                <td>{{ reco.recommendation|linebreaksbr }}</td>
+                                                <li class="list-group-item recommendation-item">{{ forloop.counter }}. {{ reco.recommendation|linebreaksbr }}</li>
                                             {% endfor %}
-                                        </tr>
-                                    </table>
+                                        </ol>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -72,12 +153,28 @@
         </div>
     </div>
 
+    <!-- html2pdf.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
+        // Sidebar toggle
         document.getElementById("sidebarToggle").addEventListener("click", function (event) {
             event.preventDefault();
             var sidebar = document.getElementById("sidebar");
             sidebar.classList.toggle("hidden");
         });
+
+        // PDF Download Function
+        function downloadPDF() {
+            const element = document.querySelector('.evaluation-form');
+            const opt = {
+                margin: 0.5,
+                filename: 'Pre-Oral_Defense_Evaluation_Form.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
     </script>
 </body>
 </html>

@@ -42,10 +42,10 @@
                 <!-- Title Hearing Details Table -->
                 <div class="dropdown no-print">
                     <select class="form-selects" id="groupSelector" onchange="displaySelectedTableById(this.value);">
-                        <option value="title-hearing-details">Title Hearing Groups</option>
-                        <option value="preoral-details">Pre-Oral Groups</option>
-                        <option value="mock-defense-details">Mock Groups</option>
-                        <option value="final-defense-details">Final Groups</option>
+                        <option value="title-hearing-details">Title Hearing Defense Group</option>
+                        <option value="preoral-details">Pre-Oral Defense Group</option>
+                        <option value="mock-defense-details">Mock Defense Group</option>
+                        <option value="final-defense-details">Final Defense Group</option>
                     </select>
                 </div>
                 <script>
@@ -65,6 +65,9 @@
                     <div id="title-hearing-details" class="details-section">
                         <h2 class="text-center mb-4 title-heading">Title Hearing Details</h2>
                         <div class="parent-container">
+                            <span class="icon-text-group">
+                                <i class="fas fa-users"></i> Total Groups: {{ group_info_list.paginator.count }}
+                            </span>
                             <input type="text" id="searchTitleHearing" class="search-bar" placeholder="Search..." onkeyup="searchTable('title-hearing-details', 'searchTitleHearing')">
                         </div>
                         <table class="table table-striped">
@@ -221,6 +224,9 @@
                         <div id="preoral-details" class="details-section">
                             <h2 class="text-center mb-4 title-heading">Pre-Oral Details</h2>
                             <div class="parent-container">
+                                <span class="icon-text-group">
+                                    <i class="fas fa-users"></i>  Total Groups: {{ group_infoPOD.paginator.count }}
+                                </span>
                                 <input type="text" id="searchPreOral" class="search-bar" placeholder="Search..." onkeyup="searchTable('preoral-details', 'searchPreOral')">
                             </div>
                             <table class="table table-striped">
@@ -381,6 +387,9 @@
                     <div id="mock-defense-details" class="details-section">
                         <h2 class="text-center mb-4 title-heading">Mock Defense Details</h2>
                         <div class="parent-container">
+                            <span class="icon-text-group">
+                                <i class="fas fa-users"></i>  Total Groups: {{ group_infoMD.paginator.count }}
+                            </span>
                             <input type="text" id="searchMockDefense" class="search-bar" placeholder="Search..." onkeyup="searchTable('mock-defense-details', 'searchMockDefense')">
                         </div>
                         <table class="table table-striped">
@@ -539,6 +548,9 @@
                     <div id="final-defense-details" class="details-section">
                         <h2 class="text-center mb-4 title-heading">Final Defense Details</h2>
                         <div class="parent-container">
+                            <span class="icon-text-group">
+                                <i class="fas fa-users"></i>  Total Groups: {{ group_infoFD.paginator.count }}
+                            </span>
                             <input type="text" id="searchFinalDefense" class="search-bar" placeholder="Search..." onkeyup="searchTable('final-defense-details', 'searchFinalDefense')">
                         </div>
                         <table class="table table-striped">

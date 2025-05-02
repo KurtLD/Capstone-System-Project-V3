@@ -397,9 +397,40 @@ table {
 
 .parent-container {
     display: flex;
+    align-items: center;
+    gap: 14px; /* Adds space between all children */
     justify-content: flex-end;
+    margin-bottom: 10px;
 }
 
+.icon-text-group {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+}
+
+.parent-container i {
+    font-size: 1.2em;
+    color: var(--highlighted-color);
+}
+
+.parent-container span,
+.parent-container label {
+    font-weight: 500;
+    font-size: 1em;
+}
+
+.parent-container .search-bar {
+    margin-left: auto;
+    width: 250px;
+    padding: 4px;
+    border: 1px solid var(--header-color);
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 .search-bar {
     width: 250px;
     padding: 4px;

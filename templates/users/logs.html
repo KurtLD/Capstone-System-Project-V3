@@ -5,15 +5,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Audit Logs</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'logs.css' %}">
-    <!-- SweetAlert CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Custom styles for the revamped design */
+        .search-time-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        @media (min-width: 768px) {
+            .search-time-container {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+        
+        .search-container {
+            position: relative;
+            flex-grow: 1;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .search-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        .pst-time-display {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background-color: #ffffff;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            color: #1f2937;
+            border-left: 4px solid #7C0404;
+            min-width: 320px;
+        }
+        
+        .time-icon {
+            margin-right: 0.75rem;
+            color: #7C0404;
+        }
+        
+        .table-container {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .card {
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            background-color: white;
+        }
+        
+        legend {
+            font-weight: 600;
+            font-size: 1.25rem;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
     <div class="flex h-screen flex-col">
@@ -27,86 +121,118 @@
             <!-- Main Content Wrapper -->
             <div class="flex flex-col flex-1">
                 <!-- Content -->
-            <main class="main-content p-4">
-                <div class="card">
-                    <fieldset>
-                        <legend>Audit Logs</legend>
-                        <div class="pagination">
-                            <span class="step-links">
-                                {% if audit_logs.has_previous %}
-                                    <a href="?page=1&per_page={{ request.GET.per_page }}">&laquo;</a>
-                                    <a href="?page={{ audit_logs.previous_page_number }}&per_page={{ request.GET.per_page }}">&lsaquo;</a>
-                                {% endif %}
-                                <span class="current">
-                                    Page {{ audit_logs.number }} of {{ audit_logs.paginator.num_pages }}
-                                </span>
-                                {% if audit_logs.has_next %}
-                                    <a href="?page={{ audit_logs.next_page_number }}&per_page={{ request.GET.per_page }}">&rsaquo;</a>
-                                    <a href="?page={{ audit_logs.paginator.num_pages }}&per_page={{ request.GET.per_page }}">&raquo;</a>
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div id="pst-time" class="float-right"></div> <!-- Placeholder for PST time -->
-                        {% if audit_logs %}
-                            <div class="table-container">
-                                <table class="table table-striped">
-                                    {% comment %} <a href="{% if user.is_superuser %}{% url 'admin_dashboard' %}{% else %}{% url 'faculty_dashboard' %}{% endif %}" class="back-button">Back to Dashboard</a> {% endcomment %}
-                                    <thead>
-                                        <tr>
-                                            <th>Email</th>
-                                            <th>Action</th>
-                                            <th>Time</th>
-                                            <th>IP Address</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for log in audit_logs %}
-                                            <tr>
-                                                <td data-label="Email">{{ log.user }}</td>
-                                                <td data-label="Action">{{ log.action|safe }}</td>
-                                                <td data-label="Time">{{ log.time|date:"M d, Y, h:i A" }}</td>
-                                                <td data-label="Ip Address">{{ log.ip_address }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                <main class="main-content p-4">
+                    <div class="card">
+                        <fieldset>
+                            <legend>Audit Logs</legend>
+                            
+                            <!-- Revamped Search and PST Time Container -->
+                            <div class="search-time-container">
+                                <!-- Revamped Search Input -->
+                                <div class="search-container">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" id="myInput" class="search-input" placeholder="Search audit logs by email, action or IP...">
+                                </div>
+                                
+                                <!-- Revamped PST Time Display -->
+                                <div class="pst-time-display">
+                                    <i class="far fa-clock time-icon"></i>
+                                    <span id="pst-time">Loading time...</span>
+                                </div>
                             </div>
-                        {% else %}
-                            <p>No audit logs found.</p>
-                        {% endif %}
-                    </fieldset>
-                </div>
-            </main>
-            <footer class="footer">
-                {% include 'footer.html' %}
-              </footer>
+                            
+                            <!-- Pagination -->
+                            <div class="pagination mb-3">
+                                <span class="step-links">
+                                    {% if audit_logs.has_previous %}
+                                        <a href="?page=1&per_page={{ request.GET.per_page }}">«</a>
+                                        <a href="?page={{ audit_logs.previous_page_number }}&per_page={{ request.GET.per_page }}">‹</a>
+                                    {% endif %}
+                                    <span class="current">
+                                        Page {{ audit_logs.number }} of {{ audit_logs.paginator.num_pages }}
+                                    </span>
+                                    {% if audit_logs.has_next %}
+                                        <a href="?page={{ audit_logs.next_page_number }}&per_page={{ request.GET.per_page }}">›</a>
+                                        <a href="?page={{ audit_logs.paginator.num_pages }}&per_page={{ request.GET.per_page }}">»</a>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            {% if audit_logs %}
+                                <div class="table-container">
+                                    <table id="myTable" class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Email</th>
+                                                <th>Action</th>
+                                                <th>Time</th>
+                                                <th>IP Address</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for log in audit_logs %}
+                                                <tr>
+                                                    <td data-label="Email">{{ log.user }}</td>
+                                                    <td data-label="Action">{{ log.action|safe }}</td>
+                                                    <td data-label="Time">{{ log.time|date:"M d, Y, h:i A" }}</td>
+                                                    <td data-label="Ip Address">{{ log.ip_address }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p>No audit logs found.</p>
+                            {% endif %}
+                        </fieldset>
+                    </div>
+                </main>
+                <footer class="footer">
+                    {% include 'footer.html' %}
+                </footer>
+            </div>
         </div>
-      </div>
     </div>
-    <!-- Bootstrap JS and dependencies -->
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-    <!-- SweetAlert JS -->
+    <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Table Filtering Script -->
+    <script>
+        $(document).ready(function() {
+            $("#myInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
+    <!-- Sidebar Toggle and PST Time Script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const sidebarToggle = document.getElementById("sidebarToggle");
             const sidebar = document.getElementById("sidebar");
-    
+
             // Retrieve the sidebar state from localStorage
             const sidebarState = localStorage.getItem("sidebarState");
-    
+
             // Apply the saved sidebar state (open/closed)
             if (sidebarState === "closed") {
-                sidebar.classList.add("hidden"); // Keep sidebar closed if it was previously closed
+                sidebar.classList.add("hidden");
             }
-    
+
             // Sidebar toggle functionality
             if (sidebarToggle) {
                 sidebarToggle.addEventListener("click", function (event) {
                     event.preventDefault();
                     sidebar.classList.toggle("hidden");
-    
+
                     // Store the sidebar state in localStorage
                     if (sidebar.classList.contains("hidden")) {
                         localStorage.setItem("sidebarState", "closed");
@@ -115,7 +241,7 @@
                     }
                 });
             }
-    
+
             // Function to get current time in Philippine Standard Time (PST)
             function updatePSTTime() {
                 const pstTimeElement = document.getElementById('pst-time');
@@ -123,7 +249,6 @@
                     const now = new Date();
                     const options = {
                         timeZone: 'Asia/Manila',
-                        weekday: 'long', // Add day of the week
                         hour12: true,
                         hour: 'numeric',
                         minute: 'numeric',
@@ -136,29 +261,26 @@
                     pstTimeElement.textContent = `Philippine Standard Time: ${pstTime}`;
                 }
             }
-    
+
             // Update PST time every second
             setInterval(updatePSTTime, 1000);
-            updatePSTTime(); // Initial call to set the time immediately
-    
+            updatePSTTime(); // Initial call
+
             // Focus the clicked pagination link
             const paginationLinks = document.querySelectorAll('.pagination a');
             paginationLinks.forEach(function (link) {
                 link.addEventListener("click", function () {
-                    // Store the href of the clicked pagination link in localStorage
                     localStorage.setItem("focusedPaginationLink", this.href);
                 });
             });
-    
-            // Retrieve the focused pagination link from localStorage
+
+            // Retrieve and focus pagination link
             const focusedPaginationLink = localStorage.getItem("focusedPaginationLink");
             if (focusedPaginationLink) {
                 const linkToFocus = Array.from(paginationLinks).find(link => link.href === focusedPaginationLink);
                 if (linkToFocus) {
-                    // Focus on the link and scroll it into view
                     linkToFocus.focus();
                     linkToFocus.scrollIntoView({ behavior: "smooth" });
-                    // Clear the stored link after focusing to avoid refocusing on subsequent page loads
                     localStorage.removeItem("focusedPaginationLink");
                 }
             }
