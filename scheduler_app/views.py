@@ -93,6 +93,8 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.platypus import KeepTogether
+from reportlab.lib.utils import ImageReader  # Import ImageReader for better PNG handling
+
 
 def room_list(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
@@ -784,15 +786,17 @@ def export_schedules_pdf(request):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
         evsu_logo_path = os.path.join(BASE_DIR, 'media', 'EVSU_logo.png')
-        intel_logo_path = os.path.join(BASE_DIR, 'media', 'intel.jpg')
+        it_logo_path = os.path.join(BASE_DIR, 'media', 'it_logo.jpg')  # Updated path for IT logo
 
         # Draw EVSU logo on the left
         if os.path.exists(evsu_logo_path):
-            canvas.drawImage(evsu_logo_path, doc.leftMargin, letter[1] - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
+            evsu_logo = ImageReader(evsu_logo_path)
+            canvas.drawImage(evsu_logo, doc.leftMargin, letter[1] - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
 
-        # Draw Intel logo on the right
-        if os.path.exists(intel_logo_path):
-            canvas.drawImage(intel_logo_path, letter[0] - doc.rightMargin - 1*inch, letter[1] - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
+        # Draw IT logo on the right
+        if os.path.exists(it_logo_path):
+            it_logo = ImageReader(it_logo_path)
+            canvas.drawImage(it_logo, letter[0] - doc.rightMargin - 1*inch, letter[1] - 1.5 * inch, width=1*inch, height=1*inch, preserveAspectRatio=True)
 
         # Draw centered text
         header_text = [
@@ -2620,7 +2624,7 @@ def export_schedules_pdf_pod(request):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
         evsu_logo_path = os.path.join(BASE_DIR, 'media', 'EVSU_logo.png')
-        intel_logo_path = os.path.join(BASE_DIR, 'media', 'intel.jpg')
+        intel_logo_path = os.path.join(BASE_DIR, 'media', 'it_logo.jpg')
 
         # Draw EVSU logo on the left
         if os.path.exists(evsu_logo_path):
@@ -4604,7 +4608,7 @@ def export_schedules_pdf_md(request):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
         evsu_logo_path = os.path.join(BASE_DIR, 'media', 'EVSU_logo.png')
-        intel_logo_path = os.path.join(BASE_DIR, 'media', 'intel.jpg')
+        intel_logo_path = os.path.join(BASE_DIR, 'media', 'it_logo.jpg')
 
         # Draw EVSU logo on the left
         if os.path.exists(evsu_logo_path):
@@ -6377,7 +6381,7 @@ def export_schedules_pdf_fd(request):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
         evsu_logo_path = os.path.join(BASE_DIR, 'media', 'EVSU_logo.png')
-        intel_logo_path = os.path.join(BASE_DIR, 'media', 'intel.jpg')
+        intel_logo_path = os.path.join(BASE_DIR, 'media', 'it_logo.jpg')
 
         # Draw EVSU logo on the left
         if os.path.exists(evsu_logo_path):
