@@ -17,6 +17,29 @@
     .nav-item-active p {
         color: white !important;
     }
+    /* Remove default hover styles */
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link:focus,
+    .sidebar .nav-link:active {
+        background-color: transparent !important;
+        color: inherit !important;
+        box-shadow: none !important;
+        transform: none !important;
+        text-decoration: none !important;
+    }
+
+    /* Prevent slight movement or glow effect */
+    .sidebar .nav-link {
+        transition: none !important;
+    }
+    #sidebar {
+        background: linear-gradient(rgba(33, 37, 41, 0.95), rgba(33, 37, 41, 0.85)), 
+                    url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        z-index: 1;
+    }
 </style>
 
 <!-- Sidebar with Add School Year button -->
@@ -54,37 +77,37 @@
                             <i class="fas fa-circle fa-stack-2x text-pink-500"></i>
                             <i class="fas fa-calendar-alt fa-stack-1x fa-inverse text-white"></i>
                         </span>
-                        <p class="text-red-500">Title Hearing Schedule</p>
+                        <p class="text-red-500">Title Hearing</p>
                     </a>
                 </li>
                 
-                <li class="nav-item mb-0.5 {% if request.path == '/pre_oral_defense/' or request.resolver_match.url_name == 'update_evaluate_capstone' or request.resolver_match.url_name == 'reco' %}nav-item-active{% endif %}">
+                <li class="nav-item mb-0.5 {% if request.resolver_match.url_name == 'input_grade' or request.path == '/pre_oral_defense/' or request.resolver_match.url_name == 'update_evaluate_capstone' or request.resolver_match.url_name == 'reco' %}nav-item-active{% endif %}">
                     <a href="{% url 'pre_oral_defense' %}" class="nav-link">
                         <span class="fa-stack fa-md">
                             <i class="fas fa-circle fa-stack-2x text-yellow-500"></i>
                             <i class="fas fa-calendar-check fa-stack-1x fa-inverse text-white"></i>
                         </span>
-                        <p class="text-blue-500">Pre-Oral Schedule</p>
+                        <p class="text-blue-500">Pre-Oral</p>
                     </a>
                 </li>
                 
-                <li class="nav-item mb-0.5 {% if request.path == '/mock_defense/' %}nav-item-active{% endif %}">
+                <li class="nav-item mb-0.5 {% if request.resolver_match.url_name == 'mock_input_grade' or request.path == '/mock_defense/' or request.resolver_match.url_name == 'mock_update_evaluate_capstone' or request.resolver_match.url_name == 'mock_reco' %}nav-item-active{% endif %}">
                     <a href="{% url 'mock_defense' %}" class="nav-link">
                         <span class="fa-stack fa-md">
                             <i class="fas fa-circle fa-stack-2x text-indigo-500"></i>
                             <i class="fas fa-shield-alt fa-stack-1x fa-inverse text-white"></i>
                         </span>
-                        <p class="text-gray-500">Mock Defense Schedule</p>
+                        <p class="text-gray-500">Mock Defense</p>
                     </a>
                 </li>
                 
-                <li class="nav-item mb-0.5 {% if request.path == '/final_defense/' %}nav-item-active{% endif %}">
+                <li class="nav-item mb-0.5 {% if request.resolver_match.url_name == 'final_input_grade' or request.path == '/final_defense/' or request.resolver_match.url_name == 'final_update_evaluate_capstone' or request.resolver_match.url_name == 'final_reco' %}nav-item-active{% endif %}">
                     <a href="{% url 'final_defense' %}" class="nav-link">
                         <span class="fa-stack fa-md">
                             <i class="fas fa-circle fa-stack-2x text-gray-500"></i>
                             <i class="fas fa-user-shield fa-stack-1x fa-inverse text-white"></i>
                         </span>
-                        <p class="text-orange-500">Final Defense Schedule</p>
+                        <p class="text-orange-500">Final Defense</p>
                     </a>
                 </li>
 

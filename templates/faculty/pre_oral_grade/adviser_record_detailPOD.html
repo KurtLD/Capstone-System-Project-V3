@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Adviser Record Details</title>
     <!-- Bootstrap CSS -->
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -45,16 +46,13 @@
                                 <p>{{ error }}: <span class="span">{{ title }}</p>
                             {% else %}
                                 <h3>Title: <span class="span">{{ title }}</span></h3><br>
-                                <h3>Summary of Points</h3>
+                                <h3>Summary of Points:</h3>
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
                                             <th>Criteria</th>
                                             <th>Percentage</th>
                                             <th>Earned Points (%)</th>
-                                            {% if member1_grade or member2_grade %}
-                                            <th>Individual Scores</th>
-                                            {% endif %}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -67,24 +65,12 @@
                                                         {{ total|floatformat:2 }}
                                                     {% endwith %}
                                                 </td>
-                                                {% if member1_grade or member2_grade %}
-                                                <td>
-                                                    {% if forloop.first %}
-                                                        <strong>Members:</strong> {{ member1 }}: {{ member1_grade|floatformat:2 }}<br>
-                                                        {{ member2 }}: {{ member2_grade|floatformat:2 }}<br>
-                                                        {% if member3 %}{{ member3 }}: {{ member3_grade|floatformat:2 }}{% endif %}
-                                                    {% endif %}
-                                                </td>
-                                                {% endif %}
                                             </tr>
                                         {% endfor %}
                                         <tr>
                                             <td><strong>TOTAL</strong></td>
                                             <td><strong>{{ total_points }}</strong></td>
-                                            <td id="overall_grade"><strong>{{ total_earned_points }}</strong></td>
-                                            {% if member1_grade or member2_grade %}
-                                            <td></td>
-                                            {% endif %}
+                                            <td id="overall_grade">{{ total_earned_points }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -92,6 +78,58 @@
                             {% endif %}
                         </fieldset>
 
+                        <fieldset>
+                            {% if member1_grade or member2_grade %}
+                                <legend>Individual Score</legend>
+                                <table class="table table-striped" style="text-align: center;">
+                                    <tbody>
+                                        <tr>
+                                            <th>Members</th>
+                                            <th>Score</th>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ member1 }}</td>
+                                            <td>{{ member1_grade|floatformat:2 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ member2 }}</td>
+                                            <td>{{ member2_grade|floatformat:2 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ member3 }}</td>
+                                            {% if member3 == None %}
+                                                <td>None</td>
+                                            {% else %}
+                                                <td>{{ member3_grade|floatformat:2 }}</td>
+                                            {% endif %}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <legend>Group Members</legend>
+                                <table class="table table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <th>Members</th>
+                                            <th>Name</th>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Member 1</strong></td>
+                                            <td>{{ member1 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Member 2</strong></td>
+                                            <td>{{ member2 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Member 3</strong></td>
+                                            <td>{{ member3 }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                        </fieldset>
+                        
                         <fieldset>
                             <legend>Verdicts</legend>
                             <table class="table table-striped">

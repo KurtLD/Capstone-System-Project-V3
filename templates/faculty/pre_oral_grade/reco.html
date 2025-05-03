@@ -137,7 +137,7 @@
                                     <div class="mt-3">
                                         <ol class="list-group">
                                             {% for reco in recos %}
-                                                <li class="list-group-item recommendation-item">{{ forloop.counter }}. {{ reco.recommendation|linebreaksbr }}</li>
+                                            <td>{{ reco.recommendation|linebreaksbr }}</td>
                                             {% endfor %}
                                         </ol>
                                     </div>
