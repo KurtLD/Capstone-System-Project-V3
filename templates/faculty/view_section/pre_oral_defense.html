@@ -86,7 +86,7 @@
                                                                         <td data-label="Adviser">{{ schedule.group.adviser.name }} {% if schedule.group.adviser  == faculty_member %}
                                                                             <span class="role">(You)</span>{% endif %}
                                                                         </td>
-                                                                        <td data-label="Action">
+                                                                        <!-- <td data-label="Action">
                                                                             {% if grade_exists %}
                                                                                 <span style="color: gray;">Graded</span><br>
                                                                                 {% if selected_school_year == last_school_year %}
@@ -100,6 +100,29 @@
                                                                                 {% endif %}
                                                                             {% endif %}
 
+                                                                            {% if recommendation %}
+                                                                                <a href="{% url 'reco' schedule.id %}" class="btn btn-secondary">Recommendation</a>
+                                                                            {% endif %}
+                                                                        </td> -->
+
+                                                                        <td data-label="Action">
+                                                                            {% if grade_exists %}
+                                                                                <span style="color: gray;">Graded</span><br>
+                                                                                {% if selected_school_year == last_school_year %}
+                                                                                    <a href="{% url 'update_evaluate_capstone' schedule_id=schedule.id %}" class="btn btn-maroon">Update Grade</a>
+                                                                                {% endif %}
+                                                                            {% else %}
+                                                                                {% if selected_school_year == last_school_year %}
+                                                                                    {% if faculty_member == schedule.faculty1 or faculty_member == schedule.faculty2 or faculty_member == schedule.faculty3 %}
+                                                                                        <a href="{% url 'input_grade' schedule.id %}" class="btn btn-maroon">Input Grade</a>
+                                                                                    {% else %}
+                                                                                        <p><i>Not Available</i></p>
+                                                                                    {% endif %}
+                                                                                {% else %}
+                                                                                    <p><i>Not Available</i></p>
+                                                                                {% endif %}
+                                                                            {% endif %}
+                                                                        
                                                                             {% if recommendation %}
                                                                                 <a href="{% url 'reco' schedule.id %}" class="btn btn-secondary">Recommendation</a>
                                                                             {% endif %}
