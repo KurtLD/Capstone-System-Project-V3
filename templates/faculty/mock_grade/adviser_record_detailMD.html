@@ -42,15 +42,19 @@
                         <fieldset>
                             <legend>Record Detail</legend>
                             {% if error %}
-                                <p>{{ error }}: <span class="span">{{ title }}</p>
+                                <p>{{ error }}: <span class="span">{{ title }}</span></p>
                             {% else %}
                                 <h3>Title: <span class="span">{{ title }}</span></h3><br>
-                                <h3>Summary of Points:</h3>
-                                <table class="table table-striped">
+                                <h3>Evaluation Summary:</h3>
+                                <table class="table table-striped text-center">
+                                    <thead>
                                         <tr>
                                             <th>Criteria</th>
-                                            <th>Percentage</th>
+                                            <th>Group Percentage</th>
                                             <th>Earned Points (%)</th>
+                                            {% if member1 %}<th class="bg-warning text-dark">{{ member1 }}</th>{% endif %}
+                                            {% if member2 %}<th class="bg-warning text-dark">{{ member2 }}</th>{% endif %}
+                                            {% if member3 %}<th class="bg-warning text-dark">{{ member3 }}</th>{% endif %}                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -63,65 +67,26 @@
                                                         {{ total|floatformat:2 }}
                                                     {% endwith %}
                                                 </td>
+                                                {% if member1 %}<td>-</td>{% endif %}
+                                                {% if member2 %}<td>-</td>{% endif %}
+                                                {% if member3 %}<td>-</td>{% endif %}
                                             </tr>
                                         {% endfor %}
-                                        <tr>
-                                            <td><strong>TOTAL</strong></td>
-                                            <td><strong>{{ total_points }}</strong></td>
+                                        <tr class="font-weight-bold">
+                                            <td>TOTAL</td>
+                                            <td>{{ total_points }}</td>
                                             <td id="overall_grade">{{ total_earned_points }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <br />
-                            {% endif %}
-                        </fieldset>
-
-                        <fieldset>
-                            {% if member1_grade or member2_grade %}
-                                <legend>Individual Score</legend>
-                                <table class="table table-striped" style="text-align: center;">
-                                    <tbody>
-                                        <tr>
-                                            <th>Members</th>
-                                            <th>Score</th>
-                                        </tr>
-                                        <tr>
-                                            <td>{{ member1 }}</td>
-                                            <td>{{ member1_grade|floatformat:2 }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>{{ member2 }}</td>
-                                            <td>{{ member2_grade|floatformat:2 }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>{{ member3 }}</td>
-                                            {% if member3 == None %}
-                                                <td>None</td>
-                                            {% else %}
-                                                <td>{{ member3_grade|floatformat:2 }}</td>
+                                            {% if member1 %}<td>{{ member1_grade|default:"N/A"|floatformat:2 }}</td>{% endif %}
+                                            {% if member2 %}<td>{{ member2_grade|default:"N/A"|floatformat:2 }}</td>{% endif %}
+                                            {% if member3 %}
+                                                <td>
+                                                    {% if member3_grade %}
+                                                        {{ member3_grade|floatformat:2 }}
+                                                    {% else %}
+                                                        None
+                                                    {% endif %}
+                                                </td>
                                             {% endif %}
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            {% else %}
-                                <legend>Group Members</legend>
-                                <table class="table table-striped">
-                                    <tbody>
-                                        <tr>
-                                            <th>Members</th>
-                                            <th>Name</th>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Member 1</strong></td>
-                                            <td>{{ member1 }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Member 2</strong></td>
-                                            <td>{{ member2 }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Member 3</strong></td>
-                                            <td>{{ member3 }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

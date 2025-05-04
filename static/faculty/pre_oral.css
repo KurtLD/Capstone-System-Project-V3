@@ -228,11 +228,9 @@ tr:hover {
 
 .faculty-info-highlight {
     /* background-color: #F6C500; */
-    background-color: #5b97f8;
-    color: var(--header-color);
+    color: #7C0404; /* maroon */
     padding: 3px;
     border-radius: 3px;
-    display: inline-block;
     font-size: 12px;
     font-weight: 600;
 }
