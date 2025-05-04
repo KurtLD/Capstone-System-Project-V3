@@ -649,7 +649,7 @@ def audit_logs(request):
             audit_logs = AuditTrail.objects.filter(user=request.user).order_by('-time')
         
         # Get the per_page parameter from the request
-        per_page = request.GET.get('per_page', '10')
+        per_page = request.GET.get('per_page', '100')
         
         # Handle 'all' case and invalid per_page values
         if per_page == 'all':
@@ -658,7 +658,7 @@ def audit_logs(request):
             try:
                 per_page = int(per_page)
             except ValueError:
-                per_page = 10  # Default to 10 if conversion fails
+                per_page = 100  # Default to 10 if conversion fails
             paginator = Paginator(audit_logs, per_page)
         
         # Get the current page number
@@ -720,7 +720,7 @@ def faculty_logs(request):
     audit_logs = AuditTrail.objects.filter(user__is_superuser=False).order_by('-time')
     
     # Get the per_page parameter from the request
-    per_page = request.GET.get('per_page', '10')
+    per_page = request.GET.get('per_page', '100')
     
     # Handle 'all' case and invalid per_page values
     if per_page == 'all':
@@ -729,7 +729,7 @@ def faculty_logs(request):
         try:
             per_page = int(per_page)
         except ValueError:
-            per_page = 10  # Default to 10 if conversion fails
+            per_page = 100  # Default to 100 if conversion fails
         paginator = Paginator(audit_logs, per_page)
     
     # Get the current page number

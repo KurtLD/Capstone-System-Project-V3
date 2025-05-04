@@ -1500,54 +1500,127 @@ def reassign(request, schedule_id):
 #         messages.error(request, 'Invalid request method.')
 #         return redirect('schedule_list')
 
+# def faculty_tally_view(request):
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+#     # current_school_year = SchoolYear.get_active_school_year()
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     # get the last school year added to the db
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the active school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         # Retrieve the selected school year based on the session
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     # Initialize a dictionary to hold faculty assignments
+#     faculty_tally = defaultdict(lambda: defaultdict(int))
+
+#     # Get all schedules
+#     schedules = Schedule.objects.filter(school_year=selected_school_year)
+
+#     # Count the number of groups each faculty is assigned as a panel member
+#     for schedule in schedules:
+#         # Extract the actual date from the string
+#         date_str = schedule.date  # Assuming date is in 'Month Day, Year' format
+#         date = datetime.strptime(date_str, '%B %d, %Y')  # Parse the date string
+#         weekday = date.strftime('%A')  # Get the day name, e.g., "Monday"
+
+#         # Count assignments for each faculty
+#         faculty_tally[schedule.faculty1.id][weekday] += 1
+#         faculty_tally[schedule.faculty2.id][weekday] += 1
+#         faculty_tally[schedule.faculty3.id][weekday] += 1
+
+#     # Prepare data for the template
+#     faculty_summary = []
+
+#     # To store the mapping of weekday to actual dates for this week
+#     week_dates = {}
+    
+#     # Iterate through the schedules to create a mapping of weekday to actual dates
+#     for schedule in schedules:
+#         date_str = schedule.date
+#         date = datetime.strptime(date_str, '%B %d, %Y')
+#         weekday = date.strftime('%A')
+#         if weekday not in week_dates:
+#             week_dates[weekday] = date_str  # Store the first occurrence of the date for that weekday
+
+#     for faculty_id, days in faculty_tally.items():
+#         faculty = Faculty.objects.get(id=faculty_id)
+#         row = {
+#             'faculty_name': faculty.name,
+#             'monday_count': days.get('Monday', 0),
+#             'tuesday_count': days.get('Tuesday', 0),
+#             'wednesday_count': days.get('Wednesday', 0),
+#             'thursday_count': days.get('Thursday', 0),
+#             'friday_count': days.get('Friday', 0),
+#         }
+#         # Calculate total assignments
+#         total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count'])
+#         row['total'] = total
+        
+#         # Add actual dates for each weekday
+#         row['monday_date'] = week_dates.get('Monday', '')
+#         row['tuesday_date'] = week_dates.get('Tuesday', '')
+#         row['wednesday_date'] = week_dates.get('Wednesday', '')
+#         row['thursday_date'] = week_dates.get('Thursday', '')
+#         row['friday_date'] = week_dates.get('Friday', '')
+
+#         faculty_summary.append(row)
+
+#     context = {
+#         'faculty_summary': faculty_summary,
+#         # 'current_school_year': current_school_year,
+#         'selected_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#     }
+
+
+#     return render(request, 'admin/title_hearing/faculty_tally.html', context)
+
+# Modify  faculty tally
+
 def faculty_tally_view(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-    # current_school_year = SchoolYear.get_active_school_year()
     selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
 
-    # Get the selected school year from session or fallback to the active school year
     selected_school_year = ''
     if not selected_school_year_id:
         selected_school_year = last_school_year
-        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+        request.session['selected_school_year_id'] = selected_school_year.id
     else:
-        # Retrieve the selected school year based on the session
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
-    # Initialize a dictionary to hold faculty assignments
     faculty_tally = defaultdict(lambda: defaultdict(int))
 
-    # Get all schedules
-    schedules = Schedule.objects.filter(school_year=selected_school_year)
+    # ✅ Only include schedules that are NOT rescheduled
+    schedules = Schedule.objects.filter(school_year=selected_school_year, has_been_rescheduled=False)
 
-    # Count the number of groups each faculty is assigned as a panel member
     for schedule in schedules:
-        # Extract the actual date from the string
-        date_str = schedule.date  # Assuming date is in 'Month Day, Year' format
-        date = datetime.strptime(date_str, '%B %d, %Y')  # Parse the date string
-        weekday = date.strftime('%A')  # Get the day name, e.g., "Monday"
+        date_str = schedule.date
+        date = datetime.strptime(date_str, '%B %d, %Y')
+        weekday = date.strftime('%A')
 
         # Count assignments for each faculty
-        faculty_tally[schedule.faculty1.id][weekday] += 1
-        faculty_tally[schedule.faculty2.id][weekday] += 1
-        faculty_tally[schedule.faculty3.id][weekday] += 1
+        for faculty_member in [schedule.faculty1, schedule.faculty2, schedule.faculty3]:
+            if faculty_member:
+                faculty_tally[faculty_member.id][weekday] += 1
 
-    # Prepare data for the template
     faculty_summary = []
-
-    # To store the mapping of weekday to actual dates for this week
     week_dates = {}
-    
-    # Iterate through the schedules to create a mapping of weekday to actual dates
+
     for schedule in schedules:
         date_str = schedule.date
         date = datetime.strptime(date_str, '%B %d, %Y')
         weekday = date.strftime('%A')
         if weekday not in week_dates:
-            week_dates[weekday] = date_str  # Store the first occurrence of the date for that weekday
+            week_dates[weekday] = date_str
 
     for faculty_id, days in faculty_tally.items():
         faculty = Faculty.objects.get(id=faculty_id)
@@ -1558,30 +1631,27 @@ def faculty_tally_view(request):
             'wednesday_count': days.get('Wednesday', 0),
             'thursday_count': days.get('Thursday', 0),
             'friday_count': days.get('Friday', 0),
+            'monday_date': week_dates.get('Monday', ''),
+            'tuesday_date': week_dates.get('Tuesday', ''),
+            'wednesday_date': week_dates.get('Wednesday', ''),
+            'thursday_date': week_dates.get('Thursday', ''),
+            'friday_date': week_dates.get('Friday', ''),
         }
-        # Calculate total assignments
-        total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count'])
-        row['total'] = total
-        
-        # Add actual dates for each weekday
-        row['monday_date'] = week_dates.get('Monday', '')
-        row['tuesday_date'] = week_dates.get('Tuesday', '')
-        row['wednesday_date'] = week_dates.get('Wednesday', '')
-        row['thursday_date'] = week_dates.get('Thursday', '')
-        row['friday_date'] = week_dates.get('Friday', '')
-
+        row['total'] = sum([
+            row['monday_count'], row['tuesday_count'], row['wednesday_count'],
+            row['thursday_count'], row['friday_count']
+        ])
         faculty_summary.append(row)
 
     context = {
         'faculty_summary': faculty_summary,
-        # 'current_school_year': current_school_year,
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
     }
 
-
     return render(request, 'admin/title_hearing/faculty_tally.html', context)
+
 
 
 # the folllowing function are for generating schedule for title hearing together with uploading group info

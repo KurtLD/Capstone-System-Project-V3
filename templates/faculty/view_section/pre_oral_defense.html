@@ -16,16 +16,143 @@
 </head>
 <body>
     {% if verdict_message %}
-        {% if selected_verdict == "Verdict is not available since not all of the panels submit the evaluation!" %}
-            <script>
-                alert("Verdict: {{ verdict_message }}");
-            </script>
-        {% else %}
-            <script>
-                alert("Evaluation Updated Successfully!\n\n{{ verdict_message }}");
-            </script>
-        {% endif %}
+    {% if selected_verdict == "Verdict is not available since not all of the panels submit the evaluation!" %}
+        <div id="verdictModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Verdict Notification</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>{{ verdict_message }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-button" onclick="modal.style.display='none'">Close</button>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div id="verdictModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Evaluation Update</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Evaluation Updated Successfully!</p>
+                    <p>{{ verdict_message }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-button" onclick="modal.style.display='none'">Acknowledge</button>
+                </div>
+            </div>
+        </div>
     {% endif %}
+
+    <script>
+        // Get the modal
+        var modal = document.getElementById("verdictModal");
+        
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+        
+        // When the page loads, show the modal 
+        window.onload = function() {
+            modal.style.display = "block";
+        }
+        
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+{% endif %}
+
+<style>
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+    
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    }
+    
+    .modal-header {
+        padding: 15px 20px;
+        background-color: #5cb85c;
+        color: white;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-footer {
+        padding: 15px 20px;
+        background-color: #f9f9f9;
+        border-top: 1px solid #ddd;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        text-align: right;
+    }
+    
+    .close {
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    .close:hover {
+        color: #f1f1f1;
+    }
+    
+    .modal-button {
+        background-color: #5cb85c;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+    
+    .modal-button:hover {
+        background-color: #4cae4c;
+    }
+</style>
     <div class="flex h-screen flex-col">
         <!-- Navbar -->
         <div class="no-print">
