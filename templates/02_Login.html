@@ -5,62 +5,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Form</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static '02_loginForm.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>Login | EVSU</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7C0404;
+            --primary-hover: #5c0303;
+            --primary-light: rgba(124, 4, 4, 0.08);
+            --text-color: #2d3748;
+            --text-light: #718096;
+            --error-color: #e53e3e;
+            --background-color: #f7fafc;
+            --card-background: rgba(255, 255, 255, 0.95);
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            color: var(--text-color);
+            background: url('{% static "images/bg-login.jpg" %}') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
+            z-index: 1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-background);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .form-header img {
+            width: 100px;
+        }
+
+        .form-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .modern-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.875rem;
+            color: var(--text-color);
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.2s ease;
+        }
+
+        .modern-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+            background: #ffffff;
+        }
+
+        .modern-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(229, 62, 62, 0.1);
+            padding: 0.75rem;
+            border-radius: 6px;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-password {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--primary-hover);
+        }
+
+        .developer-profile {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.05);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .developer-profile:hover {
+            color: var(--primary-color);
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .developer-profile i {
+            font-size: 0.8rem;
+        }
+
+        .modern-button {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .modern-button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .modern-button.loading {
+            opacity: 0.8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .signup-section {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .signup-section p {
+            color: var(--text-light);
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .signup-link, .faq-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .signup-link:hover, .faq-link a:hover {
+            color: var(--primary-hover);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 12px;
+                margin: 1rem;
+            }
+
+            .form-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="front-img">
-            <img src="{% static 'images/evsu.jpg' %}" alt="Landing Image" />
-        </div>
-        <form method="post" action="{% url 'login' %}" onsubmit="showLoader()">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="username">Email</label>
-                <div class="input-container">
-                    <i class="fas fa-envelope icon"></i>
-                    {{ form.username|attr:"placeholder:Enter your email" }}
-                </div>
+        <div class="form-content">
+            <div class="form-header">
+                <img src="{% static 'images/IT.png' %}" alt="IT Department Logo" />
+                <h1>Welcome Back</h1>
+                <p>Sign in to your account</p>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="input-container">
-                    <i class="fas fa-lock icon"></i>
-                    {{ form.password|attr:"placeholder:Enter your password" }}
+            <form method="post" action="{% url 'login' %}" onsubmit="showLoader()">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="input-container">
+                        <i class="fas fa-envelope icon"></i>
+                        {{ form.username|attr:"placeholder:Enter your email"|add_class:"modern-input" }}
+                    </div>
                 </div>
-            </div>
-            {% if form.non_field_errors %}
-            <div class="form-group error">{{ form.non_field_errors }}</div>
-            {% endif %}
-            <div class="form-group">
-                <a class="forgot-password" href="{% url 'forgot_password' %}">Forgot password?</a>
-                <!-- Developer Profile Icon -->
-                <div class="developer-profile">
-                    <a href="{% url 'developer_profile' %}" title="Developer Profile">
-                        <span class="fa-stack fa-lg">
-                            <i class="fas fa-circle fa-stack-2x" style="color: white;"></i>
-                            <i class="fas fa-info-circle fa-stack-1x fa-inverse" style="color: black; font-size: 16px;"></i>
-                        </span>
+                <div class="form-group">
+                    <div class="input-container">
+                        <i class="fas fa-lock icon"></i>
+                        {{ form.password|attr:"placeholder:Enter your password"|add_class:"modern-input" }}
+                    </div>
+                </div>
+                {% if form.non_field_errors %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+                <div class="form-options">
+                    <a class="forgot-password" href="{% url 'forgot_password' %}">Forgot password?</a>
+                    <a href="{% url 'developer_profile' %}" class="developer-profile" title="Developer Profile">
+                        <i class="fas fa-code"></i>
                     </a>
                 </div>
+                <button type="submit" id="loginButton" class="modern-button">
+                    <i class="fas fa-sign-in-alt" id="loginIcon"></i>
+                    <i class="fas fa-spinner fa-spin" id="loader" style="display: none;"></i>
+                    <span>Sign In</span>
+                </button>
+            </form>
+            <div class="signup-section">
+                <p>Don't have an account? <a href="{% url 'signup' %}" class="signup-link">Create Account</a></p>
+                <p class="faq-link">Need help? <a href="{% url 'faq_list' %}">View FAQs</a></p>
             </div>
-            <button type="submit" id="loginButton" onclick="showLoader()">
-                <i class="fas fa-sign-in-alt" id="loginIcon"></i>
-                <i class="fas fa-spinner fa-spin" id="loader" style="display: none;"></i>
-                Login
-            </button>
-        </form>
-        <div class="signup-link">
-            Don't have an account? <a href="{% url 'signup' %}">Signup now</a>
-            <p>Have questions? <a href="{% url 'faq_list' %}">Check our FAQs</a></p>
         </div>
     </div>
     <script>
         function showLoader() {
-            document.getElementById('loginIcon').style.display = 'none';
-            document.getElementById('loader').style.display = 'inline-block';
+            const button = document.getElementById('loginButton');
+            const loginIcon = document.getElementById('loginIcon');
+            const loader = document.getElementById('loader');
+            
+            button.classList.add('loading');
+            loginIcon.style.display = 'none';
+            loader.style.display = 'inline-block';
         }
     </script>
 </body>
