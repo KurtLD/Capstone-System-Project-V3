@@ -70,7 +70,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = [
-            'email', 'first_name', 'middle_name', 'last_name',
+            'email', 'first_name', 'middle_name', 'last_name', 'ext_name',
             'date_of_birth', 'address', 'years_of_teaching', 'has_master_degree',
             'highest_degrees', 'new_expertise', 'expertise', 'password1', 'password2'
         ]
@@ -79,6 +79,7 @@ class CustomUserCreationForm(UserCreationForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your first name'}),
             'middle_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your middle name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your last name'}),
+            'ext_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Extension name (e.g., Jr., Sr.)'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'placeholder': 'Enter your date of birth'}),
             'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your address'}),
             'years_of_teaching': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter your years of teaching'}),
@@ -182,11 +183,11 @@ class AccountSettingsForm(forms.ModelForm):
         model = CustomUser
         fields = [
             'username', 'email', 'first_name', 'middle_name', 
-            'last_name', 'date_of_birth', 'age', 'address', "has_master_degree"
+            'last_name', 'ext_name', 'date_of_birth', 'age', 'address', "years_of_teaching", "has_master_degree"
         ]
         # Add conditional fields if the user is not a superuser
         admin_excluded_fields = [
-            'years_of_teaching', 'has_master_degree', 'highest_degrees'
+             'has_master_degree', 'highest_degrees'
         ]
 
         widgets = {
@@ -195,10 +196,30 @@ class AccountSettingsForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
             'middle_name': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'autofocus': 'autofocus'}),
+            'ext_name': forms.TextInput(attrs={'class': 'form-control'}),
             'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'age': forms.TextInput(attrs={'readonly': 'readonly', 'class': 'form-control'}),
             'address': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    # def __init__(self, *args, **kwargs):
+    #     user = kwargs.get('instance')  # Get the instance, which is the user
+    #     super().__init__(*args, **kwargs)
+        
+    #     # Exclude fields if the user is an admin (superuser)
+    #     if user and user.is_superuser:
+    #         self.fields.pop('years_of_teaching', None)
+    #         self.fields.pop('has_master_degree', None)
+    #         self.fields.pop('highest_degrees', None)
+    #         self.fields.pop('new_expertise', None)
+    #         self.fields.pop('expertise', None)
+    #     else:
+    #         # Initialize highest_degrees from the user's data
+    #         self.fields['highest_degrees'].initial = self.instance.highest_degree.split(',') if self.instance.highest_degree else []
+    #         faculty = Faculty.objects.filter(custom_user=self.instance).first()
+    #         if faculty:
+    #             # Initialize expertise from the Faculty model
+    #             self.fields['expertise'].initial = faculty.expertise.all()
 
     def __init__(self, *args, **kwargs):
         user = kwargs.get('instance')  # Get the instance, which is the user
@@ -219,6 +240,9 @@ class AccountSettingsForm(forms.ModelForm):
                 # Initialize expertise from the Faculty model
                 self.fields['expertise'].initial = faculty.expertise.all()
 
+        # Initialize ext_name field
+        self.fields['ext_name'].initial = self.instance.ext_name
+
     def save(self, commit=True):
         user = super().save(commit=False)
         if commit:
@@ -232,7 +256,7 @@ class AccountSettingsForm(forms.ModelForm):
 
                 # Update or create the corresponding Faculty record
                 faculty, created = Faculty.objects.get_or_create(custom_user=user)
-                faculty.name = f"{user.first_name} {user.last_name}"
+                faculty.name = f"{user.first_name} {user.middle_name} {user.last_name} {user.ext_name}"
                 faculty.years_of_teaching = user.years_of_teaching
                 faculty.has_master_degree = user.has_master_degree
                 faculty.highest_degree = ','.join(highest_degrees)

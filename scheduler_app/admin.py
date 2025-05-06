@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import GroupInfoTH, Schedule, GroupInfoPOD, SchedulePOD, GroupInfoMD, ScheduleMD, GroupInfoFD, ScheduleFD 
+from .models import GroupInfoTH, Schedule, GroupInfoPOD, SchedulePOD, GroupInfoMD, ScheduleMD, GroupInfoFD, ScheduleFD, FacultyUnavailableDate, FacultyUnavailableSlot
   
 # Register your models here.
 admin.site.register(GroupInfoTH)

@@ -189,6 +189,7 @@ def signup_view(request):
                         first_name=user_data['first_name'],
                         middle_name=user_data['middle_name'],
                         last_name=user_data['last_name'],
+                        ext_name=user_data['ext_name'],
                         date_of_birth=date_of_birth,
                         address=user_data['address'],
                         years_of_teaching=user_data['years_of_teaching'],
@@ -198,7 +199,7 @@ def signup_view(request):
 
                     faculty = Faculty.objects.create(
                         custom_user=user,
-                        name=f"{user.first_name} {user.middle_name} {user.last_name}",
+                        name=f"{user.first_name} {user.middle_name} {user.last_name} {user.ext_name}",
                         years_of_teaching=user.years_of_teaching,
                         has_master_degree=user.has_master_degree,
                         highest_degree=','.join(request.session.get('highest_degrees', [])),
@@ -247,6 +248,7 @@ def signup_view(request):
                     'first_name': form.cleaned_data['first_name'],
                     'middle_name': form.cleaned_data['middle_name'],
                     'last_name': form.cleaned_data['last_name'],
+                    'ext_name': form.cleaned_data['ext_name'],
                     'date_of_birth': form.cleaned_data['date_of_birth'].isoformat(),
                     'address': form.cleaned_data['address'],
                     'years_of_teaching': form.cleaned_data['years_of_teaching'],
@@ -649,7 +651,7 @@ def audit_logs(request):
             audit_logs = AuditTrail.objects.filter(user=request.user).order_by('-time')
         
         # Get the per_page parameter from the request
-        per_page = request.GET.get('per_page', '100')
+        per_page = request.GET.get('per_page', '10')
         
         # Handle 'all' case and invalid per_page values
         if per_page == 'all':
@@ -658,7 +660,7 @@ def audit_logs(request):
             try:
                 per_page = int(per_page)
             except ValueError:
-                per_page = 100  # Default to 10 if conversion fails
+                per_page = 10  # Default to 10 if conversion fails
             paginator = Paginator(audit_logs, per_page)
         
         # Get the current page number
@@ -720,7 +722,7 @@ def faculty_logs(request):
     audit_logs = AuditTrail.objects.filter(user__is_superuser=False).order_by('-time')
     
     # Get the per_page parameter from the request
-    per_page = request.GET.get('per_page', '100')
+    per_page = request.GET.get('per_page', '10')
     
     # Handle 'all' case and invalid per_page values
     if per_page == 'all':
@@ -729,7 +731,7 @@ def faculty_logs(request):
         try:
             per_page = int(per_page)
         except ValueError:
-            per_page = 100  # Default to 100 if conversion fails
+            per_page = 10  # Default to 10 if conversion fails
         paginator = Paginator(audit_logs, per_page)
     
     # Get the current page number

@@ -6,14 +6,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recommend Adviser</title>
     <!-- Bootstrap CSS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Custom CSS -->
     <link href="{% static 'admin/reco_app/recommend_faculty.css' %}" rel="stylesheet">
+    
     <!-- SweetAlert CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/select2.min.css" rel="stylesheet" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Include Select2 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <style>
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            font-family: 'Poppins', sans-serif;
+        }
+        .select2-container--default .select2-results__option {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .group-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 12px !important;
+            }
+
+            .group-info label {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--header-color);
+            font-size: 12px;
+            }
+
+            .group-info select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--secondary-bg);
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px !important;
+            }
+    </style>
 </head>
 <body>
     <div class="flex h-screen flex-col">
@@ -57,6 +97,35 @@
                                 <div class="textarea-container">
                                     <textarea id="title" name="title" class="textarea" rows="4" placeholder="Type your title here..." required></textarea>
                                 </div>
+
+                                <br><br>
+                                <!-- Add member selection fields -->
+                                <fieldset class="fieldset">
+                                    <!-- Group Info Selection -->
+                                    <div class="group-info">
+                                        <div class="fieldset-header">
+                                            <i class="fas fa-user-check"></i> Select Group Member
+                                        </div>
+                                        <!-- Input Field 1 -->
+                                        <label for="member1">Member 1:</label>
+                                        <select id="group_info1" name="group_info1" class="member-select" style="width: 30%;" required>
+                                            <option value="{{ member1 }}" selected>{{ member1 }}</option>
+                                        </select>
+                                    
+                                        <!-- Input Field 2 -->
+                                        <label for="member2">Member 2:</label>
+                                        <select id="group_info2" name="group_info2" class="member-select" style="width: 30%;" required>
+                                            <option value="{{ member2 }}" selected>{{ member2 }}</option>
+                                        </select>
+                                    
+                                        <!-- Input Field 3 -->
+                                        <label for="member3">Member 3:</label>
+                                        <select id="group_info3" name="group_info3" class="member-select" style="width: 30%;">
+                                            <option value="{{ member3 }}" selected>{{ member3 }}</option>
+                                        </select>
+                                    </div>
+                                </fieldset>
+                                <br>
                                 <div class="button-container">
                                     <a href="{% url 'admin_dashboard' %}" class="button back-button">
                                       Back
@@ -94,6 +163,177 @@
             $("#file-upload").trigger("click");
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // CSRF Token Setup for AJAX
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            }
+        });
+
+        $(document).ready(function () {
+            // Ensure collapse functionality works for sidebar
+            $('[data-bs-toggle="collapse"]').on('click', function () {
+                var target = $(this).attr('data-bs-target');
+                $(target).collapse('toggle');
+            });
+
+            // Get members and existing members as arrays
+            const membersList = JSON.parse('{{ members_list|escapejs }}');
+            const existingMembers = new Set(JSON.parse('{{ existing_members_set|escapejs }}'));
+
+            // Filter members to exclude those in existingMembers
+            const filteredMembersList = membersList.filter(name => !existingMembers.has(name));
+
+            // Map filtered members to Select2-compatible data
+            const select2Data = filteredMembersList.map(name => ({ id: name, text: name }));
+
+            // Initialize Select2 dropdowns
+            $('#group_info1').select2({
+                data: select2Data,
+                placeholder: 'Select or Search for Member 1',
+                allowClear: true,
+                width: '25%',
+            }).on('select2:open', function() {
+                $('.select2-search__field').attr('placeholder', 'Type to search...');
+            }).val('{{ member1 }}').trigger('change');
+
+            $('#group_info2').select2({
+                data: select2Data,
+                placeholder: 'Select or Search for Member 2',
+                allowClear: true,
+                width: '25%'
+            }).on('select2:open', function() {
+                $('.select2-search__field').attr('placeholder', 'Type to search...');
+            }).val('{{ member2 }}').trigger('change');
+
+            $('#group_info3').select2({
+                data: select2Data,
+                placeholder: 'Select or Search for Member 3',
+                allowClear: true,
+                width: '25%'
+            }).on('select2:open', function() {
+                $('.select2-search__field').attr('placeholder', 'Type to search...');
+            }).val('{{ member3 }}').trigger('change');
+
+            // Sidebar toggle functionality
+            $('#sidebarToggle').on('click', function(event) {
+                event.preventDefault();
+                $('#sidebar').toggleClass('hidden');
+            });
+
+            // Print and Save Button
+            $('#printButton').on('click', function() {
+                window.print();
+                
+                setTimeout(function() {
+                    if (confirm('Did you successfully print the document?')) {
+                        saveAdviserData();
+                    } else {
+                        alert('Action canceled by user.');
+                    }
+                }, 100);
+            });
+
+            // Save Without Printing Button
+            $('#saveWithoutPrintButton').on('click', function() {
+                if (confirm('Do you want to save without printing?')) {
+                    saveAdviserData();
+                }
+            });
+
+            // Print Without Saving Button
+            $('#printWithoutSaveButton').on('click', function() {
+                window.print();
+            });
+
+            // Save Adviser Data Function
+            function saveAdviserData() {
+                var groupInfo1 = $('#group_info1').val();
+                var groupInfo2 = $('#group_info2').val();
+                var groupInfo3 = $('#group_info3').val();
+                
+                // Get the faculty ID from the first row of the table
+                var facultyId = $('table tbody tr:first-child .faculty-item').data('faculty-id');
+                var approvedTitle = "{{ title }}";
+
+                // Validate required data
+                if (!facultyId) {
+                    showErrorModal("No faculty selected. Please check the data.");
+                    return;
+                }
+
+                if (!groupInfo1 || !approvedTitle) {
+                    showErrorModal("Missing required data. Please check and try again.");
+                    return;
+                }
+
+                // Add loading state
+                const $buttons = $('.btn-printButton');
+                $buttons.prop('disabled', true);
+
+                // Make the AJAX call
+                $.ajax({
+                    url: "{% url 'save_adviser' %}",
+                    method: "POST",
+                    data: {
+                        faculty_id: facultyId,
+                        group_info1: groupInfo1,
+                        group_info2: groupInfo2,
+                        group_info3: groupInfo3,
+                        approved_title: approvedTitle,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        showSuccessModal('Adviser information successfully saved!');
+                        setTimeout(function() {
+                            window.location.href = "{% url 'adviser_list' %}";
+                        }, 1500);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error occurred:", error);
+                        showErrorModal('An error occurred while saving: ' + error);
+                    },
+                    complete: function() {
+                        // Re-enable buttons
+                        $buttons.prop('disabled', false);
+                    }
+                });
+            }
+
+            // Helper function to show success modal
+            function showSuccessModal(message) {
+                $('#successModal .modal-body').text(message);
+                $('#successModal').modal('show');
+            }
+
+            // Helper function to show error modal
+            function showErrorModal(message) {
+                $('#errorModal #errorMessage').text(message);
+                $('#errorModal').modal('show');
+            }
+
+            // Close modal buttons
+            $('.modal .btn-close, .modal .btn-secondary').on('click', function() {
+                $(this).closest('.modal').modal('hide');
+            });
+        });
+                            
+    </script>
 </body>
 </html>

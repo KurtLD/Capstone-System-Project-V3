@@ -63,6 +63,11 @@
                         <label for="{{ form.middle_name.id_for_label }}" class="block mb-2">{{ form.middle_name.label }}</label>
                         {% render_field form.middle_name class="bg-highlight italic-placeholder" placeholder="Enter middle name" %}
                     </div>
+
+                    <div class="form-group mb-4">
+                      <label for="{{ form.ext_name.id_for_label }}" class="block mb-2">Extension Name</label>
+                      {% render_field form.ext_name class="bg-highlight italic-placeholder" placeholder="Enter extension name" %}
+                    </div>
                 </fieldset>
                 
                   <div class="form-group mb-4">
@@ -177,6 +182,10 @@
               <div class="form-group">
                 <label for="new_last_name">Last Name</label>
                 <input type="text" class="form-control" id="new_last_name" name="last_name" placeholder="Enter last name" required>
+              </div>
+              <div class="form-group">
+                <label for="new_ext_name">Extension Name</label>
+                <input type="text" class="form-control" id="new_ext_name" name="ext_name" placeholder="Enter Extension name" required>
               </div>
               <div class="form-group">
                 <label for="new_date_of_birth">Date of Birth</label>

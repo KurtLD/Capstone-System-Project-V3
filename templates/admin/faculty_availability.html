@@ -1,0 +1,372 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+    .availability-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .faculty-selector {
+        margin-bottom: 20px;
+    }
+    .time-slots {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .time-slot {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+    }
+    .time-slot.selected {
+        background-color: #dc3545;
+        color: white;
+    }
+    .date-picker {
+        margin-bottom: 20px;
+    }
+    .selected-dates {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .date-badge {
+        padding: 5px 10px;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+    }
+    .date-badge button {
+        background: none;
+        border: none;
+        color: white;
+        margin-left: 5px;
+        cursor: pointer;
+    }
+    .save-btn {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    .nav-tabs {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
+    }
+    .nav-tabs button {
+        padding: 10px 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+    }
+    .nav-tabs button.active {
+        border-bottom: 3px solid #007bff;
+    }
+    .date-time-container {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    .date-section, .time-section {
+        flex: 1;
+    }
+    .time-section {
+        margin-top: 25px; /* Align with date picker */
+    }
+</style>
+<div class="availability-container">
+    <h1>Faculty Availability Management</h1>
+    
+    <div class="nav-tabs">
+        <button class="active" onclick="openTab(event, 'specific-tab')">Specific Date & Time</button>
+        <button onclick="openTab(event, 'general-tab')">General Time Slots</button>
+    </div>
+    
+    <!-- Tab for specific date/time combinations -->
+    <div id="specific-tab" class="tab-content active">
+        <div class="faculty-selector">
+            <label for="faculty-specific">Select Faculty:</label>
+            <select id="faculty-specific" class="form-control">
+                {% for faculty in faculties %}
+                    <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="date-time-container">
+            <div class="date-section">
+                <label for="unavailable-date">Select Date:</label>
+                <input type="date" id="unavailable-date" class="form-control">
+            </div>
+            
+            <div class="time-section">
+                <h4>Select Time Slots:</h4>
+                <div class="time-slots">
+                    <div class="time-slot" data-slot="8AM-9AM">8AM-9AM</div>
+                    <div class="time-slot" data-slot="9AM-10AM">9AM-10AM</div>
+                    <div class="time-slot" data-slot="10AM-11AM">10AM-11AM</div>
+                    <div class="time-slot" data-slot="11AM-12PM">11AM-12PM</div>
+                    <div class="time-slot" data-slot="1PM-2PM">1PM-2PM</div>
+                    <div class="time-slot" data-slot="2PM-3PM">2PM-3PM</div>
+                    <div class="time-slot" data-slot="3PM-4PM">3PM-4PM</div>
+                    <div class="time-slot" data-slot="4PM-5PM">4PM-5PM</div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="add-date-time" class="btn btn-primary">Add Unavailability</button>
+        
+        <div class="selected-combinations" id="selected-combinations">
+            <!-- Date-time combinations will be added here -->
+        </div>
+        
+        <button id="save-specific" class="save-btn">Save Specific Unavailability</button>
+    </div>
+    
+    <!-- Tab for general time slot unavailability -->
+    <div id="general-tab" class="tab-content">
+        <div class="faculty-selector">
+            <label for="faculty-general">Select Faculty:</label>
+            <select id="faculty-general" class="form-control">
+                {% for faculty in faculties %}
+                    <option value="{{ faculty.id }}">{{ faculty.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <h3>Select Generally Unavailable Time Slots:</h3>
+        <div class="time-slots">
+            <div class="time-slot" data-slot="8AM-9AM">8AM-9AM</div>
+            <div class="time-slot" data-slot="9AM-10AM">9AM-10AM</div>
+            <div class="time-slot" data-slot="10AM-11AM">10AM-11AM</div>
+            <div class="time-slot" data-slot="11AM-12PM">11AM-12PM</div>
+            <div class="time-slot" data-slot="1PM-2PM">1PM-2PM</div>
+            <div class="time-slot" data-slot="2PM-3PM">2PM-3PM</div>
+            <div class="time-slot" data-slot="3PM-4PM">3PM-4PM</div>
+            <div class="time-slot" data-slot="4PM-5PM">4PM-5PM</div>
+        </div>
+        
+        <button id="save-general" class="save-btn">Save General Unavailability</button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function openTab(evt, tabName) {
+        // Hide all tab content
+        $('.tab-content').removeClass('active');
+        
+        // Remove active class from all tabs
+        $('.nav-tabs button').removeClass('active');
+        
+        // Show the current tab
+        $('#' + tabName).addClass('active');
+        
+        // Add active class to the button that opened the tab
+        $(evt.currentTarget).addClass('active');
+    }
+
+    // Specific Date & Time Tab Functionality
+    const selectedCombinations = new Set();
+    let selectedTimeSlots = new Set();
+    
+    // Track selected time slots for the current date
+    $('.time-slot', '#specific-tab').click(function() {
+        $(this).toggleClass('selected');
+        const slot = $(this).data('slot');
+        
+        if (selectedTimeSlots.has(slot)) {
+            selectedTimeSlots.delete(slot);
+        } else {
+            selectedTimeSlots.add(slot);
+        }
+    });
+    
+    $('#add-date-time').click(function() {
+        const date = $('#unavailable-date').val();
+        if (!date) {
+            alert('Please select a date first');
+            return;
+        }
+        
+        if (selectedTimeSlots.size === 0) {
+            alert('Please select at least one time slot');
+            return;
+        }
+        
+        // Create a unique key for this combination
+        const combinationKey = `${date}|${Array.from(selectedTimeSlots).sort().join(',')}`;
+        selectedCombinations.add(combinationKey);
+        renderSelectedCombinations();
+        
+        // Reset selections
+        selectedTimeSlots = new Set();
+        $('.time-slot', '#specific-tab').removeClass('selected');
+    });
+    
+    function renderSelectedCombinations() {
+        const container = $('#selected-combinations');
+        container.empty();
+        
+        selectedCombinations.forEach(combo => {
+            const [date, slots] = combo.split('|');
+            const slotList = slots.split(',');
+            
+            const formattedDate = new Date(date).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            container.append(`
+                <div class="date-badge">
+                    ${formattedDate}: ${slotList.join(', ')}
+                    <button type="button" data-combo="${combo}">&times;</button>
+                </div>
+            `);
+        });
+        
+        // Add click handlers for remove buttons
+        $('.date-badge button', '#selected-combinations').click(function() {
+            const comboToRemove = $(this).data('combo');
+            selectedCombinations.delete(comboToRemove);
+            renderSelectedCombinations();
+        });
+    }
+    
+    $('#save-specific').click(function() {
+        const facultyId = $('#faculty-specific').val();
+        const combinations = Array.from(selectedCombinations);
+        
+        if (combinations.length === 0) {
+            alert('Please add at least one date-time combination');
+            return;
+        }
+        
+        // Prepare data for the server
+        const data = combinations.map(combo => {
+            const [date, slots] = combo.split('|');
+            return {
+                date: date,
+                slots: slots.split(',')
+            };
+        });
+        
+        $.ajax({
+            url: '/save-faculty-specific-unavailability/',
+            method: 'POST',
+            data: {
+                faculty_id: facultyId,
+                combinations: JSON.stringify(data),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                alert('Specific unavailability saved successfully!');
+                selectedCombinations.clear();
+                renderSelectedCombinations();
+            },
+            error: function(xhr) {
+                alert('Error saving specific unavailability: ' + xhr.responseText);
+            }
+        });
+    });
+    
+    // General Time Slots Tab Functionality
+    const selectedGeneralSlots = new Set();
+    
+    $('.time-slot', '#general-tab').click(function() {
+        $(this).toggleClass('selected');
+        const slot = $(this).data('slot');
+        
+        if (selectedGeneralSlots.has(slot)) {
+            selectedGeneralSlots.delete(slot);
+        } else {
+            selectedGeneralSlots.add(slot);
+        }
+    });
+    
+    $('#save-general').click(function() {
+        const facultyId = $('#faculty-general').val();
+        const slots = Array.from(selectedGeneralSlots);
+        
+        if (slots.length === 0) {
+            alert('Please select at least one time slot');
+            return;
+        }
+        
+        $.ajax({
+            url: '/save-faculty-general-unavailability/',
+            method: 'POST',
+            data: {
+                faculty_id: facultyId,
+                slots: slots,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+                alert('General time slot unavailability saved successfully!');
+                selectedGeneralSlots.clear();
+                $('.time-slot', '#general-tab').removeClass('selected');
+            },
+            error: function(xhr) {
+                alert('Error saving general unavailability: ' + xhr.responseText);
+            }
+        });
+    });
+    
+    // Load existing data when faculty changes
+    $('#faculty-specific, #faculty-general').change(function() {
+        const facultyId = $(this).val();
+        const isSpecificTab = $(this).attr('id') === 'faculty-specific';
+        
+        if (isSpecificTab) {
+            selectedCombinations.clear();
+            renderSelectedCombinations();
+            
+            $.get('/get-faculty-specific-unavailability/', { faculty_id: facultyId }, function(data) {
+                data.combinations.forEach(combo => {
+                    const key = `${combo.date}|${combo.slots.sort().join(',')}`;
+                    selectedCombinations.add(key);
+                });
+                renderSelectedCombinations();
+            });
+        } else {
+            selectedGeneralSlots.clear();
+            $('.time-slot', '#general-tab').removeClass('selected');
+            
+            $.get('/get-faculty-general-unavailability/', { faculty_id: facultyId }, function(data) {
+                data.slots.forEach(slot => {
+                    selectedGeneralSlots.add(slot);
+                    $(`.time-slot[data-slot="${slot}"]`, '#general-tab').addClass('selected');
+                });
+            });
+        }
+    });
+    
+    // Initialize with first faculty's data
+    $(document).ready(function() {
+        $('#faculty-specific, #faculty-general').trigger('change');
+        
+        // Disable past dates in date picker
+        const today = new Date().toISOString().split('T')[0];
+        $('#unavailable-date').attr('min', today);
+    });
+</script>

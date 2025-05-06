@@ -6,7 +6,7 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import GroupInfoTHForm, UploadFileForm, GenerateScheduleForm, GroupInfoPODForm, GroupInfoPODEditForm, GroupInfoMDForm, GroupInfoMDEditForm, GroupInfoFDForm, GroupInfoFDEditForm, RoomForm
-from .models import GroupInfoTH, Faculty, Schedule, GroupInfoPOD, SchedulePOD, GroupInfoMD, ScheduleMD, GroupInfoFD, ScheduleFD, Room
+from .models import GroupInfoTH, Faculty, Schedule, GroupInfoPOD, SchedulePOD, GroupInfoMD, ScheduleMD, GroupInfoFD, ScheduleFD, Room, FacultyUnavailableDate, FacultyUnavailableSlot
 from .utils import generate_schedule, get_faculty_assignments
 from .utils2 import generate_schedulePOD, get_faculty_assignmentsPOD
 from .utils3 import generate_scheduleMD, get_faculty_assignmentsMD
@@ -94,6 +94,126 @@ from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.platypus import KeepTogether
 from reportlab.lib.utils import ImageReader  # Import ImageReader for better PNG handling
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET, require_POST
+from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.csrf import csrf_exempt
+from .models import Faculty, FacultyUnavailableDate, FacultyUnavailableSlot
+from datetime import datetime
+import json
+from collections import defaultdict
+from reportlab.platypus import KeepTogether
+from reportlab.lib.utils import ImageReader  # 
+
+@staff_member_required
+def faculty_availability(request):
+    faculties = Faculty.objects.filter(is_active=True)
+    return render(request, 'admin/faculty_availability.html', {'faculties': faculties})
+
+# New endpoints for combined date-time unavailability
+@require_POST
+@csrf_exempt
+@staff_member_required
+def save_faculty_specific_unavailability(request):
+    try:
+        faculty_id = request.POST.get('faculty_id')
+        combinations = json.loads(request.POST.get('combinations', '[]'))
+        
+        # First delete existing specific unavailability for this faculty
+        FacultyUnavailableDate.objects.filter(faculty_id=faculty_id).delete()
+        
+        # Create new records for each date-time combination
+        for combo in combinations:
+            date = datetime.strptime(combo['date'], '%Y-%m-%d').date()
+            for slot in combo['slots']:
+                FacultyUnavailableDate.objects.create(
+                    faculty_id=faculty_id,
+                    date=date,
+                    time_slot=slot
+                )
+                
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@require_GET
+@staff_member_required
+def get_faculty_specific_unavailability(request):
+    faculty_id = request.GET.get('faculty_id')
+    records = FacultyUnavailableDate.objects.filter(faculty_id=faculty_id)
+    
+    # Group by date
+    date_map = defaultdict(list)
+    for record in records:
+        date_map[record.date.strftime('%Y-%m-%d')].append(record.time_slot)
+    
+    combinations = [{'date': date, 'slots': slots} for date, slots in date_map.items()]
+    return JsonResponse({'combinations': combinations})
+
+# Updated endpoints for general time slot unavailability
+@require_POST
+@csrf_exempt
+@staff_member_required
+def save_faculty_unavailable_slots(request):
+    faculty_id = request.POST.get('faculty_id')
+    slots = request.POST.getlist('slots[]', [])
+    
+    try:
+        # First delete existing slots for this faculty
+        FacultyUnavailableSlot.objects.filter(faculty_id=faculty_id).delete()
+        
+        # Add new slots
+        for slot in slots:
+            FacultyUnavailableSlot.objects.create(
+                faculty_id=faculty_id,
+                time_slot=slot
+            )
+            
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@require_GET
+@staff_member_required
+def get_faculty_unavailable_slots(request):
+    faculty_id = request.GET.get('faculty_id')
+    slots = FacultyUnavailableSlot.objects.filter(faculty_id=faculty_id).values_list('time_slot', flat=True)
+    return JsonResponse({
+        'slots': list(slots)
+    })
+
+# Keep this for backward compatibility (if needed)
+@require_POST
+@csrf_exempt
+@staff_member_required
+def save_faculty_unavailable_dates(request):
+    faculty_id = request.POST.get('faculty_id')
+    dates = request.POST.getlist('dates[]', [])
+    
+    try:
+        # First delete existing dates for this faculty
+        FacultyUnavailableDate.objects.filter(faculty_id=faculty_id).delete()
+        
+        # Add new dates (without time slots)
+        for date_str in dates:
+            date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            FacultyUnavailableDate.objects.create(
+                faculty_id=faculty_id,
+                date=date
+            )
+            
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+@require_GET
+@staff_member_required
+def get_faculty_unavailable_dates(request):
+    faculty_id = request.GET.get('faculty_id')
+    dates = FacultyUnavailableDate.objects.filter(faculty_id=faculty_id).values_list('date', flat=True)
+    return JsonResponse({
+        'dates': [date.strftime('%Y-%m-%d') for date in dates]
+    })
 
 
 def room_list(request):
@@ -1587,40 +1707,52 @@ def reassign(request, schedule_id):
 
 def faculty_tally_view(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
+    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+    # current_school_year = SchoolYear.get_active_school_year()
     selected_school_year_id = request.session.get('selected_school_year_id')
+    # get the last school year added to the db
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
 
+    # Get the selected school year from session or fallback to the active school year
     selected_school_year = ''
     if not selected_school_year_id:
         selected_school_year = last_school_year
-        request.session['selected_school_year_id'] = selected_school_year.id
+        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
     else:
+        # Retrieve the selected school year based on the session
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
+    # Initialize a dictionary to hold faculty assignments
     faculty_tally = defaultdict(lambda: defaultdict(int))
 
-    # ✅ Only include schedules that are NOT rescheduled
-    schedules = Schedule.objects.filter(school_year=selected_school_year, has_been_rescheduled=False)
+    # Get all schedules
+    schedules = Schedule.objects.filter(school_year=selected_school_year)
 
+    # Count the number of groups each faculty is assigned as a panel member
     for schedule in schedules:
-        date_str = schedule.date
-        date = datetime.strptime(date_str, '%B %d, %Y')
-        weekday = date.strftime('%A')
+        # Extract the actual date from the string
+        date_str = schedule.date  # Assuming date is in 'Month Day, Year' format
+        date = datetime.strptime(date_str, '%B %d, %Y')  # Parse the date string
+        weekday = date.strftime('%A')  # Get the day name, e.g., "Monday"
 
         # Count assignments for each faculty
-        for faculty_member in [schedule.faculty1, schedule.faculty2, schedule.faculty3]:
-            if faculty_member:
-                faculty_tally[faculty_member.id][weekday] += 1
+        faculty_tally[schedule.faculty1.id][weekday] += 1
+        faculty_tally[schedule.faculty2.id][weekday] += 1
+        faculty_tally[schedule.faculty3.id][weekday] += 1
 
+    # Prepare data for the template
     faculty_summary = []
-    week_dates = {}
 
+    # To store the mapping of weekday to actual dates for this week
+    week_dates = {}
+    
+    # Iterate through the schedules to create a mapping of weekday to actual dates
     for schedule in schedules:
         date_str = schedule.date
         date = datetime.strptime(date_str, '%B %d, %Y')
         weekday = date.strftime('%A')
         if weekday not in week_dates:
-            week_dates[weekday] = date_str
+            week_dates[weekday] = date_str  # Store the first occurrence of the date for that weekday
 
     for faculty_id, days in faculty_tally.items():
         faculty = Faculty.objects.get(id=faculty_id)
@@ -1631,17 +1763,15 @@ def faculty_tally_view(request):
             'wednesday_count': days.get('Wednesday', 0),
             'thursday_count': days.get('Thursday', 0),
             'friday_count': days.get('Friday', 0),
-            'monday_date': week_dates.get('Monday', ''),
-            'tuesday_date': week_dates.get('Tuesday', ''),
-            'wednesday_date': week_dates.get('Wednesday', ''),
-            'thursday_date': week_dates.get('Thursday', ''),
-            'friday_date': week_dates.get('Friday', ''),
         }
-        row['total'] = sum([
-            row['monday_count'], row['tuesday_count'], row['wednesday_count'],
-            row['thursday_count'], row['friday_count']
-        ])
+        # Calculate total assignments
+        total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count'])
+        row['total'] = total
+
         faculty_summary.append(row)
+
+    # Sort the faculty summary based on total assignments in ascending order
+    faculty_summary.sort(key=lambda x: x['total'])
 
     context = {
         'faculty_summary': faculty_summary,

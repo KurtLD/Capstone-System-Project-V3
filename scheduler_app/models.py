@@ -10,6 +10,46 @@ class Room(models.Model):
     def __str__(self):
         return self.name
 
+class FacultyUnavailableDate(models.Model):
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    date = models.DateField()
+    time_slot = models.CharField(max_length=20, default=None, choices=[
+        ("8AM-9AM", "8AM-9AM"),
+        ("9AM-10AM", "9AM-10AM"),
+        ("8AM-9AM", "8AM-9AM"),
+        ("9AM-10AM", "9AM-10AM"),
+        ("10AM-11AM", "10AM-11AM"),
+        ("11AM-12PM", "11AM-12PM"),
+        ("1PM-2PM", "1PM-2PM"),
+        ("2PM-3PM", "2PM-3PM"),
+        ("3PM-4PM", "3PM-4PM"),
+        ("4PM-5PM", "4PM-5PM"),
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('faculty', 'date', 'time_slot')
+
+class FacultyUnavailableSlot(models.Model):
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    time_slot = models.CharField(max_length=20, default=None, choices=[
+        ("8AM-9AM", "8AM-9AM"),
+        ("9AM-10AM", "9AM-10AM"),
+        ("8AM-9AM", "8AM-9AM"),
+        ("9AM-10AM", "9AM-10AM"),
+        ("10AM-11AM", "10AM-11AM"),
+        ("11AM-12PM", "11AM-12PM"),
+        ("1PM-2PM", "1PM-2PM"),
+        ("2PM-3PM", "2PM-3PM"),
+        ("3PM-4PM", "3PM-4PM"),
+        ("4PM-5PM", "4PM-5PM"),
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('faculty', 'time_slot')
+
+
 class GroupInfoTH(models.Model):
     member1 = models.CharField(max_length=100, null=True, blank=True, default=None)
     member2 = models.CharField(max_length=100, null=True, blank=True, default=None)

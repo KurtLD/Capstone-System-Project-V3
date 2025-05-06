@@ -9,9 +9,9 @@ class Expertise(models.Model):
 
 class Faculty(models.Model):
     name = models.CharField(max_length=100)
-    years_of_teaching = models.PositiveIntegerField()
+    years_of_teaching = models.PositiveIntegerField(null=True, blank=True)
     has_master_degree = models.BooleanField(default=False)
-    highest_degree = models.CharField(max_length=100)
+    highest_degree = models.CharField(max_length=100, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     expertise = models.ManyToManyField(Expertise, related_name='faculties', blank=True)
     custom_user = models.OneToOneField(

@@ -27,6 +27,11 @@
         .select2-container--default .select2-results__option {
             font-family: 'Poppins', sans-serif;
         }
+        select.member-select {
+            display: none !important;
+        }
+
+
         
     </style>
 </head>
@@ -201,21 +206,24 @@
                             <label for="group_info">Select Group Member:</label>
                             <!-- Input Field 1 -->
                             <label for="member1">Member 1:</label>
-                            <select id="group_info1" name="group_info1" class="member-select" style="width: 30%;" required>
-                                <option value="{{ member1 }}" selected>{{ member1 }}</option>
-                            </select>
+                            <!-- <select id="group_info1" name="group_info1" class="member-select" style="width: 30%;" required>
+                                <option value="{{ group_info1 }}" selected>{{ group_info1 }}</option>
+                            </select> -->
+                            <input type="text" id="group_info1" class="member-select" style="width: 10%;" value="{{ group_info1 }}" required readonly>
                         
                             <!-- Input Field 2 -->
                             <label for="member2">Member 2:</label>
-                            <select id="group_info2" name="group_info2" class="member-select" style="width: 30%;" required>
+                            <!-- <select id="group_info2" name="group_info2" class="member-select" style="width: 30%;" required>
                                 <option value="{{ member2 }}" selected>{{ member2 }}</option>
-                            </select>
+                            </select> -->
+                            <input type="text" id="group_info2" class="member-select" style="width: 10%;" value="{{ group_info2 }}" required readonly>
                         
                             <!-- Input Field 3 -->
                             <label for="member3">Member 3:</label>
-                            <select id="group_info3" name="group_info3" class="member-select" style="width: 30%;">
+                            <!-- <select id="group_info3" name="group_info3" class="member-select" style="width: 30%;">
                                 <option value="{{ member3 }}" selected>{{ member3 }}</option>
-                            </select>
+                            </select> -->
+                            <input type="text" id="group_info3" class="member-select" style="width: 10%;" value="{{ group_info3 }}" required readonly>
                         </div>
                         
                         
@@ -510,35 +518,35 @@
                             const filteredMembersList = membersList.filter(name => !existingMembers.has(name));
 
                             // Map filtered members to Select2-compatible data
-                            const select2Data = filteredMembersList.map(name => ({ id: name, text: name }));
+                            // const select2Data = filteredMembersList.map(name => ({ id: name, text: name }));
 
-                            // Initialize Select2 dropdowns
-                            $('#group_info1').select2({
-                                data: select2Data,
-                                placeholder: 'Select or Search for Member 1',
-                                allowClear: true,
-                                width: '25%',
-                            }).on('select2:open', function() {
-                                $('.select2-search__field').attr('placeholder', 'Type to search...');
-                            }).val('{{ member1 }}').trigger('change');
+                            // // Initialize Select2 dropdowns
+                            // $('#group_info1').select2({
+                            //     data: select2Data,
+                            //     placeholder: 'Select or Search for Member 1',
+                            //     allowClear: true,
+                            //     width: '25%',
+                            // }).on('select2:open', function() {
+                            //     $('.select2-search__field').attr('placeholder', 'Type to search...');
+                            // }).val('{{ member1 }}').trigger('change');
 
-                            $('#group_info2').select2({
-                                data: select2Data,
-                                placeholder: 'Select or Search for Member 2',
-                                allowClear: true,
-                                width: '25%'
-                            }).on('select2:open', function() {
-                                $('.select2-search__field').attr('placeholder', 'Type to search...');
-                            }).val('{{ member2 }}').trigger('change');
+                            // $('#group_info2').select2({
+                            //     data: select2Data,
+                            //     placeholder: 'Select or Search for Member 2',
+                            //     allowClear: true,
+                            //     width: '25%'
+                            // }).on('select2:open', function() {
+                            //     $('.select2-search__field').attr('placeholder', 'Type to search...');
+                            // }).val('{{ member2 }}').trigger('change');
 
-                            $('#group_info3').select2({
-                                data: select2Data,
-                                placeholder: 'Select or Search for Member 3',
-                                allowClear: true,
-                                width: '25%'
-                            }).on('select2:open', function() {
-                                $('.select2-search__field').attr('placeholder', 'Type to search...');
-                            }).val('{{ member3 }}').trigger('change');
+                            // $('#group_info3').select2({
+                            //     data: select2Data,
+                            //     placeholder: 'Select or Search for Member 3',
+                            //     allowClear: true,
+                            //     width: '25%'
+                            // }).on('select2:open', function() {
+                            //     $('.select2-search__field').attr('placeholder', 'Type to search...');
+                            // }).val('{{ member3 }}').trigger('change');
 
                             // Sidebar toggle functionality
                             $('#sidebarToggle').on('click', function(event) {
@@ -573,30 +581,26 @@
 
                             // Save Adviser Data Function
                             function saveAdviserData() {
+                                console.log("saveAdviserData called");
                                 var groupInfo1 = $('#group_info1').val();
                                 var groupInfo2 = $('#group_info2').val();
                                 var groupInfo3 = $('#group_info3').val();
-                                
-                                // Get the faculty ID from the first row of the table
                                 var facultyId = $('table tbody tr:first-child .faculty-item').data('faculty-id');
                                 var approvedTitle = "{{ title }}";
 
-                                // Validate required data
                                 if (!facultyId) {
-                                    showErrorModal("No faculty selected. Please check the data.");
+                                    console.log("No faculty selected");
+                                    alert("No faculty selected. Please check the data.");
                                     return;
                                 }
 
                                 if (!groupInfo1 || !approvedTitle) {
-                                    showErrorModal("Missing required data. Please check and try again.");
+                                    console.log("Missing required data");
+                                    alert("Missing required data. Please check and try again.");
                                     return;
                                 }
 
-                                // Add loading state
-                                const $buttons = $('.btn-printButton');
-                                $buttons.prop('disabled', true);
-
-                                // Make the AJAX call
+                                console.log("Making AJAX request...");
                                 $.ajax({
                                     url: "{% url 'save_adviser' %}",
                                     method: "POST",
@@ -608,23 +612,17 @@
                                         approved_title: approvedTitle,
                                         csrfmiddlewaretoken: '{{ csrf_token }}'
                                     },
-                                    success: function(response) {
-                                        showSuccessModal('Adviser information successfully saved!');
-                                        setTimeout(function() {
-                                            window.location.href = "{% url 'adviser_list' %}";
-                                        }, 1500);
+                                    success: function (response) {
+                                        console.log("Success:", response);
+                                        alert('Adviser information successfully saved!');
+                                        window.location.href = "{% url 'adviser_list' %}";
                                     },
-                                    error: function(xhr, status, error) {
+                                    error: function (xhr, status, error) {
                                         console.error("Error occurred:", error);
-                                        showErrorModal('An error occurred while saving: ' + error);
-                                    },
-                                    complete: function() {
-                                        // Re-enable buttons
-                                        $buttons.prop('disabled', false);
+                                        alert('An error occurred: ' + error);
                                     }
                                 });
                             }
-
                             // Helper function to show success modal
                             function showSuccessModal(message) {
                                 $('#successModal .modal-body').text(message);
@@ -694,3 +692,4 @@
     
 </body>
 </html>
+

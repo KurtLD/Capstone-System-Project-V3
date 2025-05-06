@@ -199,6 +199,16 @@ urlpatterns = [
     path('delete/<int:pk>/', scheduler_views.room_delete, name='room_delete'),
 
     # Title hearing schedule related URL patterns
+    path('faculty-availability/', scheduler_views.faculty_availability, name='faculty_availability'),
+    path('save-faculty-specific-unavailability/', scheduler_views.save_faculty_specific_unavailability, name='save_specific'),
+    path('get-faculty-specific-unavailability/', scheduler_views.get_faculty_specific_unavailability, name='get_specific'),
+    path('save-faculty-unavailable-slots/', scheduler_views.save_faculty_unavailable_slots, name='save_slots'),
+    path('get-faculty-unavailable-slots/', scheduler_views.get_faculty_unavailable_slots, name='get_slots'),
+    # Optional: Keep these for backward compatibility
+    path('save-faculty-unavailable-dates/', scheduler_views.save_faculty_unavailable_dates, name='save_dates'),
+    path('get-faculty-unavailable-dates/', scheduler_views.get_faculty_unavailable_dates, name='get_dates'),
+
+
     path('checker1/', scheduler_views.checker1, name='checker1'),
     path('add_group/', scheduler_views.add_group, name='add_group'),
     path('groups/', scheduler_views.group_info_list, name='group_info_list'),
