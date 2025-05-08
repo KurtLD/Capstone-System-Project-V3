@@ -10,15 +10,28 @@
 }
 
 body {
-    background-color: var(--primary-bg);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 30px;
-    margin: 20px;
     font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    color: var(--text-color);
+    background: url('https://www.upplanderalprotein.com/wp-content/uploads/2023/04/bg.webp') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
 }
 
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
+    z-index: 1;
+}
 
 h2 {
     font-size: 20px;
