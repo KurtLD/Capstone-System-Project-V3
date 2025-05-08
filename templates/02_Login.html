@@ -54,7 +54,7 @@
 
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 900px;
             background: var(--card-background);
             border-radius: 16px;
             box-shadow: var(--shadow);
@@ -63,9 +63,41 @@
             z-index: 2;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+        }
+
+        .illustration-section {
+            flex: 1;
+            background: var(--primary-light);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .illustration-section img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         .form-content {
+            flex: 1;
             padding: 2rem;
         }
 
@@ -254,6 +286,9 @@
 </head>
 <body>
     <div class="container">
+        <div class="illustration-section">
+            <img src="https://img.freepik.com/free-vector/mobile-login-concept-illustration_114360-83.jpg" alt="Login Illustration" />
+        </div>
         <div class="form-content">
             <div class="form-header">
                 <img src="{% static 'images/IT.png' %}" alt="IT Department Logo" />
