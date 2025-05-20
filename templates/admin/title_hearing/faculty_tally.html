@@ -12,6 +12,65 @@
     <link href="{% static 'admin/title_hearing/faculty_tally.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-input {
+            border-radius: 9999px;
+            padding-left: 2.5rem;
+            padding-right: 2rem;
+            border: 1px solid #e5e7eb;
+            width: 100%;
+            height: 2.5rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        .clear-search {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        
+        .clear-search.visible {
+            opacity: 1;
+        }
+        
+        .search-results-count {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+    </style>
 </head>
 <body>
     <div class="flex h-screen flex-col">
@@ -30,7 +89,20 @@
                             <h3>Faculty Assignments Tally for Title Hearing</h3>
                             <button class="no-print same-size-button btn btn-secondary" onclick="window.location.href='{% url 'schedule_list' %}'">Back</button>
                         </div>
-                        <table class="table table-striped">
+                        
+                        <!-- Modernized Search Bar -->
+                        <div class="search-container no-print px-4 py-3">
+                            <div class="relative">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="facultySearch" class="search-input" placeholder="Search faculty..." autocomplete="off">
+                                <button class="clear-search" id="clearSearch">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="search-results-count" id="searchResults"></div>
+                        </div>
+                        
+                        <table class="table table-striped" id="facultyTable">
                             <thead>
                                 <tr>
                                     <th>Faculty</th>
@@ -73,6 +145,22 @@
         document.addEventListener("DOMContentLoaded", function () {
             const sidebarToggle = document.getElementById("sidebarToggle");
             const sidebar = document.getElementById("sidebar");
+            const searchInput = document.getElementById("facultySearch");
+            const clearSearch = document.getElementById("clearSearch");
+            const searchResults = document.getElementById("searchResults");
+            const originalTableData = [];
+
+            // Store original table data to restore when clearing search
+            document.querySelectorAll("#facultyTable tbody tr").forEach(row => {
+                const rowData = [];
+                row.querySelectorAll("td").forEach(cell => {
+                    rowData.push({
+                        text: cell.textContent,
+                        html: cell.innerHTML
+                    });
+                });
+                originalTableData.push(rowData);
+            });
 
             // Retrieve the sidebar state from localStorage
             const sidebarState = localStorage.getItem("sidebarState");
@@ -90,6 +178,68 @@
                     localStorage.setItem("sidebarState", sidebar.classList.contains("hidden") ? "closed" : "open");
                 });
             }
+            
+            // Enhanced search functionality
+            function performSearch() {
+                const value = searchInput.value.toLowerCase();
+                const rows = document.querySelectorAll("#facultyTable tbody tr");
+                let visibleCount = 0;
+                
+                rows.forEach((row, rowIndex) => {
+                    const cells = row.querySelectorAll("td");
+                    let rowContainsText = false;
+                    
+                    // Restore original content first
+                    cells.forEach((cell, cellIndex) => {
+                        cell.innerHTML = originalTableData[rowIndex][cellIndex].html;
+                    });
+                    
+                    // Check if row contains search text
+                    if (value.length > 0) {
+                        cells.forEach((cell, cellIndex) => {
+                            const text = originalTableData[rowIndex][cellIndex].text.toLowerCase();
+                            if (text.includes(value)) {
+                                rowContainsText = true;
+                                const regex = new RegExp(escapeRegExp(value), "gi");
+                                const originalText = originalTableData[rowIndex][cellIndex].text;
+                                cell.innerHTML = originalText.replace(regex, match => 
+                                    `<mark style="background-color: rgba(250, 210, 8, 0.5);">${match}</mark>`
+                                );
+                            }
+                        });
+                    }
+                    
+                    // Show/hide row based on search
+                    row.style.display = (value.length === 0 || rowContainsText) ? "" : "none";
+                    if (row.style.display !== "none") visibleCount++;
+                });
+                
+                // Update UI elements
+                if (value.length > 0) {
+                    clearSearch.classList.add("visible");
+                    searchResults.textContent = `Showing ${visibleCount} of ${rows.length} faculty members`;
+                } else {
+                    clearSearch.classList.remove("visible");
+                    searchResults.textContent = "";
+                }
+            }
+            
+            // Helper function to escape regex special characters
+            function escapeRegExp(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+            
+            // Event listeners
+            searchInput.addEventListener("input", function() {
+                clearSearch.classList.toggle("visible", this.value.length > 0);
+                performSearch();
+            });
+            
+            clearSearch.addEventListener("click", function() {
+                searchInput.value = "";
+                searchInput.focus();
+                performSearch();
+            });
         });
     </script>
 </body>
