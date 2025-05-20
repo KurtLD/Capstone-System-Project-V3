@@ -5160,46 +5160,62 @@ def mock_adviser_record_detail(request, adviser_id):
     return render(request, 'faculty/mock_grade/adviser_record_detailMD.html', context)
     
 # function to fetch the preoral recommendations based on the project title
+# function to fetch the preoral recommendations based on the project title
 def mock_reco(request, schedule_id):
-    # Get the last school year added to the db
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-    # Get the current school year
-    # current_school_year = SchoolYear.get_active_school_year()
-    selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
+    # Fetch all school years (for dropdown or display)
+    school_years = SchoolYear.objects.all().order_by('start_year')
+
+    # Get the last school year added to the DB
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
 
-    # Get the selected school year from session or fallback to the active school year
+    # Get selected school year from session or use the latest one
+    selected_school_year_id = request.session.get('selected_school_year_id')
     selected_school_year = ''
     if not selected_school_year_id:
         selected_school_year = last_school_year
         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
     else:
-        # Retrieve the selected school year based on the session
-        selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+        selected_school_year = get_object_or_404(SchoolYear, id=selected_school_year_id)
 
-    # Fetch the CustomUser object associated with the logged-in user
+    # Get current user and related faculty profile
     user_profile = get_object_or_404(CustomUser, id=request.user.id)
-
-    # Fetch the Faculty object associated with the CustomUser
     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
 
-    # Fetch records from the Adviser model where the faculty is an adviser
-    adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
-    adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
+    # Filter Adviser records for selected school year
+    adviser_records = Adviser.objects.filter(
+        faculty=faculty_member,
+        school_year=selected_school_year,
+        accepted=False,
+        declined=False
+    )
+    adviser_records2 = Adviser.objects.filter(
+        faculty=faculty_member,
+        school_year=selected_school_year,
+        accepted=True
+    )
 
+    # Get schedule and recommendations
     schedule = get_object_or_404(ScheduleMD, id=schedule_id)
-    recos = Mock_Recos.objects.filter(project_title=schedule.title, school_year=selected_school_year)
-    print(recos)
+    recos = Mock_Recos.objects.filter(
+        project_title=schedule.title,
+        school_year=selected_school_year
+    )
+
+    # Escape HTML in recommendations (if needed)
     for reco in recos:
         reco.recommendation = escape(reco.recommendation)
+
     context = {
         'schedule': schedule,
         'recos': recos,
         'adviser_records': adviser_records,
-        'adviser_records2': adviser_records2
+        'adviser_records2': adviser_records2,
+        'school_years': school_years,
+        'selected_school_year': selected_school_year
     }
+
     return render(request, 'faculty/mock_grade/mock_reco.html', context)
+
 
 
 
