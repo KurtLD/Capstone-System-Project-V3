@@ -585,3 +585,65 @@ fieldset {
         border-color: var(--highlighted-color);
     }
 }
+/* Add this new media query section */
+@media (max-width: 576px) {
+    /* Hide table headers completely on very small screens */
+    thead {
+        display: none;
+    }
+    
+    /* Stack table cells vertically */
+    table, tbody, td, tr {
+        display: block;
+        width: 100%;
+    }
+    
+    /* Style table rows as cards */
+    tr {
+        margin-bottom: 15px;
+        background: var(--secondary-bg);
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Center-align cell content */
+    td {
+        text-align: center;
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    /* Remove border from last cell */
+    td:last-child {
+        border-bottom: none;
+    }
+    
+    /* Show data-label before content */
+    td::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: 600;
+        color: var(--highlighted-color);
+        margin-bottom: 3px;
+    }
+    
+    /* Adjust card padding for very small screens */
+    .card {
+        padding: 15px 10px !important;
+    }
+    
+    /* Make search input full width */
+    #searchInput {
+        width: 100%;
+        margin: 0 0 10px 0;
+        float: none;
+    }
+    
+    /* Adjust pagination for very small screens */
+    .pagination .step-links a,
+    .pagination .step-links .current {
+        padding: 1px 3px !important;
+        font-size: 9px !important;
+        margin: 0 2px;
+    }
+}
