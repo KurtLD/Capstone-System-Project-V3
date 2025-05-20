@@ -24,11 +24,9 @@ def generate_schedule(request, start_date=None):
     groups = list(GroupInfoTH.objects.filter(school_year=selected_school_year))
     faculties = list(Faculty.objects.filter(is_active=True))
     rooms = list(Room.objects.all().order_by("status"))
-    base_time_slots = ["8AM-9AM", "9AM-10AM", "10AM-11AM", "11AM-12PM", 
-                       "1PM-2PM", "2PM-3PM", "3PM-4PM", "4PM-5PM"]
+    base_time_slots = ["8AM-9AM", "9AM-10AM", "10AM-11AM", "11AM-12PM", "1PM-2PM", "2PM-3PM", "3PM-4PM", "4PM-5PM"]
 
     subject_teacher_ids = {group.subject_teacher.id for group in groups if group.subject_teacher}
-
     section_groups = defaultdict(list)
     for group in groups:
         section_groups[group.section].append(group)
@@ -40,7 +38,6 @@ def generate_schedule(request, start_date=None):
                 interleaved_groups.append(section_group.pop(0))
             if not section_group:
                 del section_groups[section]
-
     groups = interleaved_groups
 
     days = []
@@ -55,8 +52,10 @@ def generate_schedule(request, start_date=None):
     faculty_daily_assignments = defaultdict(lambda: defaultdict(int))
     faculty_time_slots = defaultdict(set)
     faculty_pairings = defaultdict(set)
+    faculty_lead_counts = defaultdict(int)
     room_schedule = defaultdict(lambda: defaultdict(set))
     assignments = []
+    used_panels = set()
 
     subject_teacher_groups = defaultdict(list)
     for group in groups:
@@ -65,14 +64,11 @@ def generate_schedule(request, start_date=None):
 
     total_assignments_needed = len(groups) * 3
     max_assignments_per_faculty = math.ceil(total_assignments_needed / len(faculties))
-    min_assignments_per_faculty = max_assignments_per_faculty - 1
 
     faculty_unavailable_dates = defaultdict(set)
     faculty_unavailable_slots = defaultdict(set)
-
     for entry in FacultyUnavailableDate.objects.all():
         faculty_unavailable_dates[entry.faculty_id].add(entry.date)
-
     for entry in FacultyUnavailableSlot.objects.all():
         faculty_unavailable_slots[entry.faculty_id].add(entry.time_slot)
 
@@ -98,16 +94,9 @@ def generate_schedule(request, start_date=None):
             f for f in faculties
             if f not in exclude
             and is_faculty_available(f, day, slot)
-            and faculty_daily_assignments[f.id][day] < 4
+            and faculty_daily_assignments[f.id][day] < 2 #total panel assignment per day
+            and faculty_assignments[f.id] < max_assignments_per_faculty
         ]
-
-        def faculty_allowed(f):
-            if f.id in subject_teacher_ids:
-                return faculty_assignments[f.id] < max_assignments_per_faculty
-            else:
-                return faculty_assignments[f.id] < min_assignments_per_faculty
-
-        base_available = [f for f in base_available if faculty_allowed(f)]
 
         panel = []
         if subject_teacher in base_available:
@@ -121,26 +110,29 @@ def generate_schedule(request, start_date=None):
         base_available.sort(key=score_faculty)
         panel += base_available[:3 - len(panel)]
 
+        if len(panel) == 3:
+            panel.sort(key=lambda f: faculty_lead_counts[f.id])
         return panel if len(panel) == 3 else []
 
     day_str_to_date = {d: datetime.strptime(d, '%B %d, %Y').date() for d in days}
     scheduled_group_ids = set()
+    unscheduled_groups = []
 
     def find_best_day_and_slot(group, preferred_day=None):
         start_day_index = days.index(preferred_day) if preferred_day else 0
-
         for day_idx in range(start_day_index, len(days)):
             day = days[day_idx]
             day_obj = day_str_to_date[day]
-            current_day_of_week = day_obj.strftime('%A')
-            time_slots = base_time_slots[1:] if current_day_of_week == "Monday" else base_time_slots
-
+            time_slots = base_time_slots[1:] if day_obj.strftime('%A') == "Monday" else base_time_slots
             for slot in time_slots:
                 for room in rooms:
                     if slot in room_schedule[room.id][day]:
                         continue
                     panel = get_available_faculties(day, slot, group=group)
                     if panel:
+                        panel_ids = tuple(sorted(f.id for f in panel))
+                        if panel_ids not in used_panels:
+                            used_panels.add(panel_ids)
                         return day, slot, room, panel
         return None, None, None, None
 
@@ -148,6 +140,7 @@ def generate_schedule(request, start_date=None):
         day, slot, room, panel = find_best_day_and_slot(group)
         if panel:
             room_schedule[room.id][day].add(slot)
+            faculty_lead_counts[panel[0].id] += 1
             for faculty in panel:
                 faculty_daily_assignments[faculty.id][day] += 1
                 faculty_assignments[faculty.id] += 1
@@ -166,41 +159,47 @@ def generate_schedule(request, start_date=None):
             })
             scheduled_group_ids.add(group.id)
         else:
+            unscheduled_groups.append(group)
             logger.warning(f"Failed to schedule group {group.id} after all attempts")
 
-    for teacher_id in subject_teacher_ids:
-        teacher = next((f for f in faculties if f.id == teacher_id), None)
-        while faculty_assignments[teacher_id] < max_assignments_per_faculty:
-            for group in subject_teacher_groups[teacher_id]:
-                if group.id in scheduled_group_ids:
-                    continue
-                for day in days:
-                    for slot in base_time_slots:
-                        for room in rooms:
-                            if slot in room_schedule[room.id][day]:
-                                continue
-                            other_faculties = [f for f in faculties if f.id != teacher_id and is_faculty_available(f, day, slot) and faculty_assignments[f.id] < min_assignments_per_faculty]
-                            if len(other_faculties) < 2:
-                                continue
-                            panel = [teacher] + other_faculties[:2]
-                            room_schedule[room.id][day].add(slot)
-                            for faculty in panel:
-                                faculty_assignments[faculty.id] += 1
-                                faculty_daily_assignments[faculty.id][day] += 1
-                                faculty_time_slots[faculty.id].add((day, slot))
-                            assignments.append({
-                                'group': group,
-                                'faculty': panel,
-                                'slot': slot,
-                                'date': day,
-                                'room': room,
-                                'day_label': f"Day {days.index(day) + 1}"
-                            })
-                            scheduled_group_ids.add(group.id)
-                            break
-                    else:
+    # Retry with relaxed constraints
+    for group in unscheduled_groups:
+        for day in days:
+            for slot in base_time_slots:
+                for room in rooms:
+                    if slot in room_schedule[room.id][day]:
                         continue
-                    break
+                    qualified_faculty = [
+                        f for f in faculties
+                        if is_faculty_available(f, day, slot)
+                        and faculty_daily_assignments[f.id][day] < 2 #total panel assignment per day
+                        and faculty_assignments[f.id] < max_assignments_per_faculty
+                    ]
+                    qualified_faculty.sort(
+                        key=lambda f: (-int(f.has_master_degree), -f.years_of_teaching, faculty_assignments[f.id])
+                    )
+                    if len(qualified_faculty) >= 3:
+                        panel = qualified_faculty[:3]
+                        panel.sort(key=lambda f: faculty_lead_counts[f.id])
+                        room_schedule[room.id][day].add(slot)
+                        faculty_lead_counts[panel[0].id] += 1
+                        for faculty in panel:
+                            faculty_assignments[faculty.id] += 1
+                            faculty_daily_assignments[faculty.id][day] += 1
+                            faculty_time_slots[faculty.id].add((day, slot))
+                        assignments.append({
+                            'group': group,
+                            'faculty': panel,
+                            'slot': slot,
+                            'date': day,
+                            'room': room,
+                            'day_label': f"Day {days.index(day) + 1}"
+                        })
+                        scheduled_group_ids.add(group.id)
+                        break
+                else:
+                    continue
+                break
 
     with transaction.atomic():
         Schedule.objects.bulk_create([
@@ -246,6 +245,7 @@ def generate_schedule(request, start_date=None):
     print(f"Avg unique coworkers: {avg_coworkers:.2f}")
 
     return assignments, assignment_report
+
 
 def get_faculty_assignments():
     faculty_assignments = {f.id: 0 for f in Faculty.objects.all()}
