@@ -1747,31 +1747,25 @@ def faculty_tally_view(request):
     week_dates = {}
     
     # Iterate through the schedules to create a mapping of weekday to actual dates
-    for schedule in schedules:
-        date_str = schedule.date
-        date = datetime.strptime(date_str, '%B %d, %Y')
-        weekday = date.strftime('%A')
-        if weekday not in week_dates:
-            week_dates[weekday] = date_str  # Store the first occurrence of the date for that weekday
-
     for faculty_id, days in faculty_tally.items():
-        faculty = Faculty.objects.get(id=faculty_id)
+        faculty = Faculty.objects.select_related('custom_user').get(id=faculty_id)
+        last_name = faculty.custom_user.last_name if faculty.custom_user and faculty.custom_user.last_name else ''
+        
         row = {
             'faculty_name': faculty.name,
+            'last_name': last_name,
             'monday_count': days.get('Monday', 0),
             'tuesday_count': days.get('Tuesday', 0),
             'wednesday_count': days.get('Wednesday', 0),
             'thursday_count': days.get('Thursday', 0),
             'friday_count': days.get('Friday', 0),
         }
-        # Calculate total assignments
-        total = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count'])
-        row['total'] = total
+        row['total'] = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count'])
 
         faculty_summary.append(row)
 
-    # Sort the faculty summary based on total assignments in ascending order
-    faculty_summary.sort(key=lambda x: x['total'])
+    # Now sort by last_name
+    faculty_summary.sort(key=lambda x: x['last_name'].lower())
 
     context = {
         'faculty_summary': faculty_summary,

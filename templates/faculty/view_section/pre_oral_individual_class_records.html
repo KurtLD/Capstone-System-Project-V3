@@ -56,44 +56,28 @@
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                                     <div class="btn-group" role="group" aria-label="Navigation Options">
                                                         <a href="{% url 'class_record' %}" class="btn btn-primary">Group</a>
-                                                        <a href="{% url 'pre_oral_individual_class_record' %}" class="btn btn-secondary">Individual</a>
+                                                        <a href="#" class="btn btn-secondary">Individual</a>
                                                     </div>
                                                 </div>
-                                                {% if page_obj %}
+                                                <!-- Table -->
+                                                 <div class="container mt-4">
+                                                    <h3>Individual Class Record for Pre Oral Defense</h3>
                                                     <div class="table-responsive">
                                                         <table class="table table-striped">
                                                             <thead>
                                                                 <tr>
                                                                     <th>Section</th>
-                                                                    <th>Members</th>
-                                                                    <th>Title</th>
-                                                                    <th>Graded</th>
-                                                                    <th>Action</th>
+                                                                    <th>Member</th>
+                                                                    <th>Grade</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
                                                                 {% for record in page_obj %}
                                                                 <tr>
                                                                     <td>{{ record.section }}</td>
-                                                                    <td>{{ record.member1 }}<br>{{ record.member2 }}<br>{{ record.member3 }}</td>
-                                                                    <td>{{ record.title }}</td>
-                                                                    {% with graded_count_threshold=3 %}
+                                                                    <td>{{ record.member }}</td>
                                                                     <td>
-                                                                        {% if record.is_graded and record.graded_count == graded_count_threshold %}
-                                                                            <span class="graded"><i>Yes</i></span>
-                                                                        {% elif record.is_graded and record.graded_count != graded_count_threshold %}
-                                                                            <span class="graded"><i>Incomplete</i></span>
-                                                                        {% else %}
-                                                                            <span class="not-graded"><i>Not Yet</i></span>
-                                                                        {% endif %}
-                                                                    </td>
-                                                                    {% endwith %}
-                                                                    <td>
-                                                                        <div class="btn-group" role="group" aria-label="Action Buttons">
-                                                                            <a href="{% url 'grade_view' record.id %}" class="btn btn-warning btn-sm">
-                                                                                View
-                                                                            </a>
-                                                                        </div>
+                                                                        {{ record.rating|floatformat:1 }}
                                                                     </td>
                                                                 </tr>
                                                                 {% endfor %}
@@ -101,7 +85,7 @@
                                                         </table>
                                                     </div>
                                                     <!-- Pagination Controls -->
-                                                    <div class="pagination" id="pagination-title-hearing">
+                                                    <div class="pagination">
                                                         <span class="step-links">
                                                             {% if page_obj.has_previous %}
                                                                 <a href="?page=1">&laquo;</a>
@@ -116,9 +100,7 @@
                                                             {% endif %}
                                                         </span>
                                                     </div>
-                                                {% else %}
-                                                    <p>No Class Records Available.</p>
-                                                {% endif %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -127,51 +109,30 @@
                         </div>
                     </div>
                 </main>
-                <footer class="footer">
-                    {% include 'footer.html' %}
+                <!-- Footer -->
+                <footer class="footer mt-auto py-3">
+                    <div class="container">
+                        <span class="text-muted">Faculty Class Record System &copy; 2023</span>
+                    </div> 
                 </footer>
             </div>
         </div>
     </div>
-<!-- Bootstrap Scripts -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<!-- AdminLTE App -->
-<script src="https://adminlte.io/themes/v3/plugins/jquery/jquery.min.js"></script>
-<script src="https://adminlte.io/themes/v3/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="https://adminlte.io/themes/v3/dist/js/adminlte.min.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("sidebarToggle").addEventListener("click", function (event) {
-            event.preventDefault();
-            var sidebar = document.getElementById("sidebar");
-            var navbar = document.querySelector(".main-header.navbar");
-            sidebar.classList.toggle("hidden");
-            sidebar.classList.toggle("no-hover");
-            navbar.classList.toggle("navbar-expanded");
-            toggleMenuIcon();
+    <!-- Include JS Libraries -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script> -->
+    <script src="{% static 'faculty/pre_oral_class_records.js' %}"></script>
+    <script>
+        // JavaScript for handling dropdown and other interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const groupSelector = document.getElementById('groupSelector');
+            groupSelector.addEventListener('change', function() {
+                window.location.href = this.value;
+            });
         });
-
-        function toggleMenuIcon() {
-            const menuIcon = document.getElementById('menu-icon');
-            menuIcon.classList.toggle('fa-bars');
-            menuIcon.classList.toggle('fa-times');
-        }
-
-        // Show the default section
-        showSection('grades');
-    });
-
-    function showSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('.content').forEach(function (section) {
-            section.style.display = 'none';
-        });
-
-        // Show the selected section
-        document.getElementById(sectionId).style.display = 'block';
-    }
-</script>
-</body>
+    </script>
+</body> 
 </html>

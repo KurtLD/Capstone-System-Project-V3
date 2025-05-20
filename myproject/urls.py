@@ -26,6 +26,7 @@ from users.views import (
     mock_adviser_records_view,
     final_adviser_records_view,
     pre_oral_class_record,
+    pre_oral_individual_class_record,
     mock_class_record,
     final_class_record,
 
@@ -164,6 +165,7 @@ urlpatterns = [
     path('mock-adviser_records/', mock_adviser_records_view, name='mock_adviser_records'),
     path('final-adviser_records/', final_adviser_records_view, name='final_adviser_records'),
     path('pre-oral-class-record/', pre_oral_class_record, name='class_record'),
+    path('pre_oral_individual_class_record/', pre_oral_individual_class_record, name='pre_oral_individual_class_record'),
     path('mock-class-record/', mock_class_record, name='mock_class_record'),
     path('final-class-record/', final_class_record, name='final_class_record'),
     path('school-year-selection/', school_year_selection, name='school_year_selection'),  
