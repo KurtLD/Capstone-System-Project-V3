@@ -104,6 +104,7 @@ import json
 from collections import defaultdict
 from reportlab.platypus import KeepTogether
 from reportlab.lib.utils import ImageReader  # 
+from decimal import Decimal
 
 @staff_member_required
 def faculty_availability(request):
@@ -3916,6 +3917,8 @@ def grade_view(request, title_id):
     criteria_list = PreOral_EvaluationSection.objects.filter(school_year=selected_school_year).annotate(total_criteria_percentage=Sum('criteria__percentage'))
     criteria_percentage = PreOral_Criteria.objects.filter(school_year=selected_school_year)
     total_points = sum(criteria.percentage for criteria in criteria_percentage)
+    print("total points: ", total_points)
+    
     adviser_records = ''
     if not request.user.is_superuser:
         adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
@@ -3953,6 +3956,8 @@ def grade_view(request, title_id):
     total_grade2 = grades.aggregate(Sum('member2_grade'))['member2_grade__sum']
     total_grade3 = grades.aggregate(Sum('member3_grade'))['member3_grade__sum']
 
+    total_points_member1 = total_points
+
     #grade for the member1
     if total_grade1 is not None and grades.count() is not 0:
         print("total_grade1: ", total_grade1)
@@ -3984,6 +3989,9 @@ def grade_view(request, title_id):
         average_grade3 = 0  # Handle the case where no grades exist
         print('the grade is 0')
     print('member grade3: ', average_grade3)
+
+
+    
 
     member1 = groups.first().member1 if groups.exists() else None
     member2 = groups.first().member2 if groups.exists() else None
@@ -4026,6 +4034,15 @@ def grade_view(request, title_id):
 
     total_earned_points = sum(summary_totals.values())
     print(f"total points: {total_earned_points}")
+
+    # Calculate the average grade for each member
+    oral_avg_grade = (Decimal(average_grade1) + Decimal(average_grade2) + Decimal(average_grade3)) / Decimal(3)
+    print('oral_avg_grade: ', oral_avg_grade)
+    total_points_member1 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade1)
+    print('total_points_member1: ', total_points_member1, average_grade1)
+    total_points_member2 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade2)
+    print('total_points_member2: ', total_points_member2, average_grade2)
+    total_points_member3 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade3)
 
     # Determine the verdict based on total earned points
     records = grades.count()
@@ -4071,7 +4088,10 @@ def grade_view(request, title_id):
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
-        'adviser_records': adviser_records
+        'adviser_records': adviser_records,
+        'total_points_member1': total_points_member1,
+        'total_points_member2': total_points_member2,
+        'total_points_member3': total_points_member3,
     }
     
     return render(request, 'faculty/pre_oral_grade/adviser_record_detailPOD.html', context)

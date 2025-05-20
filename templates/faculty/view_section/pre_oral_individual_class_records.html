@@ -77,7 +77,13 @@
                                                                     <td>{{ record.section }}</td>
                                                                     <td>{{ record.member }}</td>
                                                                     <td>
-                                                                        {{ record.rating|floatformat:1 }}
+                                                                        {% if record.rating >= 1 %}
+                                                                            {{ record.rating|floatformat:1 }}
+                                                                        {% elif record.rating == None %}
+                                                                            <span class="labelText"><i>Not Yet Rated</i></span>
+                                                                        {% else %}
+                                                                            <span class="text-danger">INC</span>
+                                                                        {% endif %}
                                                                     </td>
                                                                 </tr>
                                                                 {% endfor %}
