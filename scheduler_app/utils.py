@@ -72,18 +72,40 @@ def generate_schedule(request, start_date=None):
     for entry in FacultyUnavailableSlot.objects.all():
         faculty_unavailable_slots[entry.faculty_id].add(entry.time_slot)
 
+    # def is_faculty_available(faculty, day_str, slot):
+    #     try:
+    #         day = datetime.strptime(day_str, '%B %d, %Y').date()
+    #         if (day_str, slot) in faculty_time_slots[faculty.id]:
+    #             return False
+    #         if day in faculty_unavailable_dates[faculty.id]:
+    #             return False
+    #         if slot in faculty_unavailable_slots[faculty.id]:
+    #             return False
+    #         return True
+    #     except ValueError:
+    #         return False
+
     def is_faculty_available(faculty, day_str, slot):
         try:
             day = datetime.strptime(day_str, '%B %d, %Y').date()
-            if (day_str, slot) in faculty_time_slots[faculty.id]:
-                return False
             if day in faculty_unavailable_dates[faculty.id]:
                 return False
             if slot in faculty_unavailable_slots[faculty.id]:
                 return False
+            
+            # Get time slot index
+            slot_index = base_time_slots.index(slot)
+            assigned_slots = [base_time_slots.index(s) for d, s in faculty_time_slots[faculty.id] if d == day_str]
+
+            # Check if there's a time conflict or too close (less than 2-slot gap)
+            for assigned in assigned_slots:
+                if abs(assigned - slot_index) < 2:
+                    return False
+            
             return True
         except ValueError:
             return False
+
 
     def get_available_faculties(day, slot, group=None, exclude=None, current_panel=None):
         exclude = exclude or []
@@ -94,7 +116,7 @@ def generate_schedule(request, start_date=None):
             f for f in faculties
             if f not in exclude
             and is_faculty_available(f, day, slot)
-            and faculty_daily_assignments[f.id][day] < 2 #total panel assignment per day
+            and faculty_daily_assignments[f.id][day] < 3 #total panel assignment per day
             and faculty_assignments[f.id] < max_assignments_per_faculty
         ]
 
@@ -172,7 +194,7 @@ def generate_schedule(request, start_date=None):
                     qualified_faculty = [
                         f for f in faculties
                         if is_faculty_available(f, day, slot)
-                        and faculty_daily_assignments[f.id][day] < 2 #total panel assignment per day
+                        and faculty_daily_assignments[f.id][day] < 3 #total panel assignment per day
                         and faculty_assignments[f.id] < max_assignments_per_faculty
                     ]
                     qualified_faculty.sort(

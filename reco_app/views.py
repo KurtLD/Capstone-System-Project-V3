@@ -15,7 +15,8 @@ from spacy.lang.en.stop_words import STOP_WORDS
 from spacy.tokens import Token
 import logging
 from django.http import HttpResponse
-from scheduler_app.models import GroupInfoPOD
+
+from scheduler_app.models import GroupInfoPOD, Schedule
 import json
 from django.urls import reverse
 from .my_dictionary import IMPORTANT_TERMS, EXPERTISE_SYNONYMS, EXPERTISE_DICTIONARY

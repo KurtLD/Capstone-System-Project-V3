@@ -990,6 +990,84 @@ def title_hearing_view(request):
 
 #     return render(request, 'faculty/view_section/pre_oral_defense.html', context)
 
+# @login_required
+# def pre_oral_defense_view(request):
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+    
+#     # Get the selected school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id
+#     else:
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     user_profile = get_object_or_404(CustomUser, id=request.user.id)
+#     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
+
+#     # Get adviser records (both pending and accepted)
+#     adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
+#     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
+
+#     # Get schedules where faculty is panelist
+#     schedules_pod = SchedulePOD.objects.filter(
+#         Q(faculty1=faculty_member) |
+#         Q(faculty2=faculty_member) |
+#         Q(faculty3=faculty_member),
+#         school_year=selected_school_year
+#     )
+
+#     # Get schedules where faculty is adviser
+#     adviser_schedules = SchedulePOD.objects.filter(
+#         group__adviser=faculty_member,
+#         school_year=selected_school_year
+#     )
+
+#     # Combine both querysets and remove duplicates
+#     all_schedules = (schedules_pod | adviser_schedules).distinct().order_by('id')
+
+#     # Add day of the week to each schedule
+#     for schedule in all_schedules:
+#         schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')
+#         schedule.day_of_week = schedule_date.strftime('%A')
+#         print(schedule.date, schedule.slot, schedule.room)
+
+#     # Construct schedules with status
+#     schedules_with_status = []
+#     for schedule in all_schedules:
+#         current_faculty_graded = PreOral_Grade.objects.filter(
+#             faculty=faculty_member,
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         recent_recommendation = PreOral_Recos.objects.filter(
+#             project_title=schedule.title,
+#             school_year=selected_school_year
+#         ).exists()
+
+#         schedules_with_status.append((schedule, current_faculty_graded, recent_recommendation))
+
+#     paginator = Paginator(schedules_with_status, 5)
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     context = {
+#         'page_obj': page_obj,
+#         'selected_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#         'faculty_member': faculty_member,
+#         'verdict_message': request.GET.get('verdict_message'),
+#         'selected_verdict': request.GET.get('selected_verdict'),
+#         'adviser_records': adviser_records,
+#         'adviser_records2': adviser_records2
+#     }
+
+#     return render(request, 'faculty/view_section/pre_oral_defense.html', context)
+
 @login_required
 def pre_oral_defense_view(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
@@ -1068,104 +1146,8 @@ def pre_oral_defense_view(request):
 
     return render(request, 'faculty/view_section/pre_oral_defense.html', context)
 
-# @login_required
-# def mock_defense_view(request):
-#     school_years = SchoolYear.objects.all().order_by('start_year')
-#     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-#     # current_school_year = SchoolYear.get_active_school_year()
-#     # print('current year: ', current_school_year)
-#     selected_school_year_id = request.session.get('selected_school_year_id')
-#     # get the last school year added to the db
-#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
 
-#     # Get the selected school year from session or fallback to the active school year
-#     selected_school_year = ''
-#     if not selected_school_year_id:
-#         selected_school_year = last_school_year
-#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
-#     else:
-#         # Retrieve the selected school year based on the session
-#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
-#     # Fetch the CustomUser object associated with the logged-in user
-#     user_profile = get_object_or_404(CustomUser, id=request.user.id)
-
-#     # Fetch the Faculty object associated with the CustomUser
-#     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
-
-#     # Fetch records from the Adviser model where the faculty is an adviser
-#     adviser_records = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=False, declined=False)
-#     adviser_records2 = Adviser.objects.filter(faculty=faculty_member, school_year=selected_school_year, accepted=True)
-
-#     # Fetch schedules where the faculty is involved (as Panelist, Adviser, or Capstone Teacher)
-#     schedules_md = ScheduleMD.objects.filter(
-#         Q(faculty1=faculty_member) |
-#         Q(faculty2=faculty_member) |
-#         Q(faculty3=faculty_member),
-#         school_year=selected_school_year
-#     )
-
-#     # Add day of the week to each schedule
-#     for schedule in schedules_md:
-#         schedule_date = datetime.strptime(schedule.date, '%B %d, %Y')  # Adjust format to match 'October 19, 2024'
-#         schedule.day_of_week = schedule_date.strftime('%A')
-
-#     # Construct schedules_md_status with each schedule and its grade existence status
-#     schedules_md_status = []
-#     for schedule in schedules_md:
-#         faculty1_exists = Mock_Grade.objects.filter(
-#             faculty=schedule.faculty1,
-#             project_title=schedule.title,
-#             school_year=selected_school_year
-#         ).exists()
-
-#         faculty2_exists = Mock_Grade.objects.filter(
-#             faculty=schedule.faculty2,
-#             project_title=schedule.title,
-#             school_year=selected_school_year
-#         ).exists()
-
-#         faculty3_exists = Mock_Grade.objects.filter(
-#             faculty=schedule.faculty3,
-#             project_title=schedule.title,
-#             school_year=selected_school_year
-#         ).exists()
-
-#         # Determine if the current faculty member has graded
-#         current_faculty_graded = Mock_Grade.objects.filter(
-#             faculty=faculty_member,
-#             project_title=schedule.title,
-#             school_year=selected_school_year
-#         ).exists()
-
-#         recent_recommendation = Mock_Recos.objects.filter(
-#             project_title=schedule.title,
-#             school_year=selected_school_year
-#         ).exists()
-
-#         schedules_md_status.append((schedule, current_faculty_graded, recent_recommendation))
-
-#     paginator = Paginator(schedules_md_status, 5)  # Show 5 schedules per page
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-
-#     verdict_message = request.GET.get('verdict_message')
-#     selected_verdict = request.GET.get('selected_verdict')
-
-#     context = {
-#         'page_obj': page_obj,
-#         # 'current_school_year': current_school_year,
-#         'selected_school_year': selected_school_year,
-#         'last_school_year': last_school_year,
-#         'school_years': school_years,
-#         'adviser_records': adviser_records,
-#         'adviser_records2': adviser_records2,
-#         'verdict_message': verdict_message,
-#         'selected_verdict': selected_verdict,
-#         'faculty_member': faculty_member
-#     }
-
-#     return render(request, 'faculty/view_section/mock_defense.html', context)
 
 @login_required
 def mock_defense_view(request):
@@ -1634,6 +1616,215 @@ def pre_oral_class_record(request):
         'adviser_records': adviser_records,
         'adviser_records2': adviser_records2
     })
+
+@login_required
+def pre_oral_individual_class_record(request):
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+    # Get the selected school year from session or fallback to the active school year
+    selected_school_year = ''
+    if not selected_school_year_id:
+        selected_school_year = last_school_year
+        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+    else:
+        selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+    # Get all available school years
+    school_years = SchoolYear.objects.all().order_by('start_year')
+    if school_years.count() == 0:
+        SchoolYear.create_new_school_year()
+        school_years = SchoolYear.objects.all().order_by('start_year')
+
+    # Fetch the CustomUser object associated with the logged-in user
+    user_profile = get_object_or_404(CustomUser, id=request.user.id)
+
+    # Fetch the Faculty object associated with the CustomUser
+    faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
+
+    # Fetch records from the GroupInfoPOD model
+    class_records = GroupInfoPOD.objects.filter(
+        capstone_teacher=faculty_member,
+        school_year=selected_school_year
+    ).order_by('section')
+
+    # Fetch grades for the current school year
+    grades = PreOral_Grade.objects.filter(school_year=selected_school_year)
+
+    # Apply the formula for each member
+    def calculate_rating(individual_grade):
+        
+        if individual_grade == 0.6 * 100:
+            return 3
+        elif individual_grade > 0.6 * 100:
+            return 3 - (2 * (individual_grade - 0.6 * 100)) / (0.4 * 100)
+        else:
+            return 3 + (2 * (0.6 * 100 - individual_grade)) / (0.6 * 100)
+
+
+    # Transform the data to display individual members in each row
+    individual_records = []
+    for record in class_records:
+        # Initialize grades with default values
+        member1_grade = 0
+        member2_grade = 0
+        member3_grade = 0
+
+        # Fetch grades for the group
+        group_grades = grades.filter(project_title=record.title).first()
+
+        # Calculate ratings for each member
+        if group_grades:
+            # Aggregate data
+            summary_totals = {}
+            for grade_by_panel in grades:
+                summary_grades_data = grade_by_panel.get_grades_data()
+                for section_name, section_grades in summary_grades_data.items():
+                    if section_name not in summary_totals:
+                        summary_totals[section_name] = {'total': 0, 'count': 0}
+                    if isinstance(section_grades, dict):
+                        total = sum(section_grades.values())
+                        summary_totals[section_name]['total'] += total
+                        summary_totals[section_name]['count'] += 1
+                    elif isinstance(section_grades, list):
+                        try:
+                            average = sum(section_grades) / len(section_grades)
+                        except ZeroDivisionError:
+                            average = 0
+                        summary_totals[section_name]['total'] += average
+                        summary_totals[section_name]['count'] += 1
+
+            # Finalize totals
+            for section_name, data in summary_totals.items():
+                    if "Oral Presentation" in section_name or "Individual Grade" in section_name:
+                        # Divide by 3 for specific sections
+                        if data['count'] > 0:
+                            summary_totals[section_name] = data['total'] / 3
+                            summary_totals[section_name] = summary_totals[section_name] / 3
+                        else:
+                            summary_totals[section_name] = 0
+                    else:
+                        # For other sections, just average over the count
+                        if data['count'] > 0:
+                            summary_totals[section_name] = data['total'] / 3
+                        else:
+                            summary_totals[section_name] = 0
+
+            total_earned_points = sum(summary_totals.values())
+            print(f"total points: {total_earned_points}")
+
+            # Initialize member variables
+            member1_grade = grades.first().member1_grade if grades.exists() else None
+            member2_grade = grades.first().member2_grade if grades.exists() else None
+            member3_grade = grades.first().member3_grade if grades.exists() else None
+            recommendation = grades.first().recommendation if grades.exists() else None
+            total_grade1 = grades.aggregate(Sum('member1_grade'))['member1_grade__sum']
+            total_grade2 = grades.aggregate(Sum('member2_grade'))['member2_grade__sum']
+            total_grade3 = grades.aggregate(Sum('member3_grade'))['member3_grade__sum']
+
+            #grade for the member1
+            if total_grade1 is not None and grades.count() != 0:
+                average_grade1 = total_grade1 / 3
+                print('the grade is no 0')
+                
+            else:
+                average_grade1 = 0  # Handle the case where no grades exist
+                print('the grade is 0')
+            print('member grade1', average_grade1)
+
+            #grade for the member2
+            if total_grade2 is not None and grades.count() != 0:
+                average_grade2 = total_grade2 / 3
+                print('the grade is no 0')
+                
+            else:
+                average_grade2 = 0  # Handle the case where no grades exist
+                print('the grade is 0')
+            print('member grade3', average_grade2)
+
+            #grade for the member3
+            if total_grade3 is not None and grades.count() != 0:
+                average_grade3 = total_grade3 / 3
+                print('the grade is no 0')
+                
+            else:
+                average_grade3 = 0  # Handle the case where no grades exist
+                print('the grade is 0')
+            print('member grade3', average_grade3)
+            print(average_grade1, average_grade2, average_grade3)
+
+            valid_members = 0
+            if member1_grade != -1:
+                valid_members += 1
+            if member2_grade != -1:
+                valid_members += 1
+            if member3_grade != -1:
+                valid_members += 1
+
+            
+            member_grade = (average_grade1 + average_grade2 + average_grade3)/valid_members
+            print(f"member grade: {member_grade}")
+
+            adjusted_total_earned_points = total_earned_points - member_grade
+            print(f"adjusted total points: {adjusted_total_earned_points}")
+
+            
+            if member1_grade != -1:
+                average_grade1 = average_grade1 + adjusted_total_earned_points
+                print("average_grade1: ", average_grade1)
+                member1_rating = calculate_rating(average_grade1)
+            if member2_grade != -1:
+                average_grade2 = average_grade2 + adjusted_total_earned_points
+                member2_rating = calculate_rating(average_grade2)
+            if member3_grade != -1: 
+                average_grade3 = average_grade3 + adjusted_total_earned_points
+                member3_rating = calculate_rating(average_grade3)
+
+        else:
+            member1_rating = member2_rating = member3_rating = None
+
+        # Add individual records
+        if record.member1:
+            individual_records.append({
+                'section': record.section,
+                'member': record.member1,
+                'title': record.title,
+                'grade': member1_grade,
+                'rating': member1_rating,
+            })
+        if record.member2:
+            individual_records.append({
+                'section': record.section,
+                'member': record.member2,
+                'title': record.title,
+                'grade': member2_grade,
+                'rating': member2_rating,
+            })
+        if record.member3:
+            individual_records.append({
+                'section': record.section,
+                'member': record.member3,
+                'title': record.title,
+                'grade': member3_grade,
+                'rating': member3_rating,
+            })
+
+        
+    # Sort individual_records alphabetically by 'member'
+    individual_records = sorted(individual_records, key=lambda x: str(x['member']).lower())
+
+    # Paginate the individual records, showing 10 records per page
+    paginator = Paginator(individual_records, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'faculty/view_section/pre_oral_individual_class_records.html', {
+        'page_obj': page_obj,
+        'current_school_year': selected_school_year,
+        'last_school_year': last_school_year,
+        'school_years': school_years,
+    })
+  
 
 @login_required
 def mock_class_record(request):
