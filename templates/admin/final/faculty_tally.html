@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Assignments Tally for Final</title>
+    <title>Faculty Assignments Tally for Final Defense</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -13,6 +13,125 @@
     <link href="{% static 'admin/pre_oral/faculty_tallyPOD.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Search bar styles */
+        .search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-input {
+            border-radius: 9999px;
+            padding-left: 2.5rem;
+            padding-right: 2rem;
+            border: 1px solid #e5e7eb;
+            width: 100%;
+            height: 2.5rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        .clear-search {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        
+        .clear-search.visible {
+            opacity: 1;
+        }
+        
+        .search-results-count {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Center text by default for all table cells */
+        #facultyTable td, #facultyTable th {
+            text-align: center;
+        }
+
+        /* Responsive styles for mobile view */
+        @media (max-width: 576px) {
+            #facultyTable {
+                width: 100%;
+            }
+            .same-size-button {
+               display: none; /* Hide the button in mobile view */
+            }
+
+            #facultyTable thead {
+                display: none; /* Hide the table header in mobile view */
+            }
+
+            #facultyTable tbody tr {
+                display: block;
+                margin-bottom: 1rem;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            #facultyTable tbody td {
+                display: block;
+                text-align: right; /* Align text to the right in mobile view */
+                padding: 0.5rem;
+                position: relative;
+                padding-left: 50%;
+                border: none;
+            }
+
+            #facultyTable tbody td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0.5rem;
+                width: 45%;
+                font-weight: bold;
+                color: #333;
+                text-align: left; /* Keep label aligned left for clarity */
+            }
+
+            #facultyTable tbody td:not(:last-child) {
+                border-bottom: 1px solid #e5e7eb;
+            }
+        }
+
+        /* Adjust back button size based on sidebar state */
+        .sidebar-open .same-size-button {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .sidebar-closed .same-size-button {
+            font-size: 0.9rem;
+            padding: 0.375rem 0.75rem;
+        }
+    </style>
 </head>
 <body>
     <div class="flex h-screen flex-col">
@@ -33,36 +152,47 @@
                             <h3>Faculty Assignments Tally for Final Defense</h3>
                             <button class="no-print same-size-button btn btn-secondary" onclick="window.location.href='{% url 'schedule_listFD' %}'">Back</button>
                         </div>
+                        <!-- Modernized Search Bar -->
+                        <div class="search-container no-print px-4 py-3">
+                            <div class="relative">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="facultySearch" class="search-input" placeholder="Search faculty..." autocomplete="off">
+                                <button class="clear-search" id="clearSearch">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="search-results-count" id="searchResults"></div>
+                        </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped" id="facultyTable">
                                     <thead>
                                         <tr>
-                                            <th>Faculty</th>
-                                            <th>Monday <br>({{ faculty_summary.0.monday_date }})</th>
-                                            <th>Tuesday <br>({{ faculty_summary.0.tuesday_date }})</th>
-                                            <th>Wednesday <br>({{ faculty_summary.0.wednesday_date }})</th>
-                                            <th>Thursday <br>({{ faculty_summary.0.thursday_date }})</th>
-                                            <th>Friday <br>({{ faculty_summary.0.friday_date }})</th>
-                                            <th>Panel Total</th>
-                                            <th>Advisee Count</th>
-                                            <th>Capstone Teacher Count</th>
-                                            <th>Overall Total</th>
+                                            <th data-label="Faculty">Faculty</th>
+                                            <th data-label="Monday">Monday <br>({{ faculty_summary.0.monday_date }})</th>
+                                            <th data-label="Tuesday">Tuesday <br>({{ faculty_summary.0.tuesday_date }})</th>
+                                            <th data-label="Wednesday">Wednesday <br>({{ faculty_summary.0.wednesday_date }})</th>
+                                            <th data-label="Thursday">Thursday <br>({{ faculty_summary.0.thursday_date }})</th>
+                                            <th data-label="Friday">Friday <br>({{ faculty_summary.0.friday_date }})</th>
+                                            <th data-label="Panel Total">Panel Total</th>
+                                            <th data-label="Advisee Count">Advisee Count</th>
+                                            <th data-label="Capstone Teacher Count">Capstone Teacher Count</th>
+                                            <th data-label="Overall Total">Overall Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for faculty in faculty_summary %}
                                             <tr>
-                                                <td>{{ faculty.faculty_name }}</td>
-                                                <td>{{ faculty.monday_count }}</td>
-                                                <td>{{ faculty.tuesday_count }}</td>
-                                                <td>{{ faculty.wednesday_count }}</td>
-                                                <td>{{ faculty.thursday_count }}</td>
-                                                <td>{{ faculty.friday_count }}</td>
-                                                <td>{{ faculty.panel_total }}</td>
-                                                <td>{{ faculty.adviser_count }}</td>
-                                                <td>{{ faculty.capstone_teacher_count }}</td>
-                                                <td>{{ faculty.total }}</td>
+                                                <td data-label="Faculty">{{ faculty.faculty_name }}</td>
+                                                <td data-label="Monday">{{ faculty.monday_count }}</td>
+                                                <td data-label="Tuesday">{{ faculty.tuesday_count }}</td>
+                                                <td data-label="Wednesday">{{ faculty.wednesday_count }}</td>
+                                                <td data-label="Thursday">{{ faculty.thursday_count }}</td>
+                                                <td data-label="Friday">{{ faculty.friday_count }}</td>
+                                                <td data-label="Panel Total">{{ faculty.panel_total }}</td>
+                                                <td data-label="Advisee Count">{{ faculty.adviser_count }}</td>
+                                                <td data-label="Capstone Teacher Count">{{ faculty.capstone_teacher_count }}</td>
+                                                <td data-label="Overall Total">{{ faculty.total }}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -86,14 +216,40 @@
         document.addEventListener("DOMContentLoaded", function () {
             const sidebarToggle = document.getElementById("sidebarToggle");
             const sidebar = document.getElementById("sidebar");
+            const searchInput = document.getElementById("facultySearch");
+            const clearSearch = document.getElementById("clearSearch");
+            const searchResults = document.getElementById("searchResults");
+            const originalTableData = [];
+            const body = document.body;
 
-            // Retrieve the sidebar state from localStorage
-            const sidebarState = localStorage.getItem("sidebarState");
-            if (sidebarState === "closed") {
-                sidebar.classList.add("hidden");
-            } else {
-                sidebar.classList.remove("hidden");
+            // Store original table data to restore when clearing search
+            document.querySelectorAll("#facultyTable tbody tr").forEach(row => {
+                const rowData = [];
+                row.querySelectorAll("td").forEach(cell => {
+                    rowData.push({
+                        text: cell.textContent,
+                        html: cell.innerHTML
+                    });
+                });
+                originalTableData.push(rowData);
+            });
+
+            // Set initial sidebar state class
+            function setSidebarStateClass() {
+                const sidebarState = localStorage.getItem("sidebarState");
+                if (sidebarState === "closed") {
+                    sidebar.classList.add("hidden");
+                    body.classList.add("sidebar-closed");
+                    body.classList.remove("sidebar-open");
+                } else {
+                    sidebar.classList.remove("hidden");
+                    body.classList.add("sidebar-open");
+                    body.classList.remove("sidebar-closed");
+                }
             }
+
+            // Initialize sidebar state
+            setSidebarStateClass();
 
             // Sidebar toggle functionality
             if (sidebarToggle) {
@@ -101,10 +257,81 @@
                     event.preventDefault();
                     sidebar.classList.toggle("hidden");
 
+                    // Update body classes
+                    if (sidebar.classList.contains("hidden")) {
+                        body.classList.add("sidebar-closed");
+                        body.classList.remove("sidebar-open");
+                    } else {
+                        body.classList.add("sidebar-open");
+                        body.classList.remove("sidebar-closed");
+                    }
+
                     // Store the sidebar state in localStorage
                     localStorage.setItem("sidebarState", sidebar.classList.contains("hidden") ? "closed" : "open");
                 });
             }
+
+            // Enhanced search functionality
+            function performSearch() {
+                const value = searchInput.value.toLowerCase();
+                const rows = document.querySelectorAll("#facultyTable tbody tr");
+                let visibleCount = 0;
+
+                rows.forEach((row, rowIndex) => {
+                    const cells = row.querySelectorAll("td");
+                    let rowContainsText = false;
+
+                    // Restore original content first
+                    cells.forEach((cell, cellIndex) => {
+                        cell.innerHTML = originalTableData[rowIndex][cellIndex].html;
+                    });
+
+                    // Check if row contains search text
+                    if (value.length > 0) {
+                        cells.forEach((cell, cellIndex) => {
+                            const text = originalTableData[rowIndex][cellIndex].text.toLowerCase();
+                            if (text.includes(value)) {
+                                rowContainsText = true;
+                                const regex = new RegExp(escapeRegExp(value), "gi");
+                                const originalText = originalTableData[rowIndex][cellIndex].text;
+                                cell.innerHTML = originalText.replace(regex, match =>
+                                    `<mark style="background-color: rgba(250, 210, 8, 0.5);">${match}</mark>`
+                                );
+                            }
+                        });
+                    }
+
+                    // Show/hide row based on search
+                    row.style.display = (value.length === 0 || rowContainsText) ? "" : "none";
+                    if (row.style.display !== "none") visibleCount++;
+                });
+
+                // Update UI elements
+                if (value.length > 0) {
+                    clearSearch.classList.add("visible");
+                    searchResults.textContent = `Showing ${visibleCount} of ${rows.length} faculty members`;
+                } else {
+                    clearSearch.classList.remove("visible");
+                    searchResults.textContent = "";
+                }
+            }
+
+            // Helper function to escape regex special characters
+            function escapeRegExp(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            // Event listeners
+            searchInput.addEventListener("input", function() {
+                clearSearch.classList.toggle("visible", this.value.length > 0);
+                performSearch();
+            });
+
+            clearSearch.addEventListener("click", function() {
+                searchInput.value = "";
+                searchInput.focus();
+                performSearch();
+            });
         });
     </script>
 </body>
