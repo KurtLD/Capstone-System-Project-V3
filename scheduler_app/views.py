@@ -1708,50 +1708,50 @@ def reassign(request, schedule_id):
 
 def faculty_tally_view(request):
     school_years = SchoolYear.objects.all().order_by('start_year')
-    # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
-    # current_school_year = SchoolYear.get_active_school_year()
     selected_school_year_id = request.session.get('selected_school_year_id')
-    # get the last school year added to the db
-    last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
 
-    # Get the selected school year from session or fallback to the active school year
-    selected_school_year = ''
+    # Get the last school year added to the db
+    last_school_year = SchoolYear.objects.order_by('-end_year').first()
+
+    # Determine the selected school year
     if not selected_school_year_id:
         selected_school_year = last_school_year
-        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+        request.session['selected_school_year_id'] = selected_school_year.id
     else:
-        # Retrieve the selected school year based on the session
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
-    # Initialize a dictionary to hold faculty assignments
+    # Initialize faculty tally and weekday-date mapping
     faculty_tally = defaultdict(lambda: defaultdict(int))
+    weekday_date_map = {}
 
-    # Get all schedules
+    # Get all schedules for the selected school year
     schedules = Schedule.objects.filter(school_year=selected_school_year)
 
-    # Count the number of groups each faculty is assigned as a panel member
     for schedule in schedules:
-        # Extract the actual date from the string
-        date_str = schedule.date  # Assuming date is in 'Month Day, Year' format
-        date = datetime.strptime(date_str, '%B %d, %Y')  # Parse the date string
-        weekday = date.strftime('%A')  # Get the day name, e.g., "Monday"
+        try:
+            date_str = schedule.date  # Assuming 'Month Day, Year' format
+            date = datetime.strptime(date_str, '%B %d, %Y')
+            weekday = date.strftime('%A')  # e.g., 'Monday'
 
-        # Count assignments for each faculty
-        faculty_tally[schedule.faculty1.id][weekday] += 1
-        faculty_tally[schedule.faculty2.id][weekday] += 1
-        faculty_tally[schedule.faculty3.id][weekday] += 1
+            # Set the first occurrence of a weekday in the map
+            if weekday not in weekday_date_map:
+                weekday_date_map[weekday] = date.strftime('%B %d, %Y')
 
-    # Prepare data for the template
+            # Count faculty assignments
+            for faculty in [schedule.faculty1, schedule.faculty2, schedule.faculty3]:
+                if faculty:
+                    faculty_tally[faculty.id][weekday] += 1
+        except Exception as e:
+            print(f"Error processing schedule {schedule.id}: {e}")
+            continue
+
+    # Build summary list
     faculty_summary = []
 
-    # To store the mapping of weekday to actual dates for this week
-    week_dates = {}
-    
-    # Iterate through the schedules to create a mapping of weekday to actual dates
     for faculty_id, days in faculty_tally.items():
         faculty = Faculty.objects.select_related('custom_user').get(id=faculty_id)
-        last_name = faculty.custom_user.last_name if faculty.custom_user and faculty.custom_user.last_name else ''
-        
+        last_name = faculty.custom_user.last_name if faculty.custom_user else ''
+
         row = {
             'faculty_name': faculty.name,
             'last_name': last_name,
@@ -1761,21 +1761,30 @@ def faculty_tally_view(request):
             'thursday_count': days.get('Thursday', 0),
             'friday_count': days.get('Friday', 0),
         }
-        row['total'] = sum(row[day] for day in ['monday_count', 'tuesday_count', 'wednesday_count', 'thursday_count', 'friday_count'])
-
+        row['total'] = sum(row[day] for day in [
+            'monday_count', 'tuesday_count', 'wednesday_count',
+            'thursday_count', 'friday_count'
+        ])
         faculty_summary.append(row)
 
-    # Now sort by last_name
+    # Sort by last name
     faculty_summary.sort(key=lambda x: x['last_name'].lower())
 
+    # Dates for template (default to empty string if not found)
     context = {
         'faculty_summary': faculty_summary,
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
+        'monday_date': weekday_date_map.get('Monday', ''),
+        'tuesday_date': weekday_date_map.get('Tuesday', ''),
+        'wednesday_date': weekday_date_map.get('Wednesday', ''),
+        'thursday_date': weekday_date_map.get('Thursday', ''),
+        'friday_date': weekday_date_map.get('Friday', ''),
     }
 
     return render(request, 'admin/title_hearing/faculty_tally.html', context)
+
 
 
 
