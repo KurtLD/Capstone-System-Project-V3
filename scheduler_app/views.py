@@ -4042,7 +4042,7 @@ def grade_view(request, title_id):
                     summary_totals[section_name] = 0
 
     total_earned_points = sum(summary_totals.values())
-    print(f"total points: {total_earned_points}")
+    print(f"total earned points: {total_earned_points}")
 
     # Calculate the average grade for each member
     oral_avg_grade = (Decimal(average_grade1) + Decimal(average_grade2) + Decimal(average_grade3)) / Decimal(3)

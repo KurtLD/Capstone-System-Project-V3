@@ -72,17 +72,15 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                {% for record in page_obj %}
+                                                                {% for group in page_obj %}
                                                                 <tr>
-                                                                    <td>{{ record.section }}</td>
-                                                                    <td>{{ record.member }}</td>
+                                                                    <td>{{ group.section }}</td>
+                                                                    <td>{{ group.member }}</td>
                                                                     <td>
-                                                                        {% if record.rating >= 1 %}
-                                                                            {{ record.rating|floatformat:1 }}
-                                                                        {% elif record.rating == None %}
-                                                                            <span class="labelText"><i>Not Yet Rated</i></span>
+                                                                        {% if group.grade == "INC" or group.grade == "Not Graded" %}
+                                                                            {{ group.grade }}
                                                                         {% else %}
-                                                                            <span class="text-danger">INC</span>
+                                                                            {{ group.rating|floatformat:1 }}
                                                                         {% endif %}
                                                                     </td>
                                                                 </tr>

@@ -92,6 +92,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count, Case, When, Value, IntegerField, Subquery, OuterRef, Exists, BooleanField
 from django.db import transaction
 from datetime import datetime
+from decimal import Decimal
 
 
 def developer_profile(request):
@@ -1622,63 +1623,60 @@ def pre_oral_individual_class_record(request):
     selected_school_year_id = request.session.get('selected_school_year_id')
     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
 
-    # Get the selected school year from session or fallback to the active school year
-    selected_school_year = ''
     if not selected_school_year_id:
         selected_school_year = last_school_year
-        request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+        request.session['selected_school_year_id'] = selected_school_year.id
     else:
         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
 
-    # Get all available school years
     school_years = SchoolYear.objects.all().order_by('start_year')
     if school_years.count() == 0:
         SchoolYear.create_new_school_year()
         school_years = SchoolYear.objects.all().order_by('start_year')
 
-    # Fetch the CustomUser object associated with the logged-in user
     user_profile = get_object_or_404(CustomUser, id=request.user.id)
-
-    # Fetch the Faculty object associated with the CustomUser
     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
 
-    # Fetch records from the GroupInfoPOD model
     class_records = GroupInfoPOD.objects.filter(
         capstone_teacher=faculty_member,
         school_year=selected_school_year
     ).order_by('section')
 
-    # Fetch grades for the current school year
     grades = PreOral_Grade.objects.filter(school_year=selected_school_year)
 
-    # Apply the formula for each member
     def calculate_rating(individual_grade):
-        
-        if individual_grade == 0.6 * 100:
+        if individual_grade == 60:
             return 3
-        elif individual_grade > 0.6 * 100:
-            return 3 - (2 * (individual_grade - 0.6 * 100)) / (0.4 * 100)
+        elif individual_grade > 60:
+            return 3 - (2 * (individual_grade - 60)) / 40
         else:
-            return 3 + (2 * (0.6 * 100 - individual_grade)) / (0.6 * 100)
+            return 3 + (2 * (60 - individual_grade)) / 60
 
-
-    # Transform the data to display individual members in each row
     individual_records = []
     for record in class_records:
-        # Initialize grades with default values
-        member1_grade = 0
-        member2_grade = 0
-        member3_grade = 0
+        group_grades_qs = grades.filter(project_title=record.title)
 
-        # Fetch grades for the group
-        group_grades = grades.filter(project_title=record.title).first()
+        if group_grades_qs.count() < 3 and group_grades_qs.count() > 0:
+            # Mark all as incomplete
+            member1_grade = member2_grade = member3_grade = "INC"
+            member1_rating = member2_rating = member3_rating = "INC"
+        elif group_grades_qs.count() == 3:
+            # Aggregate member grades
+            total_grade1 = group_grades_qs.aggregate(Sum('member1_grade'))['member1_grade__sum'] or 0
+            total_grade2 = group_grades_qs.aggregate(Sum('member2_grade'))['member2_grade__sum'] or 0
+            total_grade3 = group_grades_qs.aggregate(Sum('member3_grade'))['member3_grade__sum'] or 0
+            print(total_grade1, total_grade2, total_grade3)
 
-        # Calculate ratings for each member
-        if group_grades:
-            # Aggregate data
+            average_grade1 = total_grade1 / 3
+            average_grade2 = total_grade2 / 3
+            average_grade3 = total_grade3 / 3
+
+            print(average_grade1, average_grade2, average_grade3)
+
+            # Aggregate general scores from grades_data
             summary_totals = {}
-            for grade_by_panel in grades:
-                summary_grades_data = grade_by_panel.get_grades_data()
+            for grade_obj in group_grades_qs:
+                summary_grades_data = grade_obj.get_grades_data()
                 for section_name, section_grades in summary_grades_data.items():
                     if section_name not in summary_totals:
                         summary_totals[section_name] = {'total': 0, 'count': 0}
@@ -1687,103 +1685,54 @@ def pre_oral_individual_class_record(request):
                         summary_totals[section_name]['total'] += total
                         summary_totals[section_name]['count'] += 1
                     elif isinstance(section_grades, list):
-                        try:
-                            average = sum(section_grades) / len(section_grades)
-                        except ZeroDivisionError:
-                            average = 0
-                        summary_totals[section_name]['total'] += average
+                        avg = sum(section_grades) / len(section_grades) if section_grades else 0
+                        summary_totals[section_name]['total'] += avg
                         summary_totals[section_name]['count'] += 1
 
-            # Finalize totals
             for section_name, data in summary_totals.items():
-                    if "Oral Presentation" in section_name or "Individual Grade" in section_name:
-                        # Divide by 3 for specific sections
-                        if data['count'] > 0:
-                            summary_totals[section_name] = data['total'] / 3
-                            summary_totals[section_name] = summary_totals[section_name] / 3
-                        else:
-                            summary_totals[section_name] = 0
-                    else:
-                        # For other sections, just average over the count
-                        if data['count'] > 0:
-                            summary_totals[section_name] = data['total'] / 3
-                        else:
-                            summary_totals[section_name] = 0
+                count = data['count'] or 1
+                section_avg = data['total'] / count
+                if "Oral Presentation" in section_name or "Individual Grade" in section_name:
+                    summary_totals[section_name] = section_avg / 3
+                else:
+                    summary_totals[section_name] = section_avg
 
             total_earned_points = sum(summary_totals.values())
-            print(f"total points: {total_earned_points}")
+            print("Total Earned Points:", total_earned_points)
 
-            # Initialize member variables
-            member1_grade = grades.first().member1_grade if grades.exists() else None
-            member2_grade = grades.first().member2_grade if grades.exists() else None
-            member3_grade = grades.first().member3_grade if grades.exists() else None
-            recommendation = grades.first().recommendation if grades.exists() else None
-            total_grade1 = grades.aggregate(Sum('member1_grade'))['member1_grade__sum']
-            total_grade2 = grades.aggregate(Sum('member2_grade'))['member2_grade__sum']
-            total_grade3 = grades.aggregate(Sum('member3_grade'))['member3_grade__sum']
+            # Adjust by subtracting member average
+            valid_members = sum(1 for g in [average_grade1, average_grade2, average_grade3] if g != -1)
+            valid_members = valid_members if valid_members > 0 else 1
+            member_avg = (average_grade1 + average_grade2 + average_grade3) / valid_members
+            adjusted_total = total_earned_points - member_avg
 
-            #grade for the member1
-            if total_grade1 is not None and grades.count() != 0:
-                average_grade1 = total_grade1 / 3
-                print('the grade is no 0')
-                
+            # Final grades and ratings
+            if average_grade1 != -1:
+                final_grade1 = average_grade1 + adjusted_total
+                member1_grade = average_grade1
+                member1_rating = calculate_rating(final_grade1)
             else:
-                average_grade1 = 0  # Handle the case where no grades exist
-                print('the grade is 0')
-            print('member grade1', average_grade1)
+                member1_grade = member1_rating = "inc"
 
-            #grade for the member2
-            if total_grade2 is not None and grades.count() != 0:
-                average_grade2 = total_grade2 / 3
-                print('the grade is no 0')
-                
+            if average_grade2 != -1:
+                final_grade2 = average_grade2 + adjusted_total
+                member2_grade = average_grade2
+                member2_rating = calculate_rating(final_grade2)
             else:
-                average_grade2 = 0  # Handle the case where no grades exist
-                print('the grade is 0')
-            print('member grade3', average_grade2)
+                member2_grade = member2_rating = "inc"
 
-            #grade for the member3
-            if total_grade3 is not None and grades.count() != 0:
-                average_grade3 = total_grade3 / 3
-                print('the grade is no 0')
-                
+            if average_grade3 != -1:
+                final_grade3 = average_grade3 + adjusted_total
+                member3_grade = average_grade3
+                member3_rating = calculate_rating(final_grade3)
             else:
-                average_grade3 = 0  # Handle the case where no grades exist
-                print('the grade is 0')
-            print('member grade3', average_grade3)
-            print(average_grade1, average_grade2, average_grade3)
-
-            valid_members = 0
-            if member1_grade != -1:
-                valid_members += 1
-            if member2_grade != -1:
-                valid_members += 1
-            if member3_grade != -1:
-                valid_members += 1
-
-            
-            member_grade = (average_grade1 + average_grade2 + average_grade3)/valid_members
-            print(f"member grade: {member_grade}")
-
-            adjusted_total_earned_points = total_earned_points - member_grade
-            print(f"adjusted total points: {adjusted_total_earned_points}")
-
-            
-            if member1_grade != -1:
-                average_grade1 = average_grade1 + adjusted_total_earned_points
-                print("average_grade1: ", average_grade1)
-                member1_rating = calculate_rating(average_grade1)
-            if member2_grade != -1:
-                average_grade2 = average_grade2 + adjusted_total_earned_points
-                member2_rating = calculate_rating(average_grade2)
-            if member3_grade != -1: 
-                average_grade3 = average_grade3 + adjusted_total_earned_points
-                member3_rating = calculate_rating(average_grade3)
-
+                member3_grade = member3_rating = "inc"
         else:
-            member1_rating = member2_rating = member3_rating = None
+            # If no grades are available, mark all as incomplete
+            member1_grade = member2_grade = member3_grade = "Not Graded"
+            member1_rating = member2_rating = member3_rating = "Not Graded"
 
-        # Add individual records
+        # Add to final display list
         if record.member1:
             individual_records.append({
                 'section': record.section,
@@ -1809,11 +1758,7 @@ def pre_oral_individual_class_record(request):
                 'rating': member3_rating,
             })
 
-        
-    # Sort individual_records alphabetically by 'member'
     individual_records = sorted(individual_records, key=lambda x: str(x['member']).lower())
-
-    # Paginate the individual records, showing 10 records per page
     paginator = Paginator(individual_records, 50)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1824,6 +1769,336 @@ def pre_oral_individual_class_record(request):
         'last_school_year': last_school_year,
         'school_years': school_years,
     })
+
+# @login_required
+# def pre_oral_individual_class_record(request):
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the active school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     # Get all available school years
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     if school_years.count() == 0:
+#         SchoolYear.create_new_school_year()
+#         school_years = SchoolYear.objects.all().order_by('start_year')
+
+#     # Fetch the CustomUser object associated with the logged-in user
+#     user_profile = get_object_or_404(CustomUser, id=request.user.id)
+
+#     # Fetch the Faculty object associated with the CustomUser
+#     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
+
+#     # Fetch records from the GroupInfoPOD model
+#     class_records = GroupInfoPOD.objects.filter(
+#         capstone_teacher=faculty_member,
+#         school_year=selected_school_year
+#     ).order_by('section')
+
+#     # Fetch grades for the current school year
+#     grades = PreOral_Grade.objects.filter(school_year=selected_school_year)
+
+#     # Apply the formula for each member
+#     def calculate_rating(individual_grade):
+        
+#         if individual_grade == 0.6 * 100:
+#             return 3
+#         elif individual_grade > 0.6 * 100:
+#             return 3 - (2 * (individual_grade - 0.6 * 100)) / (0.4 * 100)
+#         else:
+#             return 3 + (2 * (0.6 * 100 - individual_grade)) / (0.6 * 100)
+
+
+#     # Transform the data to display individual members in each row
+#     individual_records = []
+#     for record in class_records:
+#         # Initialize grades with default values
+#         member1_grade = 0
+#         member2_grade = 0
+#         member3_grade = 0
+
+#         # Fetch grades for the group
+#         group_grades = grades.filter(project_title=record.title).first()
+
+#         # Calculate ratings for each member
+#         if group_grades:
+#             # Aggregate data
+#             summary_totals = {}
+#             for grade_by_panel in grades:
+#                 summary_grades_data = grade_by_panel.get_grades_data()
+#                 for section_name, section_grades in summary_grades_data.items():
+#                     if section_name not in summary_totals:
+#                         summary_totals[section_name] = {'total': 0, 'count': 0}
+#                     if isinstance(section_grades, dict):
+#                         total = sum(section_grades.values())
+#                         summary_totals[section_name]['total'] += total
+#                         summary_totals[section_name]['count'] += 1
+#                     elif isinstance(section_grades, list):
+#                         try:
+#                             average = sum(section_grades) / len(section_grades)
+#                         except ZeroDivisionError:
+#                             average = 0
+#                         summary_totals[section_name]['total'] += average
+#                         summary_totals[section_name]['count'] += 1
+
+#             # Finalize totals and separate oral/individual sections
+#             oral_and_individual_total = 0
+#             final_summary_totals = {}
+
+#             for section_name, data in summary_totals.items():
+#                 # Skip if data is a dict (still in 'total/count' form), otherwise it's already averaged
+#                 if isinstance(data, dict):
+#                     if data['count'] > 0:
+#                         average = data['total'] / data['count']
+#                     else:
+#                         average = 0
+#                 else:
+#                     average = data  # already a number
+
+#                 final_summary_totals[section_name] = average
+
+#                 # Identify and add "Oral Presentation" or "Individual Grade" totals
+#                 if "Oral Presentation" in section_name or "Individual Grade" in section_name:
+#                     oral_and_individual_total += average
+
+#             # Now it's safe to sum
+#             total_earned_points = sum(
+#                     value if isinstance(value, (int, float)) else 0
+#                     for value in summary_totals.values()
+#                 )
+#             adjusted_total_earned_points = total_earned_points - oral_and_individual_total
+
+#             print(f"Total Earned Points: {total_earned_points}")
+#             print(f"Oral/Individual Total: {oral_and_individual_total}")
+#             print(f"Adjusted Total Points: {adjusted_total_earned_points}")
+
+
+#             # total_earned_points = sum(summary_totals.values())
+#             # print(f"total points: {total_earned_points}")
+
+#             # Initialize member variables
+#             member1_grade = grades.first().member1_grade if grades.exists() else None
+#             member2_grade = grades.first().member2_grade if grades.exists() else None
+#             member3_grade = grades.first().member3_grade if grades.exists() else None
+#             recommendation = grades.first().recommendation if grades.exists() else None
+#             total_grade1 = grades.aggregate(Sum('member1_grade'))['member1_grade__sum']
+#             total_grade2 = grades.aggregate(Sum('member2_grade'))['member2_grade__sum']
+#             total_grade3 = grades.aggregate(Sum('member3_grade'))['member3_grade__sum']
+
+#             #grade for the member1
+#             if total_grade1 is not None and grades.count() != 0:
+#                 average_grade1 = total_grade1 / 3
+#                 print('the grade is no 0')
+                
+#             else:
+#                 average_grade1 = 0  # Handle the case where no grades exist
+#                 print('the grade is 0')
+#             print('member grade1', average_grade1)
+
+#             #grade for the member2
+#             if total_grade2 is not None and grades.count() != 0:
+#                 average_grade2 = total_grade2 / 3
+#                 print('the grade is no 0')
+                
+#             else:
+#                 average_grade2 = 0  # Handle the case where no grades exist
+#                 print('the grade is 0')
+#             print('member grade3', average_grade2)
+
+#             #grade for the member3
+#             if total_grade3 is not None and grades.count() != 0:
+#                 average_grade3 = total_grade3 / 3
+#                 print('the grade is no 0')
+                
+#             else:
+#                 average_grade3 = 0  # Handle the case where no grades exist
+#                 print('the grade is 0')
+#             print('member grade3', average_grade3)
+#             print(average_grade1, average_grade2, average_grade3)
+
+#             valid_members = 0
+#             if member1_grade != -1:
+#                 valid_members += 1
+#             if member2_grade != -1:
+#                 valid_members += 1
+#             if member3_grade != -1:
+#                 valid_members += 1
+
+            
+#             member_grade = (average_grade1 + average_grade2 + average_grade3)/valid_members
+#             print(f"member grade: {member_grade}")
+
+#             adjusted_total_earned_points = total_earned_points - member_grade
+#             print(f"adjusted total points: {adjusted_total_earned_points}")
+
+            
+#             if member1_grade != -1:
+#                 average_grade1 = average_grade1 + adjusted_total_earned_points
+#                 print("average_grade1: ", average_grade1)
+#                 member1_rating = calculate_rating(average_grade1)
+#             if member2_grade != -1:
+#                 average_grade2 = average_grade2 + adjusted_total_earned_points
+#                 member2_rating = calculate_rating(average_grade2)
+#             if member3_grade != -1: 
+#                 average_grade3 = average_grade3 + adjusted_total_earned_points
+#                 member3_rating = calculate_rating(average_grade3)
+
+#         else:
+#             member1_rating = member2_rating = member3_rating = None
+
+#         # Add individual records
+#         if record.member1:
+#             individual_records.append({
+#                 'section': record.section,
+#                 'member': record.member1,
+#                 'title': record.title,
+#                 'grade': member1_grade,
+#                 'rating': member1_rating,
+#             })
+#         if record.member2:
+#             individual_records.append({
+#                 'section': record.section,
+#                 'member': record.member2,
+#                 'title': record.title,
+#                 'grade': member2_grade,
+#                 'rating': member2_rating,
+#             })
+#         if record.member3:
+#             individual_records.append({
+#                 'section': record.section,
+#                 'member': record.member3,
+#                 'title': record.title,
+#                 'grade': member3_grade,
+#                 'rating': member3_rating,
+#             })
+
+        
+#     # Sort individual_records alphabetically by 'member'
+#     individual_records = sorted(individual_records, key=lambda x: str(x['member']).lower())
+
+#     # Paginate the individual records, showing 10 records per page
+#     paginator = Paginator(individual_records, 50)
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     return render(request, 'faculty/view_section/pre_oral_individual_class_records.html', {
+#         'page_obj': page_obj,
+#         'current_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#     })
+  
+# @login_required
+# def pre_oral_individual_class_record(request):
+#     selected_school_year_id = request.session.get('selected_school_year_id')
+#     last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+#     # Get the selected school year from session or fallback to the active school year
+#     selected_school_year = ''
+#     if not selected_school_year_id:
+#         selected_school_year = last_school_year
+#         request.session['selected_school_year_id'] = selected_school_year.id  # Set in session
+#     else:
+#         selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+#     # Get all available school years
+#     school_years = SchoolYear.objects.all().order_by('start_year')
+#     if school_years.count() == 0:
+#         SchoolYear.create_new_school_year()
+#         school_years = SchoolYear.objects.all().order_by('start_year')
+
+#     # Fetch the CustomUser object associated with the logged-in user
+#     user_profile = get_object_or_404(CustomUser, id=request.user.id)
+
+#     # Fetch the Faculty object associated with the CustomUser
+#     faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
+
+#     # # Fetch records from the GroupInfoPOD model
+#     # class_records = GroupInfoPOD.objects.filter(
+#     #     capstone_teacher=faculty_member,
+#     #     school_year=selected_school_year
+#     # ).order_by('section')
+
+#     summary = []
+
+#     groups = GroupInfoPOD.objects.filter(
+#         capstone_teacher=faculty_member,
+#         school_year=selected_school_year
+#     ).order_by('section')
+
+#     for group in groups:
+#         title = group.title
+#         members = group.get_members()
+#         group_data = {
+#             'section': group.section,
+#             'title': title,
+#             'members': []
+#         }
+
+#         # Get all PreOral_Grade records for this project
+#         preoral_entries = PreOral_Grade.objects.filter(project_title=title)
+#         print("preoral_entries: ", preoral_entries)
+#         total_panelists = preoral_entries.count()
+
+#         # If less than 3 panelists: mark all as INC
+#         if total_panelists < 3:
+#             for member in members:
+#                 if member:
+#                     group_data['members'].append({'name': member, 'grade': 'INC'})
+#             summary.append(group_data)
+#             continue  # Skip to next group
+
+#         # Sum all grades per member across all panel entries
+#         member_totals = {member: 0 for member in members if member}
+#         member_counts = {member: 0 for member in members if member}
+#         not_graded = {member: False for member in members if member}
+
+#         for entry in preoral_entries:
+#             if group.member1:
+#                 if entry.member1_grade == -1:
+#                     not_graded[group.member1] = True
+#                 else:
+#                     member_totals[group.member1] += entry.member1_grade
+#                     member_counts[group.member1] += 1
+
+#             if group.member2:
+#                 if entry.member2_grade == -1:
+#                     not_graded[group.member2] = True
+#                 else:
+#                     member_totals[group.member2] += entry.member2_grade
+#                     member_counts[group.member2] += 1
+
+#             if group.member3:
+#                 if entry.member3_grade == -1:
+#                     not_graded[group.member3] = True
+#                 else:
+#                     member_totals[group.member3] += entry.member3_grade
+#                     member_counts[group.member3] += 1
+
+#         # Build final grades
+#         for member in members:
+#             if not member:
+#                 continue
+#             if not_graded[member]:
+#                 grade_display = "Not Graded"
+#             else:
+#                 grade_display = round(member_totals[member] / member_counts[member], 2)
+#             group_data['members'].append({'name': member, 'grade': grade_display})
+
+#         summary.append(group_data)
+
+#     return render(request, 'faculty/view_section/pre_oral_individual_class_records.html', {
+#         'summary': summary,
+#         'current_school_year': selected_school_year,
+#         'last_school_year': last_school_year,
+#         'school_years': school_years,
+#     })
   
 
 @login_required
@@ -3625,6 +3900,15 @@ def adviser_record_detail(request, adviser_id):
     total_earned_points = sum(summary_totals.values())
     print(f"total points: {total_earned_points}")
 
+    # Calculate the average grade for each member
+    oral_avg_grade = (Decimal(average_grade1) + Decimal(average_grade2) + Decimal(average_grade3)) / Decimal(3)
+    print('oral_avg_grade: ', oral_avg_grade)
+    total_points_member1 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade1)
+    print('total_points_member1: ', total_points_member1, average_grade1)
+    total_points_member2 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade2)
+    print('total_points_member2: ', total_points_member2, average_grade2)
+    total_points_member3 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade3)
+
     # Determine the verdict based on total earned points
     records = grades.count()
     selected_verdict = ''
@@ -3639,6 +3923,9 @@ def adviser_record_detail(request, adviser_id):
             if total_earned_points >= verdict.percentage:
                 selected_verdict = f"{verdict.name} ({verdict.percentage}%)"
                 break
+
+    print("summary_totals: ", summary_totals)
+    print("criteria_list: ", criteria_list)
 
     context = {
         'adviser_id': adviser_id,
@@ -3668,7 +3955,10 @@ def adviser_record_detail(request, adviser_id):
         'selected_school_year': selected_school_year,
         'school_years': school_years,
         'adviser_records': adviser_records,
-        'adviser_records2': adviser_records2
+        'adviser_records2': adviser_records2,
+        'total_points_member1': total_points_member1,
+        'total_points_member2': total_points_member2,
+        'total_points_member3': total_points_member3,
     }
     
     return render(request, 'faculty/pre_oral_grade/adviser_record_detailPOD.html', context)

@@ -937,6 +937,21 @@ def recommend_faculty_again(request, adviser_id):
         # Get the current members
         member1, member2, member3 = (members + [None] * 3)[:3]
 
+        # Get group members from the form
+        group_info1 = request.POST.get('group_info1')
+        group_info2 = request.POST.get('group_info2')
+        group_info3 = request.POST.get('group_info3', None)
+        
+        # Create list of group members (excluding None values)
+        group_members = []
+        if group_info1:
+            group_members.append(group_info1.strip())
+        if group_info2:
+            group_members.append(group_info2.strip())
+        if group_info3:
+            group_members.append(group_info3.strip())
+
+        print("group_info1: ", group_info1)
         return render(request, 'admin/reco_app/recommendation_results.html', {
             'title': title,
             'needed_expertise': selected_expertise if selected_expertise else [],
@@ -951,7 +966,8 @@ def recommend_faculty_again(request, adviser_id):
             'member2': member2,
             'member3': member3,
             'members_list': json.dumps(members_list),
-            'existing_members_set': json.dumps(list(existing_members_set))
+            'existing_members_set': json.dumps(list(existing_members_set)),
+            'group_info1': group_info1
         })
 
     except Adviser.DoesNotExist:
