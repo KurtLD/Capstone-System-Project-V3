@@ -2171,6 +2171,159 @@ def mock_class_record(request):
     })
 
 @login_required
+def mock_individual_class_record(request):
+    selected_school_year_id = request.session.get('selected_school_year_id')
+    last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
+
+    if not selected_school_year_id:
+        selected_school_year = last_school_year
+        request.session['selected_school_year_id'] = selected_school_year.id
+    else:
+        selected_school_year = SchoolYear.objects.get(id=selected_school_year_id)
+
+    school_years = SchoolYear.objects.all().order_by('start_year')
+    if school_years.count() == 0:
+        SchoolYear.create_new_school_year()
+        school_years = SchoolYear.objects.all().order_by('start_year')
+
+    user_profile = get_object_or_404(CustomUser, id=request.user.id)
+    faculty_member = get_object_or_404(Faculty, custom_user=user_profile)
+
+    class_records = GroupInfoMD.objects.filter(
+        capstone_teacher=faculty_member,
+        school_year=selected_school_year
+    ).order_by('section')
+
+    grades = Mock_Grade.objects.filter(school_year=selected_school_year)
+
+    def calculate_rating(individual_grade):
+        if individual_grade == 60:
+            return 3
+        elif individual_grade > 60:
+            return 3 - (2 * (individual_grade - 60)) / 40
+        else:
+            return 3 + (2 * (60 - individual_grade)) / 60
+
+    individual_records = []
+    for record in class_records:
+        group_grades_qs = grades.filter(project_title=record.title)
+
+        if group_grades_qs.count() < 3 and group_grades_qs.count() > 0:
+            # Mark all as incomplete
+            member1_grade = member2_grade = member3_grade = "INC"
+            member1_rating = member2_rating = member3_rating = "INC"
+        elif group_grades_qs.count() == 3:
+            # Aggregate member grades
+            total_grade1 = group_grades_qs.aggregate(Sum('member1_grade'))['member1_grade__sum'] or 0
+            total_grade2 = group_grades_qs.aggregate(Sum('member2_grade'))['member2_grade__sum'] or 0
+            total_grade3 = group_grades_qs.aggregate(Sum('member3_grade'))['member3_grade__sum'] or 0
+            print(total_grade1, total_grade2, total_grade3)
+
+            average_grade1 = total_grade1 / 3
+            average_grade2 = total_grade2 / 3
+            average_grade3 = total_grade3 / 3
+
+            print(average_grade1, average_grade2, average_grade3)
+
+            # Aggregate general scores from grades_data
+            summary_totals = {}
+            for grade_obj in group_grades_qs:
+                summary_grades_data = grade_obj.get_grades_data()
+                for section_name, section_grades in summary_grades_data.items():
+                    if section_name not in summary_totals:
+                        summary_totals[section_name] = {'total': 0, 'count': 0}
+                    if isinstance(section_grades, dict):
+                        total = sum(section_grades.values())
+                        summary_totals[section_name]['total'] += total
+                        summary_totals[section_name]['count'] += 1
+                    elif isinstance(section_grades, list):
+                        avg = sum(section_grades) / len(section_grades) if section_grades else 0
+                        summary_totals[section_name]['total'] += avg
+                        summary_totals[section_name]['count'] += 1
+
+            for section_name, data in summary_totals.items():
+                count = data['count'] or 1
+                section_avg = data['total'] / count
+                if "Oral Presentation" in section_name or "Individual Grade" in section_name:
+                    summary_totals[section_name] = section_avg / 3
+                else:
+                    summary_totals[section_name] = section_avg
+
+            total_earned_points = sum(summary_totals.values())
+            print("Total Earned Points:", total_earned_points)
+
+            # Adjust by subtracting member average
+            valid_members = sum(1 for g in [average_grade1, average_grade2, average_grade3] if g != -1)
+            valid_members = valid_members if valid_members > 0 else 1
+            member_avg = (average_grade1 + average_grade2 + average_grade3) / valid_members
+            adjusted_total = total_earned_points - member_avg
+
+            # Final grades and ratings
+            if average_grade1 != -1:
+                final_grade1 = average_grade1 + adjusted_total
+                member1_grade = average_grade1
+                member1_rating = calculate_rating(final_grade1)
+            else:
+                member1_grade = member1_rating = "inc"
+
+            if average_grade2 != -1:
+                final_grade2 = average_grade2 + adjusted_total
+                member2_grade = average_grade2
+                member2_rating = calculate_rating(final_grade2)
+            else:
+                member2_grade = member2_rating = "inc"
+
+            if average_grade3 != -1:
+                final_grade3 = average_grade3 + adjusted_total
+                member3_grade = average_grade3
+                member3_rating = calculate_rating(final_grade3)
+            else:
+                member3_grade = member3_rating = "inc"
+        else:
+            # If no grades are available, mark all as incomplete
+            member1_grade = member2_grade = member3_grade = "Not Graded"
+            member1_rating = member2_rating = member3_rating = "Not Graded"
+
+        # Add to final display list
+        if record.member1:
+            individual_records.append({
+                'section': record.section,
+                'member': record.member1,
+                'title': record.title,
+                'grade': member1_grade,
+                'rating': member1_rating,
+            })
+        if record.member2:
+            individual_records.append({
+                'section': record.section,
+                'member': record.member2,
+                'title': record.title,
+                'grade': member2_grade,
+                'rating': member2_rating,
+            })
+        if record.member3:
+            individual_records.append({
+                'section': record.section,
+                'member': record.member3,
+                'title': record.title,
+                'grade': member3_grade,
+                'rating': member3_rating,
+            })
+
+    individual_records = sorted(individual_records, key=lambda x: str(x['member']).lower())
+    paginator = Paginator(individual_records, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'faculty/view_section/mock_individual_class_records.html', {
+        'page_obj': page_obj,
+        'current_school_year': selected_school_year,
+        'last_school_year': last_school_year,
+        'school_years': school_years,
+    })
+
+
+@login_required
 def final_class_record(request):
     # Get the last and current school year
     # last_school_year = SchoolYear.objects.all().order_by('-end_year').first()
@@ -5587,13 +5740,33 @@ def mock_adviser_record_detail(request, adviser_id):
                 summary_totals[section_name]['total'] += average
                 summary_totals[section_name]['count'] += 1
 
+    # Finalize totals
     for section_name, data in summary_totals.items():
-        if "Oral Presentation" in section_name or "Individual Grade" in section_name:
-            summary_totals[section_name] = data['total'] / 3 if data['count'] > 0 else 0
-        else:
-            summary_totals[section_name] = data['total'] / 3 if data['count'] > 0 else 0
+            if "Oral Presentation" in section_name or "Individual Grade" in section_name:
+                # Divide by 3 for specific sections
+                if data['count'] > 0:
+                    summary_totals[section_name] = data['total'] / 3
+                    summary_totals[section_name] = summary_totals[section_name] / 3
+                else:
+                    summary_totals[section_name] = 0
+            else:
+                # For other sections, just average over the count
+                if data['count'] > 0:
+                    summary_totals[section_name] = data['total'] / 3
+                else:
+                    summary_totals[section_name] = 0
 
     total_earned_points = sum(summary_totals.values())
+
+    # Calculate the average grade for each member
+    oral_avg_grade = (Decimal(average_grade1) + Decimal(average_grade2) + Decimal(average_grade3)) / Decimal(3)
+    print('oral_avg_grade: ', oral_avg_grade)
+    total_points_member1 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade1)
+    print('total_points_member1: ', total_points_member1, average_grade1)
+    total_points_member2 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade2)
+    print('total_points_member2: ', total_points_member2, average_grade2)
+    total_points_member3 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade3)
+
 
     records = grades.count()
     selected_verdict = ''
@@ -5635,7 +5808,11 @@ def mock_adviser_record_detail(request, adviser_id):
         'school_years': school_years,
         'faculty_member': faculty_member,
         'adviser_records': adviser_records,
-        'adviser_records2': adviser_records2
+        'adviser_records2': adviser_records2,
+        'total_points_member1': total_points_member1,
+        'total_points_member2': total_points_member2,
+        'total_points_member3': total_points_member3,
+
     }
 
     return render(request, 'faculty/mock_grade/adviser_record_detailMD.html', context)
