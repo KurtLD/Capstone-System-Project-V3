@@ -228,19 +228,31 @@
                             <!-- Member 1 -->
                             <div class="member-row">
                                 <label for="member1">Member 1:</label>
-                                <input style="padding: 1%; border-radius: 10px;" type="text" id="group_info1" class="member-select" value="{{ group_info1 }}" required readonly>
+                                {% if group_info1 != None %}
+                                    <input style="padding: 1%; border-radius: 10px;" type="text" id="group_info1" class="member-select" value="{{ group_info1 }}" required readonly>
+                                {% else %}
+                                    <input style="padding: 1%; border-radius: 10px;" type="text" id="group_info1" class="member-select" value="{{ member1 }}" required readonly>
+                                {% endif %}
                             </div>
 
                             <!-- Member 2 -->
                             <div class="member-row">
                                 <label for="member2">Member 2:</label>
-                                <input style="padding: 1%; border-radius: 10px;" type="text" id="group_info2" class="member-select" value="{{ group_info2 }}" required readonly>
+                                {% if group_info2 != None %}
+                                    <input style="padding: 1%; border-radius: 10px;" type="text" id="group_info2" class="member-select" value="{{ group_info2 }}" required readonly>
+                                {% else %}
+                                    <input style="padding: 1%; border-radius: 10px;" type="text" id="group_info2" class="member-select" value="{{ member2 }}" required readonly>
+                                {% endif %}
                             </div>
 
                             <!-- Member 3 -->
                             <div class="member-row">
                                 <label for="member3">Member 3:</label>
-                                <input style="padding: 1%; border-radius: 10px;" type="text" id="group_info3" class="member-select" value="{{ group_info3 }}" required readonly>
+                                {% if group_info3 != None %}
+                                    <input style="padding: 1%; border-radius: 10px;" type="text" id="group_info3" class="member-select" value="{{ group_info3 }}" required readonly>
+                                {% else %}
+                                    <input style="padding: 1%; border-radius: 10px;" type="text" id="group_info3" class="member-select" value="{{ member3 }}" required readonly>
+                                {% endif %} 
                             </div>
                         </div>
 
