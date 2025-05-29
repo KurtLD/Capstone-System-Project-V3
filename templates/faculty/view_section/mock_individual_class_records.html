@@ -42,10 +42,11 @@
                                     <div class="col-12 full-height">
                                         <div class="card">
                                             <div class="no-print">
-                                                <select class="form-select dropdown" id="groupSelector" onchange="location = this.value;">
+                                                <select class="dropdown form-select" id="groupSelector" onchange="location = this.value;">
                                                     <option value="" disabled selected>Select Group</option>
-                                                    <option value="{% url 'class_record' %}">Pre-Oral Group</option>
+                                                    <option value="{% url 'class_record' %}">Pre Oral Group</option>
                                                     <option value="{% url 'final_class_record' %}">Final Group</option>
+                                                    <option value="{% url 'combined_class_record' %}">Complete Capstone 2 Rating</option>
                                                 </select>
                                             </div>
                                             <div>

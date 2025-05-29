@@ -48,46 +48,78 @@
                                 <h3>Evaluation Summary:</h3>
                                 <table class="table table-striped text-center">
                                     <thead>
+                                        
                                         <tr>
-                                            <th>Criteria</th>
-                                            <th>Group Percentage</th>
+                                            <!-- <th>Group Percentage</th>
                                             <th>Earned Points (%)</th>
                                             {% if member1 %}<th class="bg-warning text-dark">{{ member1 }}</th>{% endif %}
                                             {% if member2 %}<th class="bg-warning text-dark">{{ member2 }}</th>{% endif %}
-                                            {% if member3 %}<th class="bg-warning text-dark">{{ member3 }}</th>{% endif %}                                            
+                                            {% if member3 %}<th class="bg-warning text-dark">{{ member3 }}</th>{% endif %}  -->
+                                            <th>Members</th>
+                                            {% for section in criteria_list %}
+                                                <th>{{ section.name }} <br>({{ section.total_criteria_percentage }})</th>
+                                            {% endfor %}
+                                            <th>Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for section in criteria_list %}
-                                            <tr>
-                                                <td>{{ section.name }}</td>
-                                                <td>{{ section.total_criteria_percentage }}</td>
+                                        <tr>
+                                            {% if member1 %}<td class="bg-warning text-dark">{{ member1 }}</td>{% endif %}
+                                            {% for section in criteria_list %}
                                                 <td id="{{ section.name|slugify }}_summary">
                                                     {% with total=summary_totals|get_item:section.name %}
-                                                        {{ total|floatformat:2 }}
+                                                        {% if "individual" in section.name|lower or "oral presentation" in section.name|lower %}
+                                                            {{ member1_grade |floatformat:2 }}
+                                                        {% else %}
+                                                            {{ total|floatformat:2 }}
+                                                        {% endif %}
                                                     {% endwith %}
                                                 </td>
-                                                {% if member1 %}<td>-</td>{% endif %}
-                                                {% if member2 %}<td>-</td>{% endif %}
-                                                {% if member3 %}<td>-</td>{% endif %}
-                                            </tr>
-                                        {% endfor %}
-                                        <tr class="font-weight-bold">
-                                            <td>TOTAL</td>
-                                            <td>{{ total_points }}</td>
-                                            <td id="overall_grade">{{ total_earned_points }}</td>
-                                            {% if member1 %}<td>{{ member1_grade|default:"N/A"|floatformat:2 }}</td>{% endif %}
-                                            {% if member2 %}<td>{{ member2_grade|default:"N/A"|floatformat:2 }}</td>{% endif %}
+                                            {% endfor %}
+
+                                            {% if member1 %}<td>{{ total_points_member1|default:"N/A"|floatformat:2 }}</td>{% endif %}
+
+                                        </tr>
+                                        <tr>
+                                            {% if member2 %}<td class="bg-warning text-dark">{{ member2 }}</td>{% endif %}
+                                            {% for section in criteria_list %}
+                                                <td id="{{ section.name|slugify }}_summary">
+                                                    {% with total=summary_totals|get_item:section.name %}
+                                                        {% if "individual" in section.name|lower or "oral presentation" in section.name|lower %}
+                                                            {{ member2_grade |floatformat:2 }}
+                                                        {% else %}
+                                                            {{ total|floatformat:2 }}
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </td>
+                                            {% endfor %}
+                                            {% if member2 %}<td>{{ total_points_member2|default:"N/A"|floatformat:2 }}</td>{% endif %}
+                                        </tr>
+                                        <tr>
+                                            {% if member3 %}<td class="bg-warning text-dark">{{ member3 }}</td>{% endif %}  
+                                            {% for section in criteria_list %}
+                                                <td id="{{ section.name|slugify }}_summary">
+                                                    {% with total=summary_totals|get_item:section.name %}
+                                                        {% if "individual" in section.name|lower or "oral presentation" in section.name|lower %}
+                                                            {{ member3_grade |floatformat:2 }}
+                                                        {% else %}
+                                                            {{ total|floatformat:2 }}
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </td>
+                                            {% endfor %}
                                             {% if member3 %}
                                                 <td>
-                                                    {% if member3_grade %}
-                                                        {{ member3_grade|floatformat:2 }}
+                                                    {% if total_points_member3 %}
+                                                        {{ total_points_member3|floatformat:2 }}
                                                     {% else %}
                                                         None
                                                     {% endif %}
                                                 </td>
                                             {% endif %}
                                         </tr>
+                                        
+                                        
                                     </tbody>
                                 </table>
                             {% endif %}

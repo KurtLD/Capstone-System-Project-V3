@@ -30,7 +30,8 @@ from users.views import (
     mock_class_record,
     mock_individual_class_record,
     final_class_record,
-
+    final_individual_class_record,
+    individual_combined_class_record,
 
     # the following view function is used for the PreOral
     add_section,
@@ -169,9 +170,13 @@ urlpatterns = [
     path('pre_oral_individual_class_record/', pre_oral_individual_class_record, name='pre_oral_individual_class_record'),
     path('mock_individual_class_record/', mock_individual_class_record, name='mock_individual_class_record'),
     path('mock-class-record/', mock_class_record, name='mock_class_record'),
+    path('final_individual_class_record/', final_individual_class_record, name='final_individual_class_record'),
     path('final-class-record/', final_class_record, name='final_class_record'),
     path('school-year-selection/', school_year_selection, name='school_year_selection'),  
     path('select_school_year/', select_school_year, name='select_school_year'),
+
+    path('records/combined/', individual_combined_class_record, name='combined_class_record'),
+
 
     # Recommend adviser URL pattern
     path('recommend_adviser/', reco_views.recommend_faculty, name='recommend_adviser'),

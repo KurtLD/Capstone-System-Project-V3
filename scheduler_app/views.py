@@ -7933,6 +7933,15 @@ def final_grade_view(request, title_id):
     total_earned_points = sum(summary_totals.values())
     print(f"total points: {total_earned_points}")
 
+    # Calculate the average grade for each member
+    oral_avg_grade = (Decimal(average_grade1) + Decimal(average_grade2) + Decimal(average_grade3)) / Decimal(3)
+    print('oral_avg_grade: ', oral_avg_grade)
+    total_points_member1 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade1)
+    print('total_points_member1: ', total_points_member1, average_grade1)
+    total_points_member2 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade2)
+    print('total_points_member2: ', total_points_member2, average_grade2)
+    total_points_member3 = (Decimal(total_earned_points) - oral_avg_grade) + Decimal(average_grade3)
+
     # Determine the verdict based on total earned points
     records = grades.count()
     selected_verdict = ''
@@ -7977,7 +7986,10 @@ def final_grade_view(request, title_id):
         'selected_school_year': selected_school_year,
         'last_school_year': last_school_year,
         'school_years': school_years,
-        'adviser_records': adviser_records
+        'adviser_records': adviser_records,
+        'total_points_member1': total_points_member1,
+        'total_points_member2': total_points_member2,
+        'total_points_member3': total_points_member3,
     }
     
     return render(request, 'faculty/final_grade/adviser_record_detailFD.html', context)
